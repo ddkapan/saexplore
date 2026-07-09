@@ -40,7 +40,7 @@ ok('venn row-labels clickable', d.querySelectorAll('.rowh.gsel').length === 10);
 ok('tour buttons present', !!d.getElementById('playS') && !!d.getElementById('prevS') && !!d.getElementById('nextS'));
 ok('map markers render', d.querySelectorAll('.mkr').length === 10);
 ok('status line renders', /organisms/.test((d.getElementById('statusline') || {}).textContent || ''));
-ok('empty taxon (Fish) greyed', d.querySelector('.chip.tax[data-g="Actinopterygii"]').classList.contains('empty'));
+ok('Fish taxon populated (not greyed)', !d.querySelector('.chip.tax[data-g="Actinopterygii"]').classList.contains('empty'));
 
 // Taxon filter: none -> 0, Plants-only -> all Plantae
 d.querySelector('.taxNone').click();
