@@ -53,8 +53,9 @@ ok('Plants-only shows only Plantae', pv.length > 0 && pv.every(r => r.getAttribu
 d.querySelector('.rowh.gsel[data-g="Aves"]').click();
 ok('row-label toggles chip', d.querySelector('.chip.tax[data-g="Aves"]').classList.contains('on'));
 
-// Compress absent rows
+// Compress absent rows (focus one site so some species are absent there)
 d.querySelector('.taxAll').click();
+d.querySelector('.chip.site').click();
 ok('absent rows compressed (hidden)', d.querySelectorAll('#content tbody tr.hid').length > 0);
 d.querySelector('.cmpT').click();
 ok('compress toggle reveals rows', d.querySelectorAll('#content tbody tr.hid').length === 0);
