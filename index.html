@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Southern Africa — Species Explorer · Cal Academy 2026</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#5e7249">
+<link rel="apple-touch-icon" href="./icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SA Species">
+</head>
+<body>
+<div id="app"></div>
+<!-- data first (organisms + maps), then the app code -->
+<script src="./data.js"></script>
+<script src="./app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
