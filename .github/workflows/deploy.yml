@@ -1,0 +1,39 @@
+name: Deploy PWA to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; newer merges supersede in-flight ones.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cache-bust the service worker so installed PWAs fetch the new files.
+      # Rewrites  var CACHE = '...';  to a per-commit version.
+      - name: Stamp service-worker cache version
+        run: |
+          sed -i "s/var CACHE = '[^']*';/var CACHE = 'sa-explorer-${GITHUB_SHA}';/" sw.js
+          echo "sw.js now:" && grep "var CACHE" sw.js
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
