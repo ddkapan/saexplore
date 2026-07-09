@@ -19,18 +19,10 @@
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").then(function (reg) {
-      // When a new SW (new deploy) activates, reload so the app picks up new code.
-      reg.addEventListener("updatefound", function () {
-        var nw = reg.installing;
-        if (!nw) return;
-        nw.addEventListener("statechange", function () {
-          if (nw.state === "activated" && navigator.serviceWorker.controller) {
-            location.reload();
-          }
-        });
-      });
-    }).catch(function () {});
+    // Register only — do NOT auto-reload on update (that would wipe the user's
+    // in-memory filters mid-session). New code is picked up on the next open;
+    // the network-first worker already serves the latest shell when online.
+    navigator.serviceWorker.register("./sw.js").catch(function () {});
   });
 }
 </script>
