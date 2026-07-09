@@ -37,21 +37,39 @@ self.addEventListener('activate', function (e) {
 
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
-  var url = e.request.url;
-  e.respondWith(
-    caches.match(e.request).then(function (hit) {
-      if (hit) return hit;
-      return fetch(e.request).then(function (resp) {
-        // Runtime-cache the external data the app relies on (photos, accounts, links).
-        if (/inaturalist|wikimedia|gbif|ebird|wikipedia/.test(url)) {
-          var copy = resp.clone();
-          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
-        }
+  var url = new URL(e.request.url);
+  var sameOrigin = url.origin === self.location.origin;
+
+  if (sameOrigin) {
+    // App shell (index.html, app.js, data.js, …): NETWORK-FIRST so a new deploy
+    // is picked up as soon as the device is online; fall back to cache offline.
+    e.respondWith(
+      fetch(e.request).then(function (resp) {
+        var copy = resp.clone();
+        caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
         return resp;
       }).catch(function () {
-        if (e.request.mode === 'navigate') return caches.match('./index.html');
-        return new Response('', { status: 504 });
-      });
-    })
-  );
+        return caches.match(e.request).then(function (hit) {
+          if (hit) return hit;
+          if (e.request.mode === 'navigate') return caches.match('./index.html');
+          return new Response('', { status: 504 });
+        });
+      })
+    );
+  } else {
+    // External media / accounts (iNat, Wikimedia, GBIF, eBird, Wikipedia):
+    // CACHE-FIRST for speed + offline; runtime-cache on first view.
+    e.respondWith(
+      caches.match(e.request).then(function (hit) {
+        if (hit) return hit;
+        return fetch(e.request).then(function (resp) {
+          if (/inaturalist|wikimedia|gbif|ebird|wikipedia/.test(url.href)) {
+            var copy = resp.clone();
+            caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+          }
+          return resp;
+        }).catch(function () { return new Response('', { status: 504 }); });
+      })
+    );
+  }
 });
