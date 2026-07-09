@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#5e7249"/>
+  <circle cx="256" cy="232" r="150" fill="#f4efe4"/>
+  <!-- acacia (umbrella thorn) silhouette -->
+  <g fill="#3d4a30">
+    <rect x="248" y="230" width="16" height="120" rx="4"/>
+    <path d="M256 250 C 210 250 150 244 120 212 C 175 232 220 232 256 226 C 292 232 337 232 392 212 C 362 244 302 250 256 250 Z"/>
+    <path d="M150 214 C 168 190 210 178 256 182 C 302 178 344 190 362 214 C 320 196 280 194 256 196 C 232 194 192 196 150 214 Z"/>
+  </g>
+  <!-- terracotta site dot -->
+  <circle cx="256" cy="352" r="12" fill="#b5623c"/>
+  <text x="256" y="452" font-family="Palatino, Georgia, serif" font-size="60" fill="#f4efe4" text-anchor="middle">SA</text>
+</svg>
