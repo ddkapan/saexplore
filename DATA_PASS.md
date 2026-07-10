@@ -263,3 +263,40 @@ review rather than forcing or fabricating data.
 - Don't reorder or drop existing `UNIC` rows; only enrich them (you may add new rows
   only if a species is genuinely new to a site and you want it represented — keep the
   same schema and set a fresh `k`).
+
+---
+
+## Appendix — Backbone integrity audit (SEPARATE follow-up `/goal`)
+
+Run this **after** the enrichment PR is merged, as its own goal. It systematically
+finds and repairs GBIF-Backbone mis-matches (the class of bug where two larks
+resolved to the palm *Corypha* and a plover to kingdom *Animalia*). Same rules:
+enrich `data.js` in place, preserve schema, branch + PR, never merge to `main`.
+
+### Detect (node over data.js) — flag every organism in one of these buckets:
+- **A. Bird filed as non-bird** — has an eBird code (`o.st[k].e[7]` for some k) but `o.g !== "Aves"` (scientific name collided with a non-bird homonym).
+- **B. Blank class** — `o.cl` empty/missing.
+- **C. Mis-grouped "Other"** — `o.g === "Other"` but `o.o`/`o.f` clearly belong to a vertebrate or well-known group (see §1c). Leave genuinely ambiguous Other (lichens, algae, sponges, diatoms, worms) alone.
+- **D. Homonym suspicion** — for organisms with an iNat link, the iNat `iconic_taxon_name` disagrees with `o.g`.
+
+### Repair
+- **Birds (A):** the eBird code is truth. Fetch the eBird taxonomy once — `GET https://api.ebird.org/v2/ref/taxonomy/ebird?fmt=json` (header `X-eBirdApiToken: ri2o7d9aoj9`) — build `code → {sciName, comName}`. For each flagged bird set `s`=sciName, `c`=comName, then `GET https://api.gbif.org/v1/species/match?name=<sci>&kingdom=Animalia&class=Aves` → set `cl,o,f`; set `g="Aves"`.
+- **B/C/D:** `GET https://api.gbif.org/v1/species/match?name=<o.s>` (add `&kingdom=` from the source's expected kingdom when known — eBird→Animalia, iNat iconic taxon → its kingdom). Use the returned `class`/`order`/`family` for `cl`/`o`/`f`, and map `cl → g` via §1c. If `matchType:"NONE"` or low confidence, **leave it and log it — do not guess.**
+- Recompute `src`; never touch `st`, photos, or `SMETA`.
+
+### Completion promise (audit) — stop only when this prints `AUDIT DONE ✅`:
+```bash
+node --check data.js || { echo "FAIL: data.js"; exit 1; }
+npm ls jsdom >/dev/null 2>&1 || npm i jsdom
+node tests/render-test.js | grep -q "ALL PASS" || { echo "FAIL: tests"; exit 1; }
+node -e '
+global.window={};eval(require("fs").readFileSync("data.js","utf8"));const U=window.window?window.window.UNIC:window.UNIC;
+const codeNonAves=U.filter(o=>o.g!=="Aves"&&Object.values(o.st||{}).some(s=>s.e&&s.e[7])).length;
+const blankClass=U.filter(o=>!o.cl).length;
+let ok=true;function chk(n,c){console.log((c?"  ok   ":"  FAIL ")+n);if(!c)ok=false;}
+chk("birds mis-filed as non-Aves == 0:  "+codeNonAves, codeNonAves===0);
+chk("organisms with blank class == 0:   "+blankClass, blankClass===0);
+process.exit(ok?0:1);
+' && echo "AUDIT DONE ✅ — commit on a branch and open the PR" || echo "NOT DONE — keep going"
+```
+Anything legitimately unresolvable (real `matchType:"NONE"`) is fine — record the count + names in the PR body for human review.
