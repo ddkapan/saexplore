@@ -10,6 +10,15 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.21 — seen-lately filter + fixes (2026-07-10)
+- **"Seen lately" filter** now exists (its own row): `any · ≤1yr · ≤3mo · ≤1mo` on the most-recent iNat/eBird record date (uses the `ld` field from the data pass; 500 organisms in the last 30 days, 1,323 in a year).
+- **Site-account expander** no longer collapses the moment you scroll — it stays open until you've scrolled *past* it (its bottom leaves the viewport), so you can read the card.
+- Fixed the off-looking **Taxa** row label (now matches the other control-row labels).
+
+## 1.0.20 — backbone tidy (2026-07-10)
+- Post-enrichment backbone check: birds mis-filed as non-Aves = 0, non-bird eBird = 0. Reclassified *Erica tristis* (a fynbos heath) from "Other" to **Plantae / Ericaceae**. Six blank-class records remain by design — velvet worms (Peripatopsidae), a phylum-level museum specimen, and three obscure names that need a live GBIF lookup; left as "Other" rather than guessed.
+- Added a **Backbone integrity audit** appendix to `DATA_PASS.md` (self-contained follow-up `/goal`) for future sweeps.
+
 ## 1.0.19 — data pass: iNaturalist + museum evidence, photos, recency (2026-07-10)
 - **Birds ↔ iNaturalist**: attached research-grade iNaturalist evidence to birds at every site (matched by scientific name). Birds carrying an `i` source went **0 → 474** (of 585); 30 also gained GBIF `PRESERVED_SPECIMEN` museum vouchers.
 - **All groups enriched uniformly**: iNaturalist (`i`) and museum (`m`) layers merged into every group's per-site evidence from iNat `species_counts` + GBIF preserved-specimen boxes (tight per-site boxes, human-observation excluded from the museum layer).
