@@ -150,7 +150,12 @@ For each organism with `p:0`, in order:
    resolved from the sci name → `thumbnail.source`; get license via the Commons
    `imageinfo` API (`action=query&prop=imageinfo&iiprop=extmetadata`, `origin=*`).
    Store `[thumbUrl, licenseShortName, artist]`. Only open licenses.
-3. If neither yields an open image, leave `p:0` (specimen-only species legitimately
+3. **eBird / Macaulay Library** (optional, birds only): media are copyright by default,
+   but a subset carry a Creative-Commons license (contributor opt-in), so only assets
+   whose license is CC BY / BY-SA / CC0 are usable — check per photo. Low yield and
+   extra work; **skip unless a bird still lacks a photo after 1–2**, because Pass A
+   gives each bird an iNat taxon id → a CC default photo for most.
+4. If none yields an open image, leave `p:0` (specimen-only species legitimately
    have no CC photo).
 
 ### Pass C (optional) — "Seen lately" dates  (task #38)
@@ -211,7 +216,45 @@ Then bump the footer version in `app.js` (`v1.0.N` + date), commit `data.js`
 
 ---
 
-## 7. Don'ts
+## 7. Completion promise (definition of done)
+
+**Do not consider this task finished until every check below passes.** Run this
+script; stop only when it prints `DONE ✅`, *or* when you have written the actual
+numbers you achieved into the PR description and flagged what could not be met.
+**Never merge to `main`** (it is protected) — open a PR and stop.
+
+```bash
+node --check data.js || { echo "FAIL: data.js is not valid JS"; exit 1; }
+npm ls jsdom >/dev/null 2>&1 || npm i jsdom
+node tests/render-test.js | grep -q "ALL PASS" || { echo "FAIL: render tests"; exit 1; }
+node -e '
+global.window={};eval(require("fs").readFileSync("data.js","utf8"));const U=window.window?window.window.UNIC:window.UNIC;
+const birdsI=U.filter(o=>o.g==="Aves"&&(o.src||"").includes("i")).length;
+const noPhoto=U.filter(o=>!o.p).length;
+const badE=U.filter(o=>o.g!=="Aves"&&(o.src||"").includes("e")).length;
+let ok=true;function chk(n,c){console.log((c?"  ok   ":"  FAIL ")+n);if(!c)ok=false;}
+chk("birds with iNaturalist evidence >= 300 (was 0):  "+birdsI, birdsI>=300);
+chk("organisms with no photo < 500 (was 1448):        "+noPhoto, noPhoto<500);
+chk("non-bird eBird records == 0 (regression guard):  "+badE, badE===0);
+process.exit(ok?0:1);
+' && echo "DONE ✅ — now commit on a branch and open the PR" || echo "NOT DONE — keep going"
+```
+
+In words, the goal is met when:
+1. `node --check data.js` passes.
+2. `node tests/render-test.js` prints **ALL PASS** (15/15) — the app still renders.
+3. **Birds carry iNaturalist evidence** — `Aves` rows with `i` in `src` ≥ 300 (was 0); museum/genomic attached wherever GBIF returns specimens in the site boxes.
+4. **Missing photos filled** — `p:0` count drops below 500 (from 1,448), using only CC / CC0 / public-domain images (iNat default photo, Wikimedia fallback).
+5. **No regressions** — non-bird organisms with an eBird source stay at 0.
+6. A **feature branch is pushed and a PR opened against `main`**, and a `## 1.0.N` block is prepended to `CHANGELOG.md`.
+
+If a threshold is genuinely unreachable (a source is down, few CC photos exist),
+that is acceptable — record the real numbers in the PR body and leave it for human
+review rather than forcing or fabricating data.
+
+---
+
+## 8. Don'ts
 - Don't touch `window.MAPIMG` (baked offline tiles) or `window.SMETA.sites[].a`
   (the Grinnell accounts — already authored and recovered).
 - Don't widen the site boxes.
