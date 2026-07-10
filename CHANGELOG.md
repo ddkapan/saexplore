@@ -10,6 +10,12 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.23 — declutter the control block (2026-07-10)
+- **Reorganized, not redesigned** (implements the *Control-block declutter* design spec). The header dropped from a tall stack to **four always-visible primary rows** — `Sites · Match · Season · Taxa` — plus the status line. Everything set-and-forget folds into **one collapsed disclosure** labelled **“More filters, sorting & the evidence basis.”**
+- **One panel, not two.** Per the spec, the existing `details.methods` element gains a `refine` class and the set-and-forget rows are inserted *above* its Venn/how-to, so the filters and the evidentiary basis share a single disclosure: Abundance + Specimen yr, Seen lately, Sort + Text-size + absent-toggle, then the evidence Venn + how-to (unchanged). (The legacy Evidence/Groups rows were already `display:none`'d by `buildVenn()`, so they're left untouched.)
+- **No control removed, nothing re-wired.** The reorder IIFE now *re-parents* existing `.row` nodes rather than appending them all to `.controls`; wiring is by class/id, so every hook (`#rLo #yLo #reset #q #tripwin #allyr .smode .seenw .chip.sort .fsb .cmpT .chip.site .chip.tax`) keeps working. `Refine`’s open/closed state is remembered in `localStorage` (`sa5_refine`).
+- Re-implemented **on top of** v1.0.22 (the design package was branched from v1.0.21) — the genomic-flag restore, end-to-end taxonomic sort, ★-late-Jul default, filtered matrix count, and mobile polish all persist. Offline PWA intact — pure CSS/DOM, no new dependencies. `node --check app.js` passes; `node tests/render-test.js` → **ALL PASS (15/15)**.
+
 ## 1.0.22 — genomic restored + grab-bag fixes (2026-07-10)
 - **Genomic evidence restored.** The v1.0.19 data pass silently dropped the `g` flag from `src` while keeping the genomic counts — so the *genomic* column in Methods and the badges went blank even though 210 organisms carry genomic records. Re-flagged all 210; the column and glyphs light up again.
 - **Genomic link no longer 404s.** The genomic glyph pointed at BOLD's dead pre-v5 URL. Repointed to a working GBIF `MATERIAL_SAMPLE` occurrence search on the backbone `taxonKey`.
