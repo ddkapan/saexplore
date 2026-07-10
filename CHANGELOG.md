@@ -10,6 +10,14 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.22 — genomic restored + grab-bag fixes (2026-07-10)
+- **Genomic evidence restored.** The v1.0.19 data pass silently dropped the `g` flag from `src` while keeping the genomic counts — so the *genomic* column in Methods and the badges went blank even though 210 organisms carry genomic records. Re-flagged all 210; the column and glyphs light up again.
+- **Genomic link no longer 404s.** The genomic glyph pointed at BOLD's dead pre-v5 URL. Repointed to a working GBIF `MATERIAL_SAMPLE` occurrence search on the backbone `taxonKey`.
+- **Taxonomic sort now follows the authority end-to-end**: class → order → family → **scientific name** (genus, then species), instead of stopping at family and tie-breaking on common name. Genera now cluster correctly (e.g. within Laridae the *Chroicocephalus* gulls and *Sterna*/*Thalasseus* terns each group together rather than mixing by English name).
+- **★ late Jul** moved to the **left** of the Season row and is now the **default** on load (Jul + Aug); one tap on **all yr** clears it.
+- **Pinned matrix header** shows the **filtered** organism count (“species 1,576”), not the fixed total.
+- Mobile polish: drawer close **×** clears the iOS status-bar/notch (safe-area inset) so it isn’t obscured in full screen; dual sliders get more vertical room on narrow screens so the rare/common labels stop colliding.
+
 ## 1.0.21 — seen-lately filter + fixes (2026-07-10)
 - **"Seen lately" filter** now exists (its own row): `any · ≤1yr · ≤3mo · ≤1mo` on the most-recent iNat/eBird record date (uses the `ld` field from the data pass; 500 organisms in the last 30 days, 1,323 in a year).
 - **Site-account expander** no longer collapses the moment you scroll — it stays open until you've scrolled *past* it (its bottom leaves the viewport), so you can read the card.
