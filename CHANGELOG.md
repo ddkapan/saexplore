@@ -10,6 +10,13 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.19 — data pass: iNaturalist + museum evidence, photos, recency (2026-07-10)
+- **Birds ↔ iNaturalist**: attached research-grade iNaturalist evidence to birds at every site (matched by scientific name). Birds carrying an `i` source went **0 → 474** (of 585); 30 also gained GBIF `PRESERVED_SPECIMEN` museum vouchers.
+- **All groups enriched uniformly**: iNaturalist (`i`) and museum (`m`) layers merged into every group's per-site evidence from iNat `species_counts` + GBIF preserved-specimen boxes (tight per-site boxes, human-observation excluded from the museum layer).
+- **Missing photos filled**: organisms with no photo dropped **1,448 → 270** using only CC / CC0 / public-domain images — iNaturalist taxon default photos first, then a **Wikimedia Commons** fallback (license verified per image via Commons `imageinfo`; all-rights-reserved skipped).
+- **"Seen lately" dates (Part C)**: added a top-level `ld:"YYYY-MM-DD"` most-recent-observation field to **1,420** organisms (from the iNaturalist date-desc pass), ready to power a recency filter.
+- Enriched **in place** — no schema change, no rebuild; `MAPIMG` tiles and Grinnell site accounts untouched. `node tests/render-test.js` → **ALL PASS (15/15)**.
+
 ## 1.0.18 — map zoom & pan (2026-07-09)
 - Map **+ / − zoom** (scales the baked image *and* its markers together, 1×–4×) and **click-drag / touch pan** — fully offline, no tiles.
 
