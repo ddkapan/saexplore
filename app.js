@@ -1,7 +1,7 @@
 /* Southern Africa — Species Explorer · app.js
  * Offline PWA, no dependencies. index.html loads data.js then this file.
  * CSS string IIFE -> window.APP5 (builds the funnel shell) -> window.__wire5 (renders + wires).
- * v1.0.24 — "funnel that becomes a workbench" redesign (imported from the design pass).
+ * v1.0.25 — round-2 quick wins: Venn abundance · hide-absent-at-focus · text size · voice pass.
  */
 (function(){var st=document.createElement("style");st.textContent="\n"+
 ":root{--paper:#f4efe4;--raised:#fbf7ee;--ink:#2b2723;--soft:#6b6459;--rule:#cfc5b2;--acacia:#5e7249;--terra:#b5623c;--museum:#9c7a2f;--genomic:#7a5aa6;--serif:\"Iowan Old Style\",\"Palatino Linotype\",Palatino,Georgia,serif}\n"+
@@ -40,6 +40,8 @@
 ".dlab{font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--acacia);text-transform:uppercase;margin-bottom:4px;font-family:system-ui,sans-serif}\n"+
 "#journal{position:fixed;inset:0;background:#d9d2c2;z-index:90;display:none;overflow:auto}\n"+
 "#themeToggle{position:fixed;top:8px;right:10px;z-index:80;width:34px;height:34px;border-radius:50%}\n"+
+"#textSize{position:fixed;top:8px;right:50px;z-index:80;height:34px;min-width:34px;padding:0 11px;border-radius:17px;font-weight:700}\n"+
+"#textSize .tsx{font-size:10px;opacity:.7}\n"+
 ".dual{position:relative;height:26px;width:160px;display:inline-block}\n"+
 ".dual .trk{position:absolute;top:11px;height:3px;left:0;right:0;background:var(--rule);border-radius:2px}\n"+
 ".dual .bnd{position:absolute;top:10px;height:5px;background:var(--soft);opacity:.65;border-radius:2px}\n"+
@@ -49,6 +51,7 @@
 ".tx-Aves{--tc:#4a6b8a}.tx-Mammalia{--tc:#b0925e}.tx-Reptilia{--tc:#c08a2e}.tx-Amphibia{--tc:#3e8a7e}.tx-Actinopterygii{--tc:#5f7e96}.tx-Insecta{--tc:#7a5a8a}.tx-Arachnida{--tc:#7a3b3b}.tx-Mollusca{--tc:#b3697e}.tx-Plantae{--tc:#5e7249}.tx-Other{--tc:#888}\n"+
 "@media print{#app,#scrim,#drawer,#themeToggle{display:none!important}#journal{position:static!important;display:block!important;background:#fff!important;overflow:visible!important}#journal .jclose,#journal .jprint,#journal .jscope{display:none!important}}\n"+
 "@media(max-width:680px){#app{padding:14px 12px 60px}#mapGrid{grid-template-columns:1fr!important}#mapLeft,#mapRight{border:none!important;border-top:1px solid var(--rule)!important;max-height:none!important}}\n"+
+"@media(max-width:480px){.dual{width:100%!important;max-width:300px;height:34px}.dual input{height:34px}.dual .trk{top:15px}.dual .bnd{top:14px}.yrlab{margin-top:3px}#abChips{flex-wrap:wrap}}\n"+
 "";document.head.appendChild(st);})();
 
 window.APP5=function(UNIC,SMETA,MAPIMG){
@@ -59,11 +62,11 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">'+
    '<div><h1 style="font-size:30px;margin:0 0 4px;font-weight:600;letter-spacing:-.2px">Southern Africa — Species Explorer</h1>'+
    '<p class="sans" style="margin:0;font-size:13px;color:var(--soft)">Cal Academy field guide · 20 Jul – 1 Aug 2026 · ten localities, Cape winter to Kruger dry season.</p></div>'+
-   '<div style="display:flex;align-items:center;gap:12px"><span class="sans" style="font-size:11.5px;color:var(--soft);max-width:210px;text-align:right;line-height:1.35">Read down the funnel to orient. Collapse each <b style="color:var(--terra)">▾</b> as you learn it — the list rises and you graduate to fluent mode.</span>'+
+   '<div style="display:flex;align-items:center;gap:12px"><span class="sans" style="font-size:11.5px;color:var(--soft);max-width:210px;text-align:right;line-height:1.35">Read down the sections to orient. Collapse each <b style="color:var(--terra)">▾</b> as you learn it — the list rises to fill the screen.</span>'+
    '<button id="openJournal" class="btn pri sans">Field journal ▸</button></div></div>';
  // 1 South Africa
  h+=sec(1,'South Africa','the frame')+'<div class="fb" data-body="1">'+
-   '<p style="max-width:660px;margin:.1em 0 12px">Thirteen days across two of the planet’s great biological theatres: the <b>Cape Floristic Region</b> — the smallest and richest of the world’s six floral kingdoms<sup><a href="#refs" style="text-decoration:none">1</a></sup> — and the summer-rain <b>savanna of the Lowveld</b>. We travel in austral winter, and each region is read on its own clock.</p>'+
+   '<p style="max-width:660px;margin:.1em 0 12px">Thirteen days across two of the world’s great biological regions: the <b>Cape Floristic Region</b> — the smallest and richest of the world’s six floral kingdoms<sup><a href="#refs" style="text-decoration:none">1</a></sup> — and the summer-rain <b>savanna of the Lowveld</b>. We travel in austral winter, and each region is read on its own clock.</p>'+
    '<div class="sans" id="saStats" style="display:flex;gap:28px;flex-wrap:wrap;font-size:12px;color:var(--soft);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:9px 0;max-width:660px"></div></div>';
  // 2 regions
  h+=sec(2,'The two regions','the axis everything hinges on')+'<div class="fb" data-body="2">'+
@@ -98,8 +101,8 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  // 6 filters & evidence
  h+=sec(6,'Filters &amp; evidence','how you narrow, and why to trust it')+'<div class="fb sans" data-body="6" style="font-size:12.5px">'+
    '<div style="display:flex;flex-wrap:wrap;gap:26px 40px">'+
-   '<div><div class="dlab">Abundance</div><div id="abChips" style="display:flex;gap:5px;align-items:center"></div><div style="font-size:11px;color:var(--soft);margin-top:5px">rare ← → common</div></div>'+
-   '<div><div class="dlab">Specimen year</div><div class="dual" id="yrD"><span class="trk"></span><span class="bnd" id="yrBnd"></span><input type="range" id="yrLo"><input type="range" id="yrHi"></div><div style="font-size:11px;color:var(--soft)"><span id="yrLoLab"></span> – <span id="yrHiLab"></span> · museum records</div></div>'+
+   '<div><div class="dlab">Abundance</div><div id="abChips" style="display:flex;gap:5px;align-items:center"></div><div style="font-size:11px;color:var(--soft);margin-top:5px">tap classes to filter · rare → common · none = all</div></div>'+
+   '<div><div class="dlab">Specimen year</div><div class="dual" id="yrD"><span class="trk"></span><span class="bnd" id="yrBnd"></span><input type="range" id="yrLo"><input type="range" id="yrHi"></div><div class="yrlab" style="font-size:11px;color:var(--soft)"><span id="yrLoLab"></span> – <span id="yrHiLab"></span> · museum records</div></div>'+
    '<div><div class="dlab">Season</div><div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap"><button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600">★ late Jul</button><button class="allyrBtn" style="border:1px solid var(--rule);background:var(--raised);color:var(--soft);border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit">all yr</button><span class="seasonchip" data-se="0">Summer</span><span class="seasonchip" data-se="1">Autumn</span><span class="seasonchip" data-se="2">Winter</span><span class="seasonchip" data-se="3">Spring</span></div></div>'+
    '<div><div class="dlab">Sort</div><div style="display:flex;gap:5px"><span class="sortchip" data-sort="az">A→Z</span><span class="sortchip" data-sort="za">Z→A</span><span class="sortchip" data-sort="tax">taxonomic</span></div></div></div>'+
    '<div style="margin-top:18px;border-top:1px solid var(--rule);padding-top:12px"><div class="dlab" style="margin-bottom:8px">Evidence — strongest on the left</div><div id="evLegend" style="display:flex;flex-wrap:wrap;gap:20px"></div></div></div>';
@@ -107,6 +110,8 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  h+=sec(7,'The results','the working checklist · columns are sites, rows are organisms')+'<div class="fb" data-body="7" style="padding:0 0 16px 8px">'+
    '<div class="strip"><span style="font-weight:700;color:var(--soft);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase">Filters at hand</span>'+
    '<div id="stripTaxa" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
+   '<button id="stripTaxAll" class="chip sans mini">all</button><button id="stripTaxNone" class="chip sans mini">none</button>'+
+   '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra)"></button>'+
    '<input id="q" type="search" placeholder="search name or type…">'+
    '<div id="stripSites" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
    '<button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600">★ late Jul</button>'+
@@ -115,13 +120,14 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div id="matrix"></div><div id="status" class="sans" style="font-size:12px;color:var(--soft);margin-top:8px"></div></div>';
  // 8 export
  h+=sec(8,'Export','a Grinnell field-journal page')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
-   '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the spirit of the buff Grinnell journal: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints beautifully — a keepsake, not a CSV. <b>Export is how notes are saved</b> — there is no cloud; export early, export often.</p>'+
+   '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.24</span> · built 2026-07-10 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs by solidity: <b>filled square</b>=museum voucher (physical truth) · <b>outlined square</b>=genomic (a projection) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
- // references — verified against authoritative sources (2026-07-10), embedded for offline use
- h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources — the claims above, verified &amp; cited (2026)</summary>'+
-   '<p style="margin:8px 0 4px;max-width:760px">Load-bearing facts checked against IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.25</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ // references — checked against authoritative sources, embedded for offline use
+ h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
+   '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
+   '<p style="margin:6px 0 4px;max-width:760px"><b>Data sources.</b> Occurrence &amp; taxonomy from <a href="https://www.gbif.org" target="_blank" rel="noopener">GBIF</a> · <a href="https://www.boldsystems.org" target="_blank" rel="noopener">BOLD</a> · <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> · <a href="https://ebird.org" target="_blank" rel="noopener">eBird</a>.</p>'+
    '<ol style="margin:4px 0;padding-left:20px;line-height:1.5;max-width:760px">'+
    '<li id="ref-cfr">Cape Floristic Region — smallest of the six floral kingdoms and richest per unit area; &gt;9,000 plant species, ~69% endemic. <a href="https://www.cepf.net/our-work/biodiversity-hotspots/cape-floristic-region" target="_blank" rel="noopener">CEPF</a>.</li>'+
    '<li>African Penguin — the only penguin breeding in Africa; IUCN uplisted to <b>Critically Endangered</b> (2024). <a href="https://www.birdlife.org/news/2024/11/20/african-penguin-on-the-brink-of-extinction/" target="_blank" rel="noopener">BirdLife</a>. (Boulders colony founded early 1980s; SANParks gives 1983.)</li>'+
@@ -136,7 +142,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '</ol></details>';
  var app=document.getElementById('app');app.innerHTML=h;
  // overlays
- var ov=document.createElement('div');ov.innerHTML='<div id="scrim"></div><div id="drawer"></div><div id="journal"></div><button class="btn sans" id="themeToggle" title="light / dark">◐</button>';
+ var ov=document.createElement('div');ov.innerHTML='<div id="scrim"></div><div id="drawer"></div><div id="journal"></div><button class="btn sans" id="textSize" title="text size">A<span class="tsx">+</span></button><button class="btn sans" id="themeToggle" title="light / dark">◐</button>';
  while(ov.firstChild)document.body.appendChild(ov.firstChild);
  window.__wire5&&window.__wire5(UNIC,SMETA);
 };
@@ -180,7 +186,7 @@ window.__wire5=function(UNIC,SMETA){
  function seenSpeciesCount(){return Object.keys(seenSpeciesMap()).length;}
  function updateSeenOrder(){var m=seenSpeciesMap();seenOrder=seenOrder.filter(function(k){return m[k];});Object.keys(m).forEach(function(k){if(seenOrder.indexOf(k)<0)seenOrder.push(k);});save();}
  // ---------- state ----------
- var S={region:'all',focus:null,taxa:{},q:'',months:new Set([0,1,2,3,4,5,6,7,8,9,10,11]),tripwin:false,abMin:1,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az'};
+ var S={region:'all',focus:null,taxa:{},q:'',months:new Set([0,1,2,3,4,5,6,7,8,9,10,11]),tripwin:false,ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az'};
  GORDER.forEach(function(p){S.taxa[p[0]]=1;});
  var GY=SMETA.gbifYears||[1838,2026];
  window.__S=S;
@@ -193,14 +199,15 @@ window.__wire5=function(UNIC,SMETA){
  (function(){var el=$('#saStats');if(!el)return;el.innerHTML='<span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">~9,000</b>&nbsp; fynbos plant species, ~70% endemic</span><span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">10</b>&nbsp; localities</span><span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">'+UNIC.length.toLocaleString()+'</b>&nbsp; organisms on file</span>';})();
 
  // ---------- evidence legend ----------
- (function(){var el=$('#evLegend');if(!el)return;var rows=[['m','Museum voucher','A physical specimen — the firmest evidence a name exists here.'],['g','Genomic','Sequence derived from a specimen; links back to the collection event.'],['i','iNaturalist','Photographed, community-curated sightings — a public virtual museum.'],['e','eBird','Reviewer-vetted bird records; an honor system that works at scale.']];el.innerHTML=rows.map(function(r){return '<div style="max-width:230px">'+glyph(r[0],1)+' <b>'+r[1]+'</b><div style="color:var(--soft);line-height:1.4;margin-top:2px">'+r[2]+'</div></div>';}).join('');})();
+ (function(){var el=$('#evLegend');if(!el)return;var rows=[['m','Museum voucher','A physical specimen held in a collection.'],['g','Genomic','A sequence from a specimen; links to the collection event.'],['i','iNaturalist','Photographed, community-verified sightings.'],['e','eBird','Reviewer-vetted bird records.']];el.innerHTML=rows.map(function(r){return '<div style="max-width:230px">'+glyph(r[0],1)+' <b>'+r[1]+'</b><div style="color:var(--soft);line-height:1.4;margin-top:2px">'+r[2]+'</div></div>';}).join('');})();
 
  // ---------- taxa chips ----------
  function buildTaxa(){['#taxaChips','#stripTaxa'].forEach(function(sel){var box=$(sel);if(!box)return;box.innerHTML='';GORDER.forEach(function(p){var b=document.createElement('button');b.className='chip tax mini';b.dataset.g=p[0];b.textContent=p[1];b.style.borderColor=TAXCOL[p[0]];box.appendChild(b);});});
   $$('.chip.tax').forEach(function(b){b.onclick=function(){S.taxa[b.dataset.g]=S.taxa[b.dataset.g]?0:1;paintTaxa();applyFilters();};});paintTaxa();}
  function paintTaxa(){$$('.chip.tax').forEach(function(b){var on=S.taxa[b.dataset.g];var col=TAXCOL[b.dataset.g];b.style.background=on?col:C.raised;b.style.color=on?'#fff':col;});}
- $('#taxAll').onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=1;});paintTaxa();applyFilters();};
- $('#taxNone').onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=0;});paintTaxa();applyFilters();};
+ $$('#taxAll,#stripTaxAll').forEach(function(b){b.onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=1;});paintTaxa();applyFilters();};});
+ $$('#taxNone,#stripTaxNone').forEach(function(b){b.onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=0;});paintTaxa();applyFilters();};});
+ var _abst=$('#absToggle');if(_abst)_abst.onclick=function(){S.hideAbsent=!S.hideAbsent;applyFilters();};
 
  // ---------- site chips (funnel + strip) ----------
  function buildSiteChips(){['#siteChips','#stripSites'].forEach(function(sel,idx){var box=$(sel);if(!box)return;box.innerHTML='';SITES.forEach(function(s){var b=document.createElement('button');b.className='chip site mini';b.dataset.site=s.key;b.textContent=idx===0?s.short:s.short.replace('Kruger–','K–');box.appendChild(b);});});
@@ -208,8 +215,8 @@ window.__wire5=function(UNIC,SMETA){
  function paintSiteChips(){$$('.chip.site').forEach(function(b){var s=SI[b.dataset.site],on=(S.region==='all'||s.rk===S.region);var isFocus=S.focus===s.key,dim=S.focus&&!isFocus;b.style.display=on?'':'none';if(isFocus){b.style.background=C.terra;b.style.color='#fff';b.style.borderColor=C.terra;}else{b.style.background=C.raised;b.style.color=sitecol(s.key);b.style.borderColor=sitecol(s.key);}b.style.opacity=dim?'.4':'1';});}
 
  // ---------- abundance ----------
- (function(){var box=$('#abChips');if(!box)return;for(var i=1;i<=5;i++){var b=document.createElement('button');b.dataset.ab=i;b.style.cssText='border:1px solid '+C.rule+';background:'+C.raised+';border-radius:9px;padding:3px 8px;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:'+C.soft;b.textContent=Array(i+1).join('●');box.appendChild(b);b.onclick=function(){S.abMin=(+this.dataset.ab===S.abMin)?1:+this.dataset.ab;paintAb();applyFilters();};}paintAb();})();
- function paintAb(){$$('#abChips button').forEach(function(b){var on=+b.dataset.ab>=S.abMin;b.style.color=on?C.acacia:C.rule;b.style.borderColor=on?C.acacia:C.rule;});}
+ (function(){var box=$('#abChips');if(!box)return;var LB=['','rare','scarce','uncommon','frequent','common'];for(var i=1;i<=5;i++){var b=document.createElement('button');b.dataset.ab=i;b.title=LB[i];b.style.cssText='border:1px solid '+C.rule+';background:'+C.raised+';border-radius:9px;padding:3px 8px;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:'+C.soft;b.textContent=Array(i+1).join('●');box.appendChild(b);b.onclick=function(){var v=+this.dataset.ab;if(S.ab.has(v))S.ab.delete(v);else S.ab.add(v);paintAb();applyFilters();};}paintAb();})();
+ function paintAb(){$$('#abChips button').forEach(function(b){var on=S.ab.has(+b.dataset.ab);b.style.color=on?'#fff':C.soft;b.style.borderColor=on?C.acacia:C.rule;b.style.background=on?C.acacia:C.raised;});}
 
  // ---------- year dual ----------
  (function(){var lo=$('#yrLo'),hi=$('#yrHi'),bnd=$('#yrBnd');lo.min=hi.min=GY[0];lo.max=hi.max=GY[1];lo.value=GY[0];hi.value=GY[1];
@@ -267,15 +274,16 @@ window.__wire5=function(UNIC,SMETA){
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;
   $$('#matrix tr.org').forEach(function(tr){var o=UNIC[+tr.dataset.i];var ok=!!S.taxa[o.g];
    if(ok&&S.q)ok=textOK(o,tr);
-   if(ok&&o._e>0)ok=o._e>=S.abMin;
+   if(ok&&S.ab.size)ok=S.ab.has(o._e);
    if(ok)ok=seasonOK(o);
    if(ok)ok=yearOK(o);
    if(ok)ok=colKeys.some(function(k){return presentAt(o,k);});
-   var dimF=ok&&S.focus&&!presentAt(o,S.focus);
-   tr.classList.toggle('hid',!ok);tr.style.opacity=dimF?'.32':'1';if(ok)vis++;});
+   if(ok&&S.focus&&S.hideAbsent&&!presentAt(o,S.focus))ok=false;
+   tr.classList.toggle('hid',!ok);tr.style.opacity='1';if(ok)vis++;});
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
   var cnt=$('#count');if(cnt)cnt.textContent=vis.toLocaleString()+' / '+UNIC.length.toLocaleString();var mc=$('#mxCount');if(mc)mc.textContent=vis.toLocaleString()+' species';
   var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all ten sites':'in the '+(S.region==='cape'?'Cape':'Lowveld'));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
+  var at=$('#absToggle');if(at){if(S.focus){at.style.display='';at.textContent=S.hideAbsent?('only at '+SI[S.focus].short):'all sites shown';at.title=S.hideAbsent?('Hiding species not recorded at '+SI[S.focus].short+' — tap to show every site’s species'):('Showing every site’s species — tap to hide those not recorded at '+SI[S.focus].short);}else at.style.display='none';}
  }
  function colVisibility(){$$('#matrix .colh, #matrix .cell').forEach(function(el){var s=SI[el.dataset.site];el.style.display=(S.region==='all'||(s&&s.rk===S.region))?'':'none';});}
 
@@ -378,6 +386,10 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- theme ----------
  var root=document.documentElement;try{var th=localStorage.getItem('sa_theme');if(th)root.dataset.theme=th;}catch(e){}
  $('#themeToggle').onclick=function(){root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('sa_theme',root.dataset.theme);}catch(e){}renderMap();};
+ // ---------- text size (readability on a phone) ----------
+ var UIS=[1,1.18,1.36],uidx=0;try{var _sv=parseFloat(localStorage.getItem('sa_uiscale'));if(_sv){var _k=UIS.indexOf(_sv);uidx=_k<0?0:_k;}}catch(e){}
+ function applyScale(){var z=UIS[uidx];['#app','#journal'].forEach(function(sel){var el=$(sel);if(el)el.style.zoom=z;});var ts=$('#textSize');if(ts)ts.innerHTML='A<span class="tsx">'+(uidx===0?'+':uidx===1?'++':'∅')+'</span>';try{localStorage.setItem('sa_uiscale',z);}catch(e){}}
+ var _tsb=$('#textSize');if(_tsb)_tsb.onclick=function(){uidx=(uidx+1)%UIS.length;applyScale();};applyScale();
 
  // ---------- observer notebook: JSON backup (offline; export is the save mechanism) ----------
  function collectNotes(){return {v:1,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs};}
@@ -402,7 +414,7 @@ window.__wire5=function(UNIC,SMETA){
    '<textarea class="jnote" data-jk="'+esc(jk)+'" placeholder="What happened, who we met, conditions, effort…" style="width:100%;min-height:90px;border:1px solid #e2d9c6;border-radius:6px;background:#fffdf8;font-family:var(--serif);font-size:15px;line-height:1.6;color:#2b2723;padding:8px 10px;margin-bottom:18px;resize:vertical">'+esc(J.note||'')+'</textarea>'+
    '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">Species accounts</div><div style="margin-bottom:20px">'+acctHTML+'</div>'+
    '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">The day’s checklist</div>'+checkHTML+
-   '<div class="sans" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell field-journal export · evidence reconciled on the GBIF Backbone</div>'+
+   '<div class="sans" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell Field Journal · records on the GBIF Backbone</div>'+
   '</div>';
  }
  function renderJournal(scope){var jn=$('#journal');var days=(scope==='all')?itinList():(SI[scope]?[SI[scope]]:itinList());
