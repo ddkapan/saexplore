@@ -261,6 +261,7 @@ window.__wire5=function(UNIC,SMETA){
   if(nSeen>0)tb.appendChild(makeSeenHdr(nSeen));rws.forEach(function(r){tb.appendChild(r);});
   if(nSeen>0&&nSeen<rws.length){rws[nSeen-1].style.borderBottom='2px solid '+C.rule;}
  }
+ window.__sortRows=sortRows;
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;
