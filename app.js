@@ -388,7 +388,8 @@ window.__wire5=function(UNIC,SMETA){
  window.__exportJSON=exportJSON;window.__importJSON=importJSON;
 
  // ---------- Grinnell field-journal export ----------
- function jAccounts(s){return UNIC.filter(function(o){return presentAt(o,s.key)&&(seen.has(o.k+'|'+s.key)||notes['sp:'+o.k]);});}
+ // species accounts for a site-day = the species the leader recorded there (their notes surface inline)
+ function jAccounts(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
  function jChecklist(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
  function jSection(s){
   var jk=s.date+'|'+s.key,J=journal[jk]||{};var accounts=jAccounts(s),checklist=jChecklist(s);
