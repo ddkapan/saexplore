@@ -156,6 +156,38 @@ w.__sa.journal[jk0].ebird = ['https://ebird.org/checklist/S987654'];
 w.__sa.save(); w.__openJournal();
 ok('eBird checklist link shows on the day page', /ebird\.org\/checklist\/S987654/.test(d.getElementById('journal').innerHTML));
 
+// ---- PR-C: focal/tour tiers (T1), map layers + zoom (T4), tour speed (T3) ----
+const marksBefore = Object.keys(w.__sa.marks).length;
+const star0 = d.querySelector('#matrix tr.org .markstar');
+star0.click(); // unmarked -> focal
+ok('star marks a species focal', Object.keys(w.__sa.marks).length === marksBefore + 1);
+ok('focal/tour toggle chip appears in the strip', d.getElementById('markToggle').style.display !== 'none');
+star0.click(); // focal -> tour
+ok('star cycles focal -> tour', Object.values(w.__sa.marks).indexOf('tour') >= 0);
+ok('marked species pinned under a ★ header', !!d.getElementById('markHdr'));
+d.getElementById('markToggle').click(); // unpin
+ok('unpin removes the pinned header', !d.getElementById('markHdr') && w.__S.showMarks === false);
+d.getElementById('markToggle').click(); // re-pin
+star0.click(); // tour -> unmarked
+ok('star cycles back to unmarked', Object.keys(w.__sa.marks).length === marksBefore);
+
+ok('map zoom controls present', !!d.getElementById('zIn') && !!d.getElementById('zOut'));
+d.querySelector('.segbtn[data-region="cape"]').click();
+ok('Cape map exposes 3 selectable layers', d.querySelectorAll('#mapSurface .lyr').length === 3, d.querySelectorAll('#mapSurface .lyr').length + '');
+d.querySelector('#mapSurface .lyr[data-l="satellite"]').click();
+ok('selecting a layer sets S.layer', w.__S.layer === 'satellite');
+d.querySelector('.segbtn[data-region="all"]').click();
+
+ok('tour speed control present', !!d.getElementById('tSpeed') && !!d.getElementById('tSpeedLab'));
+const spd0 = w.__S.tourMs;
+d.getElementById('tFast').click();
+ok('faster button lowers the interval', w.__S.tourMs < spd0, spd0 + ' -> ' + w.__S.tourMs);
+d.getElementById('tSlow').click();
+ok('slower button restores the interval', w.__S.tourMs === spd0);
+
+// durable mark for the reload test
+w.__sa.marks['MARKTESTKEY'] = 'tour'; w.__sa.save();
+
 // references section (embedded, offline)
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
@@ -166,6 +198,7 @@ ok('boot 2: species note survived', b2.w.__sa.notes['sp:TESTKEY'] === 'a persist
 ok('boot 2: journal entry survived', !!(b2.w.__sa.journal['23 Jul|boulders'] && b2.w.__sa.journal['23 Jul|boulders'].note === 'left at first light'));
 ok('boot 2: off-DB stub survived reload', Object.keys(b2.w.__sa.journal).some(jk => (b2.w.__sa.journal[jk].extras || []).some(x => x.n === 'Testus fabricatus')));
 ok('boot 2: eBird link survived reload', Object.keys(b2.w.__sa.journal).some(jk => (b2.w.__sa.journal[jk].ebird || []).some(u => /S987654/.test(u))));
+ok('boot 2: focal/tour marks survived reload', b2.w.__sa.marks['MARKTESTKEY'] === 'tour');
 
 console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
 process.exit(failures === 0 ? 0 : 1);
