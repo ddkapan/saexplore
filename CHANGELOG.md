@@ -10,6 +10,49 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.24 — the "funnel → workbench" redesign + observer notebook
+
+Ground-up reimplementation of `app.js` on the imported design pass
+(claude.ai/design → `Species Explorer.dc.html`), bound to the real ~2,780-organism
+corpus. The app is now a **narrative funnel that becomes a workbench**.
+
+- **Eight `▾/▸` disclosure sections** (South Africa → the two regions → the trip →
+  the sites → the groups → filters & evidence → the results → export). Independent
+  per-section triangles, persisted in `localStorage` — you "graduate by collapsing"
+  from orienting to fluent mode without changing screens.
+- **Region is the master filter.** Whole trip / Cape / Lowveld cascades to the site
+  chips, the map view and the checklist columns. Region is grouped by
+  `SMETA.sites.region === 'Cape Town'` → Cape / else Lowveld, **fixing the old
+  literal-"Lowveld" substring bug** (Lowveld now correctly selects all 5
+  Lowveld/Kruger sites).
+- **"Filters at hand" sticky strip** (taxa · search · site chips · ★ late Jul + a
+  live N/total count and a ✓-seen tally), bound to the same state as the funnel.
+- **Checklist matrix** on the full corpus: taxon rail · photo · name/crumb ·
+  evidence glyphs · one cell per site (presence dot / green ✓). Sightings float to
+  the top, newest first, under a live "✓ Seen this trip" header.
+- **Shared 3-column map** on the real baked `MAPIMG` tiles: focused site's Grinnell
+  account on the left, the map with focus-pulse markers in the centre, species
+  highlights on the right — plus the itinerary bar and Play tour. Sites focus
+  identically from four surfaces (chips · markers · itinerary · column headers).
+- **Detail drawer**: evidence band with real GBIF/iNat/eBird deep links, photo,
+  season sparkline, per-site "seen" chips (sync the matrix), an iNat-observation
+  slot, and autosaving species notes.
+- **Observer notebook (the Grinnell method's authored half):** a printable
+  field-journal export — per site-day, buff paper, editable weather + journal
+  narrative → species accounts with the leader's notes → the day's checklist;
+  choose one day or the whole trip. **JSON export/import** of all field notes
+  ("export is the save mechanism" — fully offline).
+- **Embedded, cited reference section** by the footer: the app's load-bearing
+  claims verified against IUCN, SANBI, BirdLife, UNESCO, SANParks & CEPF, with
+  corrections flagged (e.g. African Penguin now IUCN Critically Endangered;
+  Kirstenbosch the *first*, not "only", botanic garden in a natural WHS).
+- Fix: `seen` (a Set) now persists via `Array.from` — checks previously vanished
+  across reloads. Tests rewritten to the new DOM + a notebook reload round-trip.
+
+Offline PWA, no dependencies. `node tests/render-test.js` → ALL PASS.
+
+---
+
 ## 1.0.23 — declutter the control block (2026-07-10)
 - **Reorganized, not redesigned** (implements the *Control-block declutter* design spec). The header dropped from a tall stack to **four always-visible primary rows** — `Sites · Match · Season · Taxa` — plus the status line. Everything set-and-forget folds into **one collapsed disclosure** labelled **“More filters, sorting & the evidence basis.”**
 - **One panel, not two.** Per the spec, the existing `details.methods` element gains a `refine` class and the set-and-forget rows are inserted *above* its Venn/how-to, so the filters and the evidentiary basis share a single disclosure: Abundance + Specimen yr, Seen lately, Sort + Text-size + absent-toggle, then the evidence Venn + how-to (unchanged). (The legacy Evidence/Groups rows were already `display:none`'d by `buildVenn()`, so they're left untouched.)
