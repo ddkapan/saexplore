@@ -116,7 +116,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  // 8 export
  h+=sec(8,'Export','a Grinnell field-journal page')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the spirit of the buff Grinnell journal: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints beautifully — a keepsake, not a CSV. <b>Export is how notes are saved</b> — there is no cloud; export early, export often.</p>'+
-   '<button class="openJournal2 btn pri sans">Open field journal ▸</button></div></div></div>';
+   '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
  h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.24</span> · built 2026-07-10 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs by solidity: <b>filled square</b>=museum voucher (physical truth) · <b>outlined square</b>=genomic (a projection) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  var app=document.getElementById('app');app.innerHTML=h;
@@ -159,7 +159,7 @@ window.__wire5=function(UNIC,SMETA){
  var seen,notes,seenOrder,journal,inatobs;
  function LG(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
  seen=new Set(LG('sa5_seen',[]));notes=LG('sa5_notes',{});seenOrder=LG('sa5_seenOrder',[]);journal=LG('sa5_journal',{});inatobs=LG('sa5_inatobs',{});
- function save(){try{localStorage.setItem('sa5_seen',JSON.stringify([].slice.call(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));}catch(e){}}
+ function save(){try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));}catch(e){}}
  window.__sa={get seen(){return seen;},get notes(){return notes;},get journal(){return journal;},get inatobs(){return inatobs;},save:save};
  function seenSpeciesMap(){var m={};seen.forEach(function(ck){m[ck.split('|')[0]]=1;});return m;}
  function seenSpeciesCount(){return Object.keys(seenSpeciesMap()).length;}
@@ -181,7 +181,7 @@ window.__wire5=function(UNIC,SMETA){
  (function(){var el=$('#evLegend');if(!el)return;var rows=[['m','Museum voucher','A physical specimen — the firmest evidence a name exists here.'],['g','Genomic','Sequence derived from a specimen; links back to the collection event.'],['i','iNaturalist','Photographed, community-curated sightings — a public virtual museum.'],['e','eBird','Reviewer-vetted bird records; an honor system that works at scale.']];el.innerHTML=rows.map(function(r){return '<div style="max-width:230px">'+glyph(r[0],1)+' <b>'+r[1]+'</b><div style="color:var(--soft);line-height:1.4;margin-top:2px">'+r[2]+'</div></div>';}).join('');})();
 
  // ---------- taxa chips ----------
- function buildTaxa(){['#taxaChips','#stripTaxa'].forEach(function(sel,idx){var box=$(sel);if(!box)return;box.innerHTML='';GORDER.forEach(function(p){var b=document.createElement('button');b.className='chip tax mini';b.dataset.g=p[0];b.textContent=idx===0?p[1]:p[1].slice(0,idx===1?4:99);b.style.borderColor=TAXCOL[p[0]];box.appendChild(b);});});
+ function buildTaxa(){['#taxaChips','#stripTaxa'].forEach(function(sel){var box=$(sel);if(!box)return;box.innerHTML='';GORDER.forEach(function(p){var b=document.createElement('button');b.className='chip tax mini';b.dataset.g=p[0];b.textContent=p[1];b.style.borderColor=TAXCOL[p[0]];box.appendChild(b);});});
   $$('.chip.tax').forEach(function(b){b.onclick=function(){S.taxa[b.dataset.g]=S.taxa[b.dataset.g]?0:1;paintTaxa();applyFilters();};});paintTaxa();}
  function paintTaxa(){$$('.chip.tax').forEach(function(b){var on=S.taxa[b.dataset.g];var col=TAXCOL[b.dataset.g];b.style.background=on?col:C.raised;b.style.color=on?'#fff':col;});}
  $('#taxAll').onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=1;});paintTaxa();applyFilters();};
@@ -363,8 +363,44 @@ window.__wire5=function(UNIC,SMETA){
  var root=document.documentElement;try{var th=localStorage.getItem('sa_theme');if(th)root.dataset.theme=th;}catch(e){}
  $('#themeToggle').onclick=function(){root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('sa_theme',root.dataset.theme);}catch(e){}renderMap();};
 
- // ---------- journal button (full render lands in a later phase) ----------
- function openJournal(){var jn=$('#journal');jn.innerHTML='<div class="sans" style="max-width:820px;margin:0 auto;padding:26px 20px"><button class="jclose btn">← Back to explorer</button><p style="margin-top:20px;color:var(--soft)">The Grinnell field-journal export renders here.</p></div>';jn.style.display='block';jn.scrollTop=0;$('.jclose',jn).onclick=function(){jn.style.display='none';};}
+ // ---------- observer notebook: JSON backup (offline; export is the save mechanism) ----------
+ function collectNotes(){return {v:1,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs};}
+ function exportJSON(){try{var blob=new Blob([JSON.stringify(collectNotes(),null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='saexplore-fieldnotes.json';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},0);}catch(e){window.alert&&alert('Export failed: '+e.message);}}
+ function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=d.journal;if(d.inatobs)inatobs=d.inatobs;save();buildMatrix();updateSeenOrder();paintSeenTally();applyFilters();window.alert&&alert('Field notes imported.');}catch(e){window.alert&&alert('Import failed: '+e.message);}}
+ var ej=$('#expJson');if(ej)ej.onclick=exportJSON;
+ var ij=$('#impJson'),iff=$('#impFile');if(ij&&iff){ij.onclick=function(){iff.click();};iff.onchange=function(){var f=iff.files&&iff.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importJSON(r.result);};r.readAsText(f);};}
+ window.__exportJSON=exportJSON;window.__importJSON=importJSON;
+
+ // ---------- Grinnell field-journal export ----------
+ function jAccounts(s){return UNIC.filter(function(o){return presentAt(o,s.key)&&(seen.has(o.k+'|'+s.key)||notes['sp:'+o.k]);});}
+ function jChecklist(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
+ function jSection(s){
+  var jk=s.date+'|'+s.key,J=journal[jk]||{};var accounts=jAccounts(s),checklist=jChecklist(s);
+  var acctHTML=accounts.length?accounts.map(function(o){var mine=notes['sp:'+o.k]||'';return '<div style="break-inside:avoid;display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #d8cdb6">'+(o.p?'<img src="'+esc(o.p[0])+'" style="width:60px;height:60px;flex-shrink:0;border-radius:3px;object-fit:cover;border-left:3px solid '+TAXCOL[o.g]+'">':'<div style="width:60px;height:60px;flex-shrink:0;border-radius:3px;border-left:3px solid '+TAXCOL[o.g]+';background:#efe8d8"></div>')+'<div style="flex:1"><div style="font-family:var(--serif);font-size:15px;font-weight:600">'+esc(o.c||o.s)+' <span style="font-style:italic;font-weight:400;color:#6b6459;font-size:13px">'+esc(o.s)+'</span></div><div class="sans" style="font-size:11px;color:#9a917f">'+esc([o.cl,o.o,o.f].filter(Boolean).join(' · '))+'</div><div class="sans" style="font-size:12px;color:#2b2723;margin-top:4px"><span style="color:#5e7249;font-weight:700">Field note.</span> '+(mine?esc(mine):'<span style="border-bottom:1px dotted #b5623c;display:inline-block;min-width:280px">&nbsp;</span>')+'</div></div></div>';}).join(''):'<div class="sans" style="color:#9a917f;font-size:12px;padding:6px 0">No species logged here yet — tick sightings in the checklist, or add a species note in the drawer.</div>';
+  var checkHTML=checklist.length?('<table style="border-collapse:collapse;width:100%;font-size:13.5px"><thead><tr style="border-bottom:1.5px solid #2b2723">'+['','Common','Scientific','iNat obs'].map(function(hh){return '<th class="sans" style="text-align:left;padding:2px 6px;font-size:10.5px;color:#6b6459;font-weight:600">'+hh+'</th>';}).join('')+'</tr></thead><tbody>'+checklist.map(function(o){var io=inatobs[o.k];return '<tr style="border-bottom:1px solid #e2d9c6"><td style="padding:2px 6px;width:22px;text-align:center;color:#5e7249">✓</td><td style="padding:2px 6px;font-family:var(--serif)">'+esc(o.c||o.s)+'</td><td style="padding:2px 6px;font-style:italic;color:#6b6459;font-size:12px">'+esc(o.s)+'</td><td class="sans" style="padding:2px 6px;font-size:11px;color:#6b6459">'+(io?esc(io):'')+'</td></tr>';}).join('')+'</tbody></table>'):'<div class="sans" style="color:#9a917f;font-size:12px">No checklist entries yet — tick a cell in the matrix to record a sighting here.</div>';
+  return '<div class="jday" style="background:#fbf9f2;border:1px solid #d8cdb6;box-shadow:0 3px 16px rgba(43,39,35,.18);padding:44px 52px;margin-bottom:22px;font-family:var(--serif);color:#2b2723">'+
+   '<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #2b2723;padding-bottom:8px"><div style="font-size:24px;font-weight:600">'+esc(s.label)+'</div><div class="sans" style="font-size:12.5px;color:#6b6459;text-align:right">'+esc(s.date)+' 2026<br>S. Bennett · Cal Academy</div></div>'+
+   '<input class="jweather sans" data-jk="'+esc(jk)+'" value="'+esc(J.weather||'')+'" placeholder="weather / habitat note (e.g. Clear, 9–16°C, SE wind easing by midday · winter)" style="width:100%;border:none;border-bottom:1px dotted #cfc5b2;background:none;font-size:11.5px;color:#6b6459;margin:6px 0 16px;padding:2px 0">'+
+   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">Journal</div>'+
+   '<textarea class="jnote" data-jk="'+esc(jk)+'" placeholder="What happened, who we met, conditions, effort…" style="width:100%;min-height:90px;border:1px solid #e2d9c6;border-radius:6px;background:#fffdf8;font-family:var(--serif);font-size:15px;line-height:1.6;color:#2b2723;padding:8px 10px;margin-bottom:18px;resize:vertical">'+esc(J.note||'')+'</textarea>'+
+   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">Species accounts</div><div style="margin-bottom:20px">'+acctHTML+'</div>'+
+   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">The day’s checklist</div>'+checkHTML+
+   '<div class="sans" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell field-journal export · evidence reconciled on the GBIF Backbone</div>'+
+  '</div>';
+ }
+ function renderJournal(scope){var jn=$('#journal');var days=(scope==='all')?itinList():(SI[scope]?[SI[scope]]:itinList());
+  var opts='<option value="all">Whole trip (all days)</option>'+itinList().map(function(s){return '<option value="'+s.key+'"'+(scope===s.key?' selected':'')+'>'+esc(s.date+' · '+s.short)+'</option>';}).join('');
+  jn.innerHTML='<div style="max-width:820px;margin:0 auto;padding:26px 20px 60px">'+
+   '<div class="jscope sans" style="display:flex;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap"><button class="jclose btn">← Back to explorer</button><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="color:#6b6459;font-size:11.5px">Notes save to this device — export to keep them.</span><select class="jsel btn" style="font-weight:400">'+opts+'</select><button class="jprint btn pri">Print / Save PDF</button></div></div>'+
+   days.map(jSection).join('')+'</div>';
+  jn.style.display='block';jn.scrollTop=0;
+  $('.jclose',jn).onclick=function(){jn.style.display='none';};
+  var pr=$('.jprint',jn);if(pr)pr.onclick=function(){if(typeof window.print==='function')window.print();};
+  var sel=$('.jsel',jn);if(sel)sel.onchange=function(){renderJournal(sel.value);};
+  $$('.jnote',jn).forEach(function(t){t.oninput=function(){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].note=t.value;save();};});
+  $$('.jweather',jn).forEach(function(t){t.oninput=function(){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].weather=t.value;save();};});
+ }
+ function openJournal(){renderJournal('all');}
  var oj=$('#openJournal');if(oj)oj.onclick=openJournal;$$('.openJournal2').forEach(function(b){b.onclick=openJournal;});
  window.__openJournal=openJournal;
 
