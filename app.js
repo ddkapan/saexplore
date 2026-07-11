@@ -1,7 +1,8 @@
 /* Southern Africa — Species Explorer · app.js
  * Offline PWA, no dependencies. index.html loads data.js then this file.
  * CSS string IIFE -> window.APP5 (builds the funnel shell) -> window.__wire5 (renders + wires).
- * v1.0.25 — round-2 quick wins: Venn abundance · hide-absent-at-focus · text size · voice pass.
+ * v1.0.26 — round-2 PR-B: Grinnell Field Journal overhaul (per-day page, two-way
+ *           notes, auto-grow, eBird links, add off-DB species w/ GBIF match).
  */
 (function(){var st=document.createElement("style");st.textContent="\n"+
 ":root{--paper:#f4efe4;--raised:#fbf7ee;--ink:#2b2723;--soft:#6b6459;--rule:#cfc5b2;--acacia:#5e7249;--terra:#b5623c;--museum:#9c7a2f;--genomic:#7a5aa6;--serif:\"Iowan Old Style\",\"Palatino Linotype\",Palatino,Georgia,serif}\n"+
@@ -39,6 +40,18 @@
 "#drawer.open{transform:none}\n"+
 ".dlab{font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--acacia);text-transform:uppercase;margin-bottom:4px;font-family:system-ui,sans-serif}\n"+
 "#journal{position:fixed;inset:0;background:#d9d2c2;z-index:90;display:none;overflow:auto}\n"+
+".jmast{max-width:820px;margin:0 auto 4px}.jmast .obs{font-family:system-ui,sans-serif;font-size:12px;color:#6b6459;letter-spacing:.2px}\n"+
+".jday{background:#fbf9f2;border:1px solid #d8cdb6;box-shadow:0 3px 16px rgba(43,39,35,.18);padding:38px 46px;margin-bottom:22px;font-family:var(--serif);color:#2b2723}\n"+
+".jloc{font-size:23px;font-weight:600;line-height:1.12}.jdate{font-family:system-ui,sans-serif;font-size:12.5px;color:#6b6459;margin-top:2px}\n"+
+".jlab{font-family:system-ui,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin:16px 0 6px}\n"+
+".jnoteta{width:100%;border:1px solid #e2d9c6;border-radius:6px;background:#fffdf8;font-family:var(--serif);font-size:14.5px;line-height:1.55;color:#2b2723;padding:7px 9px;resize:none;overflow:hidden;display:block}\n"+
+".jaccounts .jacct{break-inside:avoid;display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #d8cdb6}\n"+
+".jchecklist{margin-top:2px}.jckwrap{break-inside:avoid}\n"+
+".jck{display:flex;gap:8px;align-items:baseline;padding:3px 5px;border-radius:5px;cursor:pointer;font-size:13.5px}\n"+
+".jck:hover{background:#efe8d8}.jck .tick{color:#5e7249;flex-shrink:0}.jck .sci{font-style:italic;color:#6b6459;font-size:12px}\n"+
+".jck .pen{margin-left:auto;font-family:system-ui,sans-serif;font-size:10.5px;color:#b5623c;opacity:0;flex-shrink:0}.jck:hover .pen,.jck.noted .pen{opacity:1}\n"+
+".ebd{font-family:system-ui,sans-serif;font-size:11.5px;background:#eef3ea;border:1px solid #cfdcc6;color:#4a6b3f;border-radius:11px;padding:2px 9px;text-decoration:none}\n"+
+"@media(max-width:680px){.jday{padding:22px 16px!important}}\n"+
 "#themeToggle{position:fixed;top:8px;right:10px;z-index:80;width:34px;height:34px;border-radius:50%}\n"+
 "#textSize{position:fixed;top:8px;right:50px;z-index:80;height:34px;min-width:34px;padding:0 11px;border-radius:17px;font-weight:700}\n"+
 "#textSize .tsx{font-size:10px;opacity:.7}\n"+
@@ -49,7 +62,7 @@
 ".dual input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:15px;height:15px;border-radius:50%;background:var(--raised);border:1.5px solid var(--ink);cursor:pointer}\n"+
 ".dual input::-moz-range-thumb{pointer-events:auto;width:15px;height:15px;border-radius:50%;background:var(--raised);border:1.5px solid var(--ink);cursor:pointer}\n"+
 ".tx-Aves{--tc:#4a6b8a}.tx-Mammalia{--tc:#b0925e}.tx-Reptilia{--tc:#c08a2e}.tx-Amphibia{--tc:#3e8a7e}.tx-Actinopterygii{--tc:#5f7e96}.tx-Insecta{--tc:#7a5a8a}.tx-Arachnida{--tc:#7a3b3b}.tx-Mollusca{--tc:#b3697e}.tx-Plantae{--tc:#5e7249}.tx-Other{--tc:#888}\n"+
-"@media print{#app,#scrim,#drawer,#themeToggle{display:none!important}#journal{position:static!important;display:block!important;background:#fff!important;overflow:visible!important}#journal .jclose,#journal .jprint,#journal .jscope{display:none!important}}\n"+
+"@media print{#app,#scrim,#drawer,#themeToggle,#textSize{display:none!important}#journal{position:static!important;display:block!important;background:#fff!important;overflow:visible!important}#journal .jscope,#journal .jadd,#journal .jck .pen,#journal .jresolve,#journal .jebadd,#journal .jebrm,#journal .jtray{display:none!important}#journal .jchecklist{column-count:2;column-gap:24px}#journal .jck{cursor:default}#journal .jday{box-shadow:none!important;border:none!important;padding:0 0 20px!important}#journal .jnoteta{border:none!important;background:none!important;padding:0!important}}\n"+
 "@media(max-width:680px){#app{padding:14px 12px 60px}#mapGrid{grid-template-columns:1fr!important}#mapLeft,#mapRight{border:none!important;border-top:1px solid var(--rule)!important;max-height:none!important}}\n"+
 "@media(max-width:480px){.dual{width:100%!important;max-width:300px;height:34px}.dual input{height:34px}.dual .trk{top:15px}.dual .bnd{top:14px}.yrlab{margin-top:3px}#abChips{flex-wrap:wrap}}\n"+
 "";document.head.appendChild(st);})();
@@ -119,11 +132,11 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<span id="count" style="margin-left:auto;color:var(--soft);font-weight:600"></span></div>'+
    '<div id="matrix"></div><div id="status" class="sans" style="font-size:12px;color:var(--soft);margin-top:8px"></div></div>';
  // 8 export
- h+=sec(8,'Export','a Grinnell field-journal page')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
+ h+=sec(8,'Field journal','a Grinnell Field Journal page, saved per day')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.25</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.26</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -368,7 +381,7 @@ window.__wire5=function(UNIC,SMETA){
   scrim.style.display='block';
   $('.dclose',drawer).onclick=closeDrawer;
   $$('.ckchip',drawer).forEach(function(ch){ch.onclick=function(){toggleSeen(o,ch.dataset.key.split('|')[1]);};});
-  var ta=$('.noteta',drawer);ta.oninput=function(){notes[nk]=ta.value;save();};
+  var ta=$('.noteta',drawer);ta.style.overflow='hidden';ta.oninput=function(){notes[nk]=ta.value;save();autoGrow(ta);};autoGrow(ta);
   var io=$('.inatobs',drawer);io.oninput=function(){if(io.value.trim())inatobs[o.k]=io.value.trim();else delete inatobs[o.k];save();};
   // wikipedia summary via iNat
   var w=$('.dwiki',drawer),wsci=encodeURIComponent((o.s||'').replace(/ /g,'_'));
@@ -399,39 +412,93 @@ window.__wire5=function(UNIC,SMETA){
  var ij=$('#impJson'),iff=$('#impFile');if(ij&&iff){ij.onclick=function(){iff.click();};iff.onchange=function(){var f=iff.files&&iff.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importJSON(r.result);};r.readAsText(f);};}
  window.__exportJSON=exportJSON;window.__importJSON=importJSON;
 
- // ---------- Grinnell field-journal export ----------
- // species accounts for a site-day = the species the leader recorded there (their notes surface inline)
- function jAccounts(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
- function jChecklist(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
- function jSection(s){
-  var jk=s.date+'|'+s.key,J=journal[jk]||{};var accounts=jAccounts(s),checklist=jChecklist(s);
-  var acctHTML=accounts.length?accounts.map(function(o){var mine=notes['sp:'+o.k]||'';return '<div style="break-inside:avoid;display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #d8cdb6">'+(o.p?'<img src="'+esc(o.p[0])+'" style="width:60px;height:60px;flex-shrink:0;border-radius:3px;object-fit:cover;border-left:3px solid '+TAXCOL[o.g]+'">':'<div style="width:60px;height:60px;flex-shrink:0;border-radius:3px;border-left:3px solid '+TAXCOL[o.g]+';background:#efe8d8"></div>')+'<div style="flex:1"><div style="font-family:var(--serif);font-size:15px;font-weight:600">'+esc(o.c||o.s)+' <span style="font-style:italic;font-weight:400;color:#6b6459;font-size:13px">'+esc(o.s)+'</span></div><div class="sans" style="font-size:11px;color:#9a917f">'+esc([o.cl,o.o,o.f].filter(Boolean).join(' · '))+'</div><div class="sans" style="font-size:12px;color:#2b2723;margin-top:4px"><span style="color:#5e7249;font-weight:700">Field note.</span> '+(mine?esc(mine):'<span style="border-bottom:1px dotted #b5623c;display:inline-block;min-width:280px">&nbsp;</span>')+'</div></div></div>';}).join(''):'<div class="sans" style="color:#9a917f;font-size:12px;padding:6px 0">No species logged here yet — tick sightings in the checklist, or add a species note in the drawer.</div>';
-  var checkHTML=checklist.length?('<table style="border-collapse:collapse;width:100%;font-size:13.5px"><thead><tr style="border-bottom:1.5px solid #2b2723">'+['','Common','Scientific','iNat obs'].map(function(hh){return '<th class="sans" style="text-align:left;padding:2px 6px;font-size:10.5px;color:#6b6459;font-weight:600">'+hh+'</th>';}).join('')+'</tr></thead><tbody>'+checklist.map(function(o){var io=inatobs[o.k];return '<tr style="border-bottom:1px solid #e2d9c6"><td style="padding:2px 6px;width:22px;text-align:center;color:#5e7249">✓</td><td style="padding:2px 6px;font-family:var(--serif)">'+esc(o.c||o.s)+'</td><td style="padding:2px 6px;font-style:italic;color:#6b6459;font-size:12px">'+esc(o.s)+'</td><td class="sans" style="padding:2px 6px;font-size:11px;color:#6b6459">'+(io?esc(io):'')+'</td></tr>';}).join('')+'</tbody></table>'):'<div class="sans" style="color:#9a917f;font-size:12px">No checklist entries yet — tick a cell in the matrix to record a sighting here.</div>';
-  return '<div class="jday" style="background:#fbf9f2;border:1px solid #d8cdb6;box-shadow:0 3px 16px rgba(43,39,35,.18);padding:44px 52px;margin-bottom:22px;font-family:var(--serif);color:#2b2723">'+
-   '<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #2b2723;padding-bottom:8px"><div style="font-size:24px;font-weight:600">'+esc(s.label)+'</div><div class="sans" style="font-size:12.5px;color:#6b6459;text-align:right">'+esc(s.date)+' 2026<br>S. Bennett · Cal Academy</div></div>'+
-   '<input class="jweather sans" data-jk="'+esc(jk)+'" value="'+esc(J.weather||'')+'" placeholder="weather / habitat note (e.g. Clear, 9–16°C, SE wind easing by midday · winter)" style="width:100%;border:none;border-bottom:1px dotted #cfc5b2;background:none;font-size:11.5px;color:#6b6459;margin:6px 0 16px;padding:2px 0">'+
-   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">Journal</div>'+
-   '<textarea class="jnote" data-jk="'+esc(jk)+'" placeholder="What happened, who we met, conditions, effort…" style="width:100%;min-height:90px;border:1px solid #e2d9c6;border-radius:6px;background:#fffdf8;font-family:var(--serif);font-size:15px;line-height:1.6;color:#2b2723;padding:8px 10px;margin-bottom:18px;resize:vertical">'+esc(J.note||'')+'</textarea>'+
-   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">Species accounts</div><div style="margin-bottom:20px">'+acctHTML+'</div>'+
-   '<div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#b5623c;text-transform:uppercase;margin-bottom:5px">The day’s checklist</div>'+checkHTML+
-   '<div class="sans" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell Field Journal · records on the GBIF Backbone</div>'+
-  '</div>';
- }
- function renderJournal(scope){var jn=$('#journal');var days=(scope==='all')?itinList():(SI[scope]?[SI[scope]]:itinList());
+ // ---------- Grinnell Field Journal ----------
+ // A saveable page per day: narrative → species accounts (only species with a field
+ // note) → the day's full checklist. Notes are the single store shared with the
+ // species drawer; the checklist is a second edit surface. Off-DB species can be
+ // added (GBIF match online, plain-text stub offline). Prints one day at a time.
+ var nav=(typeof navigator!=='undefined')?navigator:{onLine:false},jScope='all';
+ function autoGrow(t){if(!t)return;t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px';}
+ function dayKey(s){return s.date+'|'+s.key;}
+ function dayReal(s){return UNIC.filter(function(o){return seen.has(o.k+'|'+s.key);});}
+ function dayExtras(jk){return (journal[jk]&&journal[jk].extras)||[];}
+ function noteVal(v){return (v&&String(v).trim())?v:'';}
+ function gbif(name){return fetch('https://api.gbif.org/v1/species/match?name='+encodeURIComponent(name)).then(function(r){return r.json();});}
+ function reJournal(){renderJournal(jScope);}
+ // ----- accounts (read view; only noted species) -----
+ function acctList(s){var jk=dayKey(s),arr=[];
+  dayReal(s).forEach(function(o){var n=noteVal(notes['sp:'+o.k]);if(n)arr.push({name:o.c||o.s,sci:o.c?o.s:'',meta:[o.cl,o.o,o.f].filter(Boolean).join(' · '),photo:o.p?o.p[0]:'',col:TAXCOL[o.g],note:n});});
+  dayExtras(jk).forEach(function(x){var n=noteVal(x.note);if(n)arr.push({name:x.n,sci:x.s||'',meta:x.src==='gbif'?'added species · GBIF backbone':'added species · manual stub',photo:'',col:C.soft,note:n});});
+  return arr;}
+ function accountsHTML(s){var arr=acctList(s);if(!arr.length)return '<div class="jctrl" style="color:#9a917f;font-size:12px;padding:2px 0">Only species you write about appear here — tap one in the checklist below to add a field note.</div>';
+  return arr.map(function(a){return '<div class="jacct">'+(a.photo?'<img src="'+esc(a.photo)+'" style="width:56px;height:56px;flex-shrink:0;border-radius:3px;object-fit:cover;border-left:3px solid '+a.col+'">':'<div style="width:56px;height:56px;flex-shrink:0;border-radius:3px;border-left:3px solid '+a.col+';background:#efe8d8"></div>')+'<div style="flex:1"><div style="font-family:var(--serif);font-size:15px;font-weight:600">'+esc(a.name)+(a.sci?' <span style="font-style:italic;font-weight:400;color:#6b6459;font-size:13px">'+esc(a.sci)+'</span>':'')+'</div><div class="jctrl" style="font-size:11px;color:#9a917f">'+esc(a.meta)+'</div><div style="font-size:13.5px;line-height:1.5;margin-top:3px;white-space:pre-wrap">'+esc(a.note)+'</div></div></div>';}).join('');}
+ // ----- checklist (all detected; click a row to add/edit its note) -----
+ function ckRow(r){var own=r.sp?('data-sp="'+esc(r.sp)+'"'):('data-xk="'+esc(r.xk)+'" data-jk="'+esc(r.jk)+'"');
+  var tag=r.extra?(' <span style="font-size:9.5px;font-weight:700;color:'+(r.src==='gbif'?'#5e7249':'#b5623c')+'">'+(r.src==='gbif'?'+GBIF':'+STUB')+'</span>'):'';
+  return '<div class="jckwrap">'+
+   '<div class="jck'+(r.noted?' noted':'')+'" '+own+'><span class="tick">✓</span><span>'+esc(r.name)+tag+'</span>'+(r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'<span class="pen">✎ '+(r.noted?'note':'add note')+'</span></div>'+
+   '<textarea class="jtray jnoteta" '+own+' placeholder="Field note for '+esc(r.name)+'…" style="display:none;margin:2px 0 8px">'+esc(r.note)+'</textarea>'+
+   (r.extra&&r.src!=='gbif'?'<button class="jresolve" data-xk="'+esc(r.xk)+'" data-jk="'+esc(r.jk)+'" style="font-family:system-ui,sans-serif;font-size:10.5px;color:#5e7249;background:none;border:1px solid #cfdcc6;border-radius:9px;padding:1px 7px;cursor:pointer;margin:0 0 8px">resolve on GBIF ⟳</button>':'')+
+  '</div>';}
+ function checklistHTML(s){var jk=dayKey(s),real=dayReal(s),extras=dayExtras(jk);
+  if(!real.length&&!extras.length)return '<div class="jctrl" style="color:#9a917f;font-size:12px">No sightings ticked for this day yet — tick cells in the explorer matrix, or add a species below.</div>';
+  var rows=real.map(function(o){var n=notes['sp:'+o.k]||'';return ckRow({sp:'sp:'+o.k,name:o.c||o.s,sci:o.c?o.s:'',noted:!!noteVal(n),note:n,col:TAXCOL[o.g]});}).join('')+
+   extras.map(function(x){return ckRow({xk:x.k,jk:jk,name:x.n,sci:x.s||'',noted:!!noteVal(x.note),note:x.note||'',extra:true,src:x.src});}).join('');
+  return '<div class="jchecklist">'+rows+'</div>';}
+ // ----- eBird checklist links (offline-safe URL strings) -----
+ function ebirdHTML(jk){var arr=(journal[jk]&&journal[jk].ebird)||[];
+  var links=arr.map(function(u,i){return '<span style="display:inline-flex;align-items:center;margin:3px 6px 0 0"><a class="ebd" href="'+esc(u)+'" target="_blank" rel="noopener" title="Opens on eBird when online">eBird checklist '+(i+1)+' ↗</a><span class="jebrm jctrl" data-jk="'+esc(jk)+'" data-i="'+i+'" title="remove" style="cursor:pointer;color:#b5623c;font-size:13px;margin-left:3px">×</span></span>';}).join('');
+  return '<div class="jctrl" style="margin-top:7px;display:flex;flex-wrap:wrap;align-items:center;gap:4px">'+links+'<span class="jebadd" style="display:inline-flex;gap:5px;align-items:center"><input class="jebinput" placeholder="paste eBird checklist URL" style="border:1px solid #cfc5b2;border-radius:11px;padding:2px 9px;font:inherit;font-size:11px;background:#fffdf8;color:#2b2723;min-width:170px"><button class="jebgo" data-jk="'+esc(jk)+'" style="border:1px solid #4a6b3f;background:#eef3ea;color:#4a6b3f;border-radius:11px;padding:2px 9px;cursor:pointer;font:inherit;font-size:11px">link</button></span></div>';}
+ // ----- add a species not in the offline DB -----
+ function addHTML(jk){return '<div class="jadd jctrl" data-jk="'+esc(jk)+'" style="margin-top:12px"><button class="jaddbtn" style="border:1px dashed #b5623c;background:none;color:#b5623c;border-radius:9px;padding:4px 11px;cursor:pointer;font:inherit;font-size:12px">＋ add a species not in the list</button><span class="jaddform" style="display:none;gap:6px;align-items:center;flex-wrap:wrap"><input class="jaddinput" placeholder="common or scientific name" style="border:1px solid #cfc5b2;border-radius:8px;padding:4px 9px;font:inherit;font-size:12.5px;background:#fffdf8;color:#2b2723;min-width:190px"><button class="jaddgo" style="border:1px solid #5e7249;background:#5e7249;color:#fbf7ee;border-radius:8px;padding:4px 11px;cursor:pointer;font:inherit;font-size:12px">add</button><span style="font-size:11px;color:#9a917f">online → matched to GBIF · offline → saved as a stub to resolve later</span></span></div>';}
+ function addExtra(jk,name){journal[jk]=journal[jk]||{};journal[jk].extras=journal[jk].extras||[];
+  var id='x'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36);
+  var ex={k:id,n:name,s:'',key:0,src:'manual',note:'',obs:''};journal[jk].extras.push(ex);save();reJournal();
+  if(nav.onLine&&typeof fetch==='function')gbif(name).then(function(j){if(j&&j.usageKey&&j.matchType!=='NONE'){ex.s=j.canonicalName||j.scientificName||'';ex.key=j.usageKey;ex.src='gbif';save();reJournal();}}).catch(function(){});}
+ function resolveExtra(jk,xk){var ex=dayExtras(jk).filter(function(x){return x.k===xk;})[0];if(!ex)return;
+  if(!(nav.onLine&&typeof fetch==='function')){if(window.alert)alert('Offline — reconnect to resolve “'+ex.n+'” on GBIF.');return;}
+  gbif(ex.n).then(function(j){if(j&&j.usageKey&&j.matchType!=='NONE'){ex.s=j.canonicalName||j.scientificName||'';ex.key=j.usageKey;ex.src='gbif';save();reJournal();}else if(window.alert)alert('No GBIF match for “'+ex.n+'”.');}).catch(function(){if(window.alert)alert('Lookup failed — check your connection.');});}
+ function setNoteFromEl(t,val){var sp=t.dataset.sp;if(sp){if(noteVal(val))notes[sp]=val;else delete notes[sp];return;}
+  var xk=t.dataset.xk,jk=t.dataset.jk,ex=dayExtras(jk).filter(function(x){return x.k===xk;})[0];if(ex)ex.note=val;}
+ // ----- one day -----
+ function jSection(s){var jk=dayKey(s),J=journal[jk]||{};
+  return '<div class="jday" data-jk="'+esc(jk)+'">'+
+   '<div style="border-bottom:2px solid #2b2723;padding-bottom:8px"><div class="jloc">'+esc(s.label)+'</div><div class="jdate">'+esc(s.date)+' 2026 · '+esc(s.region)+'</div>'+ebirdHTML(jk)+'</div>'+
+   '<input class="jweather" data-jk="'+esc(jk)+'" value="'+esc(J.weather||'')+'" placeholder="weather / habitat — e.g. Clear, 9–16°C, SE wind easing by midday · winter" style="width:100%;border:none;border-bottom:1px dotted #cfc5b2;background:none;font-family:system-ui,sans-serif;font-size:11.5px;color:#6b6459;margin:8px 0 14px;padding:2px 0">'+
+   '<div class="jlab">Journal</div><textarea class="jnarr jnoteta" data-jk="'+esc(jk)+'" placeholder="What happened, who we met, conditions, effort…" style="min-height:80px">'+esc(J.note||'')+'</textarea>'+
+   '<div class="jlab">Species accounts</div><div class="jaccounts" style="margin-bottom:12px">'+accountsHTML(s)+'</div>'+
+   '<div class="jlab">The day’s checklist</div>'+checklistHTML(s)+addHTML(jk)+
+   '<div class="jctrl" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell Field Journal · records on the GBIF Backbone</div>'+
+  '</div>';}
+ // ----- delegated wiring (attached to #journal once) -----
+ function wireJournal(jn){if(jn.__wired)return;jn.__wired=1;
+  jn.addEventListener('input',function(e){var t=e.target,cl=t.classList;if(!cl)return;
+   if(cl.contains('jweather')){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].weather=t.value;save();return;}
+   if(cl.contains('jnarr')){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].note=t.value;save();autoGrow(t);return;}
+   if(cl.contains('jtray')){setNoteFromEl(t,t.value);save();autoGrow(t);var row=t.parentNode.querySelector('.jck');if(row){var on=!!noteVal(t.value);row.classList.toggle('noted',on);var pen=row.querySelector('.pen');if(pen)pen.textContent='✎ '+(on?'note':'add note');}return;}});
+  jn.addEventListener('focusout',function(e){var t=e.target;if(t.classList&&t.classList.contains('jtray')){var day=t.closest('.jday');if(day){var box=day.querySelector('.jaccounts'),sk=(day.dataset.jk||'').split('|')[1];if(box&&SI[sk])box.innerHTML=accountsHTML(SI[sk]);}}});
+  jn.addEventListener('click',function(e){var el=e.target;
+   var rm=el.closest('.jebrm');if(rm){var jk=rm.dataset.jk;if(journal[jk]&&journal[jk].ebird){journal[jk].ebird.splice(+rm.dataset.i,1);save();reJournal();}return;}
+   var eb=el.closest('.jebgo');if(eb){var jk=eb.dataset.jk,inp=eb.parentNode.querySelector('.jebinput'),u=inp&&inp.value.trim();if(u){journal[jk]=journal[jk]||{};journal[jk].ebird=journal[jk].ebird||[];journal[jk].ebird.push(u);save();reJournal();}return;}
+   var rz=el.closest('.jresolve');if(rz){resolveExtra(rz.dataset.jk,rz.dataset.xk);return;}
+   var ab=el.closest('.jaddbtn');if(ab){var wrap=ab.closest('.jadd');ab.style.display='none';var f=wrap.querySelector('.jaddform');f.style.display='inline-flex';var i=f.querySelector('.jaddinput');if(i)i.focus();return;}
+   var go=el.closest('.jaddgo');if(go){var wrap=go.closest('.jadd'),jk=wrap.dataset.jk,inp=wrap.querySelector('.jaddinput'),nm=inp&&inp.value.trim();if(nm)addExtra(jk,nm);return;}
+   var ck=el.closest('.jck');if(ck){var tray=ck.parentNode.querySelector('.jtray');if(tray){var open=tray.style.display!=='none';tray.style.display=open?'none':'block';if(!open){autoGrow(tray);tray.focus();}}return;}});}
+ function renderJournal(scope){jScope=scope;var jn=$('#journal');var days=(scope==='all')?itinList():(SI[scope]?[SI[scope]]:itinList());
   var opts='<option value="all">Whole trip (all days)</option>'+itinList().map(function(s){return '<option value="'+s.key+'"'+(scope===s.key?' selected':'')+'>'+esc(s.date+' · '+s.short)+'</option>';}).join('');
   jn.innerHTML='<div style="max-width:820px;margin:0 auto;padding:26px 20px 60px">'+
-   '<div class="jscope sans" style="display:flex;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap"><button class="jclose btn">← Back to explorer</button><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="color:#6b6459;font-size:11.5px">Notes save to this device — export to keep them.</span><select class="jsel btn" style="font-weight:400">'+opts+'</select><button class="jprint btn pri">Print / Save PDF</button></div></div>'+
+   '<div class="jscope jctrl" style="display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap"><button class="jclose btn">← Back to explorer</button><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="color:#6b6459;font-size:11.5px">On this device — export to keep a backup. Print each day for a clean PDF.</span><select class="jsel btn" style="font-weight:400">'+opts+'</select><button class="jprint btn pri">Print / Save PDF</button></div></div>'+
+   '<div class="jmast"><span class="obs">Observer: S. Bennett &amp; SA Explore Team · 2026</span></div>'+
    days.map(jSection).join('')+'</div>';
-  jn.style.display='block';jn.scrollTop=0;
+  jn.style.display='block';jn.scrollTop=0;wireJournal(jn);
   $('.jclose',jn).onclick=function(){jn.style.display='none';};
   var pr=$('.jprint',jn);if(pr)pr.onclick=function(){if(typeof window.print==='function')window.print();};
   var sel=$('.jsel',jn);if(sel)sel.onchange=function(){renderJournal(sel.value);};
-  $$('.jnote',jn).forEach(function(t){t.oninput=function(){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].note=t.value;save();};});
-  $$('.jweather',jn).forEach(function(t){t.oninput=function(){var jk=t.dataset.jk;journal[jk]=journal[jk]||{};journal[jk].weather=t.value;save();};});
+  $$('.jnarr',jn).forEach(autoGrow);
  }
  function openJournal(){renderJournal('all');}
  var oj=$('#openJournal');if(oj)oj.onclick=openJournal;$$('.openJournal2').forEach(function(b){b.onclick=openJournal;});
- window.__openJournal=openJournal;
+ window.__openJournal=openJournal;window.__addExtra=addExtra;
 
  // ---------- init ----------
  buildTaxa();buildSiteChips();buildMatrix();paintRegion();paintSeason();renderItin();renderMap();renderRails();updateSeenOrder();paintSeenTally();applyFilters();

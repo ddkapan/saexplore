@@ -10,6 +10,39 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.26 — Grinnell Field Journal overhaul (Shannon's field review, PR-B)
+
+Second of three review PRs. Rewrites the journal from a static export into a
+working, per-day field journal in the Grinnell form. No data changes.
+
+- **Per-day Grinnell page (J1).** Page masthead reads **Observer: S. Bennett & SA
+  Explore Team · 2026**; each day leads with the **Location** and the **Date**
+  beneath it (mirrors the Trachte 2017 journal). Body flows **weather → narrative
+  → species accounts → the day's checklist**. The day picker scopes to one day;
+  **print each day** to PDF (the checklist reflows to **two columns** in print and
+  all edit chrome is hidden).
+- **Species accounts = only species you wrote about (J1/J2).** A species is
+  promoted to an account only once it has a field note — the checklist still lists
+  everything detected, so accounts stay short.
+- **Two-way, single-copy notes (J2).** A species note is editable from both the
+  explorer drawer and the journal, backed by one stored value. **Tap any checklist
+  row** to open its note tray inline; typing promotes it to the accounts section.
+- **Auto-expanding note boxes (J3).** The narrative and every note grow to fit
+  their text (also applied to the drawer note).
+- **Link your eBird checklists (J4).** Paste an eBird checklist URL per day; it
+  shows at the top of that day's page and travels in the export. Offline-safe — the
+  URL is stored and opens when you're back online.
+- **Add species not in the offline DB (J5).** "＋ add a species not in the list"
+  per day. **Online** it matches the name against the **GBIF backbone** (fills the
+  scientific name + key); **offline** it saves a plain-text **stub** you can
+  **resolve on GBIF** later. Stubs and their notes survive JSON export/import.
+- Tests extended (account promotion, checklist trays, stub add + reload, eBird link
+  reload). `sw` cache v4 → v5.
+
+Open question for Shannon (non-blocking): eBird linking is per-day **checklist
+URLs** for now — say the word if you'd rather import an eBird **trip report** or
+pull lists live.
+
 ## 1.0.25 — round-2 quick wins & voice pass (Shannon's field review, PR-A)
 
 First of three review PRs on the landed redesign. Fixes and small features; no
