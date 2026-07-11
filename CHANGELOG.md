@@ -10,6 +10,39 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.25 — round-2 quick wins & voice pass (Shannon's field review, PR-A)
+
+First of three review PRs on the landed redesign. Fixes and small features; no
+data changes.
+
+- **Abundance is now a multi-select, not a floor.** The five mini abundance chips
+  each toggle independently (rare · scarce · uncommon · frequent · common) — pick
+  any subset, e.g. "just rare." Selecting none means no abundance filter. Replaces
+  the old "minimum N" slider behavior, which could not isolate a single class and
+  whose high end never bound. (Addresses B2 abundance + the core of T2.)
+- **Focus hides absent species instead of graying them.** Focusing a site now hides
+  species with no record there (the dimmed, non-actionable rows are gone —
+  especially noisy on a phone). A one-tap **"only at <site>" / "all sites shown"**
+  chip on the at-hand strip flips between the focused checklist and the full
+  distribution. Default is hidden. (B4 + Shannon's grayed-rows note.)
+- **Text-size control for phones.** A new `A+` button (top-right, beside the theme
+  toggle) steps through three reading sizes and remembers the choice. Scales the
+  explorer and the journal.
+- **At-hand strip gains taxa All / None** and groups the multi-select controls on
+  the left. (B3.)
+- **Mobile: the specimen-year slider gets room.** Taller track and full-width labels
+  under ~480px so the year min/max clear the thumbs. (B1.)
+- **Voice pass (V).** Removed "buff" and the load-bearing wording; trimmed the
+  references heading to **"References & sources"**; plain **"Checked against the
+  IUCN Red List…"**; added the four data-source base URLs — **GBIF · BOLD ·
+  iNaturalist · eBird** — above the numbered footnotes; the journal page reads
+  **"Grinnell Field Journal"**; and a sweep of marketing/AI phrasing back to plain
+  field-guide voice.
+
+Deferred to later PRs (noted here so nothing is lost): ⌘-click multi-site compare
+needs multi-focus plumbing → folded into PR-C (map/tour); the highlight picker and
+focal/tour tiers → PR-C.
+
 ## 1.0.24 — the "funnel → workbench" redesign + observer notebook
 
 Ground-up reimplementation of `app.js` on the imported design pass

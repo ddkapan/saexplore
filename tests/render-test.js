@@ -84,6 +84,32 @@ const focused = d.querySelector('.chip.site');
 ok('focusing a site sets a focused chip', [].slice.call(d.querySelectorAll('.chip.site')).some(c => c.style.background && /181, ?98, ?60|b5623c/i.test(c.style.background) || c.style.borderColor));
 d.querySelector('#matrix thead .colh').click(); // restore
 
+// abundance is a multi-select (Venn), not a floor: pick "common" (class 5) only
+const beforeAb = visible().length;
+d.querySelector('#abChips button[data-ab="5"]').click();
+const abOnly = visible().length;
+ok('abundance chip filters to one class', abOnly > 0 && abOnly < beforeAb, abOnly + ' of ' + beforeAb);
+ok('abundance is multi-select (S.ab set)', !!(w.__S.ab && w.__S.ab.has(5)));
+d.querySelector('#abChips button[data-ab="5"]').click(); // toggle off -> no abundance filter
+ok('deselecting abundance shows all again', visible().length === beforeAb, visible().length + '');
+
+// text-size stepper present and changes the explorer zoom
+ok('text-size control present', !!d.getElementById('textSize'));
+const z0 = d.getElementById('app').style.zoom;
+d.getElementById('textSize').click();
+ok('text-size button changes app zoom', d.getElementById('app').style.zoom !== z0);
+d.getElementById('textSize').click(); d.getElementById('textSize').click(); // 3-cycle back to base
+
+// hide-absent-at-focus: focusing hides species with no record there; a strip toggle reveals them
+d.querySelector('#matrix thead .colh').click(); // focus the first site
+const focusedVis = visible().length;
+const abst = d.getElementById('absToggle');
+ok('hide-absent toggle appears on focus', !!abst && abst.style.display !== 'none');
+abst.click(); // show all sites' species
+ok('showing all sites reveals more rows', visible().length > focusedVis, focusedVis + ' -> ' + visible().length);
+abst.click(); // back to only-at-site
+d.querySelector('#matrix thead .colh').click(); // clear focus
+
 // seen tracking: tick a cell -> seen tally shows, row floats under the seen header
 d.querySelector('#matrix .cell').click();
 if (w.__sortRows) w.__sortRows(); // flush the deferred (setTimeout) re-sort synchronously
