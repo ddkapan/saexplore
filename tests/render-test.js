@@ -135,6 +135,27 @@ ok('journal renders 10 site-days', d.querySelectorAll('#journal .jday').length =
 ok('journal has narrative + accounts + checklist', /Journal/.test(jtxt) && /Species accounts/.test(jtxt) && /checklist/i.test(jtxt));
 ok('export/import buttons present', !!d.getElementById('expJson') && !!d.getElementById('impJson'));
 
+// Grinnell rework: only species with a field note become accounts
+w.__openJournal();
+const acctsBefore = d.querySelectorAll('#journal .jaccounts .jacct').length;
+const seenCk = Array.from(w.__sa.seen)[0], spk = seenCk.split('|')[0];
+w.__sa.notes['sp:' + spk] = 'roosting in the fig at first light'; w.__sa.save();
+w.__openJournal();
+const acctsAfter = d.querySelectorAll('#journal .jaccounts .jacct').length;
+ok('noted species is promoted to a species account', acctsAfter === acctsBefore + 1, acctsBefore + ' -> ' + acctsAfter);
+ok('every checklist row has an editable note tray', d.querySelectorAll('#journal .jck').length > 0 && d.querySelectorAll('#journal .jtray').length === d.querySelectorAll('#journal .jck').length);
+
+// off-DB species: add a plain-text stub to the first day (offline path, no fetch in jsdom)
+const jk0 = d.querySelector('#journal .jday').dataset.jk;
+w.__addExtra(jk0, 'Testus fabricatus');
+ok('added off-DB species appears in the day checklist', /Testus fabricatus/.test(d.getElementById('journal').textContent));
+ok('the stub is stored under that day', (w.__sa.journal[jk0].extras || []).some(x => x.n === 'Testus fabricatus'));
+
+// eBird checklist link stored + shown at the day header
+w.__sa.journal[jk0].ebird = ['https://ebird.org/checklist/S987654'];
+w.__sa.save(); w.__openJournal();
+ok('eBird checklist link shows on the day page', /ebird\.org\/checklist\/S987654/.test(d.getElementById('journal').innerHTML));
+
 // references section (embedded, offline)
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
@@ -143,6 +164,8 @@ const b2 = boot(makeDom());
 ok('boot 2: check survived reload', b2.w.__sa.seen.size === 1, b2.w.__sa.seen.size + '');
 ok('boot 2: species note survived', b2.w.__sa.notes['sp:TESTKEY'] === 'a persistent note');
 ok('boot 2: journal entry survived', !!(b2.w.__sa.journal['23 Jul|boulders'] && b2.w.__sa.journal['23 Jul|boulders'].note === 'left at first light'));
+ok('boot 2: off-DB stub survived reload', Object.keys(b2.w.__sa.journal).some(jk => (b2.w.__sa.journal[jk].extras || []).some(x => x.n === 'Testus fabricatus')));
+ok('boot 2: eBird link survived reload', Object.keys(b2.w.__sa.journal).some(jk => (b2.w.__sa.journal[jk].ebird || []).some(u => /S987654/.test(u))));
 
 console.log(`\n${failures === 0 ? 'ALL PASS' : failures + ' FAILURE(S)'}`);
 process.exit(failures === 0 ? 0 : 1);
