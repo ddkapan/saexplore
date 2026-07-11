@@ -10,6 +10,33 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.27 — focal/tour tiers, highlights, tour & map (Shannon's field review, PR-C)
+
+Third of three review PRs. The trip-planning value-add: mark the species you care
+about, build the tour from them, and get the map layers back. No data changes.
+
+- **Focal / tour tiers (T1).** A small **☆** sits on every species row; tap it to
+  cycle **★ focal** (your interest) → **⚑ tour** (a shared highlight) → off. The
+  detail drawer has the same two buttons. Marked species **pin to the top** of the
+  checklist under a **★ Focal & tour** header; a **★ N focal/tour** chip on the
+  at-hand strip toggles the pin on/off (the "sticky with a hide option"). Marks are
+  saved and **travel in the JSON export/import** — populate them on a laptop, import
+  on your phone in the field.
+- **Highlights surface your picks (T2).** The map's Trip Highlights lead with your
+  focal/tour species (flagged), and a focused site lists its focal/tour first. Species
+  found at only one site on the trip get an **"only here"** tag as a highlight cue.
+  (The abundance Venn multi-select from PR-A already covers "show just the rare ones.")
+- **Tour speed (T3).** **← / →** slow down / speed up the playing tour; an on-screen
+  **🐢 3.2s 🐇** control in the tour bar does the same. Range 0.8–6.0 s per stop.
+- **Selectable map layers + zoom (T4).** The map exposes **Basic · Terrain ·
+  Satellite** again (baked offline for the Cape and Lowveld views) and a **＋ / −**
+  zoom with drag-to-pan. Switching region/focus resets the zoom.
+- Tests extended (mark cycle, pinning + unpin, layer switch, zoom controls, tour
+  speed, marks survive reload). `sw` cache v5 → v6.
+
+Deferred: **⌘-click multi-site compare** (needs the single-focus model to become
+multi-focus) — a focused follow-up rather than bundling more risk into this PR.
+
 ## 1.0.26 — Grinnell Field Journal overhaul (Shannon's field review, PR-B)
 
 Second of three review PRs. Rewrites the journal from a static export into a
