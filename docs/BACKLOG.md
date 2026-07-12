@@ -12,8 +12,11 @@ is a filter, not a wall** (memory: `union-not-exclusion`). None built yet.
 
 - **[done · v1.0.29] Union index sidecar (`names.js`)** — `window.NAMES` keyed by corpus
   key: `s[]` synonyms, `v[]` English vernaculars, `l{}` SA local names. 2,550/2,780 taxa
-  carry aliases. Built by `tools/reconcile/build_names.js` from GBIF synonyms +
-  vernaculars. **Still to add:** eBird, BOLD, book name columns (extend the same sidecar).
+  carry aliases. Built by `tools/reconcile/build_names.js` from GBIF synonyms + vernaculars.
+- **[done · v1.0.31] eBird canonical for birds** — every Aves carries its eBird species
+  code (`ebk`, the join key; searchable + linked + in exports); eBird scientific names are
+  canonical, iNat/GBIF form → synonym. Built from `tools/reconcile/pull_ebird.js`.
+  **Still to add:** BOLD + book name columns (extend the same sidecar).
 - **[done · v1.0.29] Per-species name-expander** — "Also known as" block in the drawer,
   aliases grouped + source-labelled (scientific / English / by language).
 - **[done · v1.0.29] OR-search across all names** — a query hits a node via key *or* any

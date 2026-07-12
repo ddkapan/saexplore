@@ -48,7 +48,7 @@ dom1.window.NAMES = {
   k2498252: { s: ['Alopochenzz testica'], v: ['Zztest Sheldgoose'], l: { afr: ['Zztestgans'] } },
   // genus-collapse fix: k3242735 is stored at genus rank (s='Astur'); the sidecar
   // resolves it to a species binomial the app must prefer for display + links.
-  k3242735: { sp: 'Astur melanoleucus', spii: 424242 },
+  k3242735: { sp: 'Astur melanoleucus', spii: 424242, ebk: 'blagos1' },
 };
 dom1.window.NAMES_LANG = { afr: 'Afrikaans' };
 let { d, w, err } = boot(dom1);
@@ -142,7 +142,15 @@ if (gcRow) {
   ok('drawer header shows the resolved species', /Astur melanoleucus/.test(drw.querySelector('div[style*=italic]').textContent));
   ok('Wikipedia link points at the species, not the genus', /wiki\/Astur_melanoleucus/.test(drw.innerHTML) && !/wiki\/Astur"/.test(drw.innerHTML));
   ok('resolved species is searchable via OR-search', (function () { w.__S.q = 'astur melanoleucus'; w.__applyFilters(); const n = visible().length; w.__S.q = ''; w.__applyFilters(); return n >= 1; })());
+  // eBird canonicalisation: code is the join key — searchable + linked + exported
+  ok('bird is searchable by its eBird code', (function () { w.__S.q = 'blagos1'; w.__applyFilters(); const n = visible().length; w.__S.q = ''; w.__applyFilters(); return n === 1; })());
+  w.__openDrawer(+gcRow.dataset.i);
+  ok('drawer links to the eBird species page (code)', /ebird\.org\/species\/blagos1/.test(d.getElementById('drawer').innerHTML));
   d.querySelector('#drawer .dclose').click();
+  w.__sa.marks.k3242735 = 'tour'; w.__sa.save();
+  const exp = w.__collectNotes();
+  ok('export carries the eBird code for referenced birds', exp.ebird && exp.ebird.k3242735 === 'blagos1', JSON.stringify(exp.ebird));
+  delete w.__sa.marks.k3242735; w.__sa.save();
 }
 
 // hide-absent-at-focus: focusing hides species with no record there; a strip toggle reveals them

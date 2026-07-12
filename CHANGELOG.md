@@ -10,6 +10,29 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.31 — eBird is canonical for birds (join key + names)
+
+Birds are indexed on **eBird/Clements**, so an exported file joins straight to eBird
+checklists and trip reports. iNaturalist stays as a synonym.
+
+- **eBird species code on every bird (the join key).** It was already in the corpus
+  (per-site data) — now surfaced: **584/585 Aves** carry `ebk`, it's **searchable**
+  (type `blagos1`), it links to the eBird species page, and it's written into the
+  favorites/journal **export** (`ebird: {corpusKey → code}` for referenced species).
+- **eBird scientific names are canonical.** 15 birds adopt eBird's binomial — the split
+  hawks (*Astur / Aerospiza / Tachyspiza*, already resolved in 1.0.30) plus genus moves
+  eBird tracks (White-fronted Plover *Charadrius* → *Anarhynchus*, Rufous-naped Lark
+  *Mirafra* → *Corypha*) and spelling fixes (*burchellii*, *corusca*). The previous
+  iNat/GBIF form drops to a synonym in "Also known as". **Common names already matched
+  eBird** (0 of 585 changed).
+- **Dropped coarse-key vernacular noise.** A handful of records are keyed to a
+  higher-rank GBIF node (a plover keyed to *Animalia*), which had leaked "Animals" /
+  genus-level "…and Allies" into the synonym list. The sidecar no longer attaches GBIF
+  synonyms/vernaculars pulled against a kingdom→genus key.
+- Built by `tools/reconcile/pull_ebird.js` (one call to the eBird taxonomy) +
+  `build_names.js`; `ebird_codes.json` / `ebird_taxonomy.json` retained for reproducible
+  builds. sw cache → v10. Taxonomy © Cornell Lab / eBird.
+
 ## 1.0.30 — genus-collapse fix: prefer the resolved species, never fail to genus
 
 Follow-up to the name index. Some corpus records were matched to a GBIF **genus** key
