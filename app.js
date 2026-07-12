@@ -164,7 +164,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.37</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.38</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -260,7 +260,7 @@ window.__wire5=function(UNIC,SMETA){
  $$('#taxNone,#stripTaxNone').forEach(function(b){b.onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=0;});paintTaxa();applyFilters();};});
  // Sites are single-focus (all vs one), so their leading control is "all" = clear focus + show every site.
  var _ssa=$('#stripSiteAll');if(_ssa)_ssa.onclick=function(){setRegion('all');};
- var _abst=$('#absToggle');if(_abst)_abst.onclick=function(){S.hideAbsent=!S.hideAbsent;applyFilters();};
+ var _abst=$('#absToggle');if(_abst)_abst.onclick=function(){S.hideAbsent=!S.hideAbsent;colVisibility();applyFilters();};
  var _mkt=$('#markToggle');if(_mkt)_mkt.onclick=function(){S.showMarks=!S.showMarks;paintMarkToggle();sortRows();};
 
  // ---------- site chips (funnel + strip) ----------
@@ -368,7 +368,7 @@ window.__wire5=function(UNIC,SMETA){
   var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all ten sites':'in the '+(S.region==='cape'?'Cape':'Lowveld'));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
   var at=$('#absToggle');if(at){if(S.focus){at.style.display='';at.textContent=S.hideAbsent?('only at '+SI[S.focus].short):'all sites shown';at.title=S.hideAbsent?('Hiding species not recorded at '+SI[S.focus].short+' — tap to show every site’s species'):('Showing every site’s species — tap to hide those not recorded at '+SI[S.focus].short);}else at.style.display='none';}
  }
- function colVisibility(){$$('#matrix .colh, #matrix .cell').forEach(function(el){var s=SI[el.dataset.site];el.style.display=(S.region==='all'||(s&&s.rk===S.region))?'':'none';});}
+ function colVisibility(){var iso=S.focus&&S.hideAbsent;$$('#matrix .colh, #matrix .cell').forEach(function(el){var s=SI[el.dataset.site];var show=iso?(el.dataset.site===S.focus):(S.region==='all'||(s&&s.rk===S.region));el.style.display=show?'':'none';});}
 
  // ---------- region ----------
  function setRegion(r){S.region=r;S.focus=null;paintRegion();paintSiteChips();colVisibility();renderMap();renderItin();renderRails();applyFilters();}
@@ -428,8 +428,8 @@ window.__wire5=function(UNIC,SMETA){
  document.addEventListener('click',function(e){var hl=e.target.closest&&e.target.closest('.hl');if(hl)openDrawer(+hl.dataset.oi);});
  // ---------- focus + tour ----------
  var tourTimer=null;
- function focusSite(k){S.focus=k;if(S.region!=='all'&&SI[k].rk!==S.region){S.region='all';paintRegion();colVisibility();}paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
- function clearFocus(){S.focus=null;paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
+ function focusSite(k){S.focus=k;if(S.region!=='all'&&SI[k].rk!==S.region){S.region='all';paintRegion();}colVisibility();paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
+ function clearFocus(){S.focus=null;colVisibility();paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
  function stopTour(){if(tourTimer){clearInterval(tourTimer);tourTimer=null;var p=$('#tPlay');if(p){p.innerHTML='▶ Play tour';p.style.background=C.acacia;}}}
  function stepTour(dir){var list=itinList();var idx=S.focus?list.map(function(s){return s.key;}).indexOf(S.focus):-1;idx=(idx+dir+list.length)%list.length;focusSite(list[idx].key);}
  function tourRun(){if(tourTimer)clearInterval(tourTimer);tourTimer=setInterval(function(){stepTour(1);},S.tourMs);}
