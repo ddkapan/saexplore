@@ -109,6 +109,10 @@ if ("serviceWorker" in navigator) {
       }).catch(function () { saving = false; refresh(); });
     }
 
+    // let the in-app "Use it offline" card drive the same save + read the count
+    window.__savePhotos = function () { savePhotos(); };
+    window.__offlineInfo = function (cb) { countCached().then(function (n) { try { cb(n, PHOTOS.length); } catch (e) {} }); };
+
     setTimeout(refresh, 1500);
     window.addEventListener("online", function () { if (!saving) refresh(); });
   });

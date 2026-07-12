@@ -52,6 +52,14 @@
 "#journal{position:fixed;inset:0;background:#d9d2c2;z-index:90;display:none;overflow:auto;padding-top:env(safe-area-inset-top,0px)}\n"+
 "#journal .jscope{position:sticky;top:0;z-index:6;background:#d9d2c2;padding:10px 0 8px;box-shadow:0 6px 10px -8px rgba(43,39,35,.35)}\n"+
 "#journal .jclose{font-size:14px;padding:9px 16px;font-weight:700}\n"+
+// dark mode: flip the journal's light-paper surfaces (print stays white via @media print)
+"[data-theme=dark] #journal{background:#1b1915}\n"+
+"[data-theme=dark] #journal .jscope{background:#1b1915}\n"+
+"[data-theme=dark] #journal .jday{background:#26231e;border-color:#3c382f;color:#ede7da}\n"+
+"[data-theme=dark] #journal .jday .jloc,[data-theme=dark] #journal .jck,[data-theme=dark] #journal .jacct{color:#ede7da}\n"+
+"[data-theme=dark] #journal .jnoteta{background:#211f1b;border-color:#3c382f;color:#ede7da}\n"+
+"[data-theme=dark] #journal .jck:hover{background:#332f28}\n"+
+"[data-theme=dark] #journal .jmast .obs{color:#a79e8e}\n"+
 ".jmast{max-width:820px;margin:0 auto 4px}.jmast .obs{font-family:system-ui,sans-serif;font-size:12px;color:#6b6459;letter-spacing:.2px}\n"+
 ".jday{background:#fbf9f2;border:1px solid #d8cdb6;box-shadow:0 3px 16px rgba(43,39,35,.18);padding:38px 46px;margin-bottom:22px;font-family:var(--serif);color:#2b2723}\n"+
 ".jloc{font-size:23px;font-weight:600;line-height:1.12}.jdate{font-family:system-ui,sans-serif;font-size:12.5px;color:#6b6459;margin-top:2px}\n"+
@@ -89,6 +97,16 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<p class="sans" style="margin:0;font-size:13px;color:var(--soft)">Cal Academy field guide · 20 Jul – 1 Aug 2026 · ten localities, Cape winter to Kruger dry season.</p></div>'+
    '<div style="display:flex;align-items:center;gap:12px"><span class="sans" style="font-size:11.5px;color:var(--soft);max-width:210px;text-align:right;line-height:1.35">Read down the sections to orient. Collapse each <b style="color:var(--terra)">▾</b> as you learn it — the list rises to fill the screen.</span>'+
    '<button id="openJournal" class="btn pri sans">Field journal ▸</button></div></div>';
+ // one-paragraph summary: what it is + Grinnell-in-reverse + take your own notes
+ h+='<p class="sans" style="max-width:770px;margin:13px 0 2px;font-size:13.5px;line-height:1.6;color:var(--ink)">A pocket field guide to every organism recorded at this trip’s ten stops — one species per row, built from museum vouchers, eBird and iNaturalist on the GBIF Backbone, and fully usable offline. It runs a museum naturalist’s field notes <b>in reverse</b>: instead of writing notes that a museum later files, you start from the filed record. In the <b>Grinnell</b> tradition — the century-old method of pairing a species list with a written journal and species accounts — you then take those notes yourself, per day and per species, as you go.</p>';
+ // app-like setup (offline · home screen · notes+reference) — one place for "how to use it"
+ h+='<div id="appSetup" class="sans" style="margin:14px 0 6px;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:13px 16px 14px">'+
+   '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:9px"><span style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--acacia);text-transform:uppercase">Use it offline · as an app</span><span id="appSetupClose" style="font-size:11px;color:var(--soft);cursor:pointer">hide ✕</span></div>'+
+   '<div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;line-height:1.5">'+
+   '<div style="flex:1;min-width:190px"><b>1 · Save the photos</b><br><span style="color:var(--soft)">On Wi‑Fi, cache every species photo so they show with no signal.</span><br><button id="saveOfflineBtn" class="btn sans" style="margin-top:7px">⤓ Save photos for offline</button> <span id="saveOfflineStat" style="font-size:11px;color:var(--soft)"></span></div>'+
+   '<div style="flex:1;min-width:190px"><b>2 · Add to Home Screen</b><br><span style="color:var(--soft)">iPhone (Safari): <b>Share → Add to Home Screen</b>. Laptop (Chrome/Edge): <b>Install</b> from the address bar. It then opens full‑screen and works with no connection.</span></div>'+
+   '<div style="flex:1;min-width:190px"><b>3 · Notes &amp; reference</b><br><span style="color:var(--soft)">Tap any species for its account, photo &amp; names. Tick sightings, keep a per‑day <b>field journal</b> (§8). Everything saves on this device — export to back up.</span></div>'+
+   '</div></div>';
  // 1 South Africa
  h+=sec(1,'South Africa','the frame')+'<div class="fb" data-body="1">'+
    '<p style="max-width:660px;margin:.1em 0 12px">Thirteen days across two of the world’s great biological regions: the <b>Cape Floristic Region</b> — the smallest and richest of the world’s six floral kingdoms<sup><a href="#refs" style="text-decoration:none">1</a></sup> — and the summer-rain <b>savanna of the Lowveld</b>. We travel in austral winter, and each region is read on its own clock.</p>'+
@@ -168,7 +186,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.43</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.44</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -653,6 +671,12 @@ window.__wire5=function(UNIC,SMETA){
  }
  function openJournal(){renderJournal('all');}
  var oj=$('#openJournal');if(oj)oj.onclick=openJournal;$$('.openJournal2').forEach(function(b){b.onclick=openJournal;});
+ // "Use it offline" card: the save button drives the page-side precache (index.html); show the count
+ var sob=$('#saveOfflineBtn');if(sob)sob.onclick=function(){if(window.__savePhotos)window.__savePhotos();};
+ function paintOfflineStat(){if(!window.__offlineInfo)return;window.__offlineInfo(function(n,t){var el=$('#saveOfflineStat');if(el)el.textContent=t?(n>=t?('✓ all '+t+' saved'):(n+' / '+t+' saved')):'';});}
+ paintOfflineStat();setInterval(paintOfflineStat,3000);
+ var asc=$('#appSetupClose');if(asc)asc.onclick=function(){var c=$('#appSetup');if(c)c.style.display='none';try{localStorage.setItem('sa_setup_hidden','1');}catch(e){}};
+ try{if(localStorage.getItem('sa_setup_hidden')){var c0=$('#appSetup');if(c0)c0.style.display='none';}}catch(e){}
  window.__openJournal=openJournal;window.__addExtra=addExtra;
 
  // ---------- init ----------
