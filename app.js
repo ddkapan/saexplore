@@ -162,7 +162,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.34</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.35</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -189,7 +189,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
 window.__wire5=function(UNIC,SMETA){
  var esc=window.__esc,MI=window.__MAPIMG;
  var $=function(s,r){return (r||document).querySelector(s);},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
- var C={paper:'#f4efe4',raised:'#fbf7ee',ink:'#2b2723',soft:'#6b6459',rule:'#cfc5b2',acacia:'#5e7249',terra:'#b5623c'};
+ var C={paper:'var(--paper)',raised:'var(--raised)',ink:'var(--ink)',soft:'var(--soft)',rule:'var(--rule)',acacia:'var(--acacia)',terra:'var(--terra)'};
  var TAXCOL={Aves:'#4a6b8a',Mammalia:'#b0925e',Reptilia:'#c08a2e',Amphibia:'#3e8a7e',Actinopterygii:'#5f7e96',Insecta:'#7a5a8a',Arachnida:'#7a3b3b',Mollusca:'#b3697e',Plantae:'#5e7249',Other:'#888'};
  var GORDER=[['Aves','Birds'],['Mammalia','Mammals'],['Reptilia','Reptiles'],['Amphibia','Amphibians'],['Actinopterygii','Fish'],['Insecta','Insects'],['Arachnida','Arachnids'],['Mollusca','Molluscs'],['Plantae','Plants'],['Other','Other']];
  var order={};GORDER.forEach(function(p,i){order[p[0]]=i;});

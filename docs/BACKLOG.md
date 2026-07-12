@@ -45,11 +45,11 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   a satellite tile; the `sa` overview has streets only (falls back gracefully) — **follow-up:
   bake an `sa` satellite tile** so the opening view is satellite too.
 - **Item 18 [done in PR-B]:** darker gray border on the drawer photo (`#9a917f`).
-- **Item 19:** **dark mode.** Reported bug: **site/species-account note text invisible in dark
-  mode** (form-control text renders white-on-light). **PR-B applies a minimal safe fix**
-  (`color-scheme: light` + explicit input color) so nothing goes invisible. **Still on the list:
-  a full dark-mode audit of every view** (accounts, journal, drawer, chips) and, if wanted, a
-  real dark theme.
+- **Item 19 [mostly done · v1.0.35]:** **real dark mode.** The colour object now points at the
+  CSS variables so the species list/strip/drawer flip to **light-on-dark** with the ◐ toggle;
+  `color-scheme` follows the toggle (fixes the invisible-input bug too). **Follow-ups:** the
+  Grinnell **journal** is still a light paper surface (print-friendly — decide if it should dark-
+  theme too), and a few **hardcoded tertiary grays** (e.g. `#9a917f` meta text) don't flip.
 
 ### PR-C · P1 — Filter-system unification + at-hand redesign (the structural one)
 - **[done · v1.0.34] Item 16 + order chips:** at-hand strip (section 07) rebuilt as 3 rows —
