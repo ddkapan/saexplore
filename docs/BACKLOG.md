@@ -65,14 +65,27 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   multi-focus for sites (the deferred multi-site-compare). Hook already stubbed at the site
   chip onclick.
 
+### PR-C2 · P1 — At-hand strip, round 2 (Durrell 2026-07-12)
+- **Season default-on + promoted:** move **★ late Jul** up with the quick filters (row 1) and
+  **default it ON** (S.tripwin true / months = late-July window) — it's the trip's default view.
+- **Tagged quick-filters:** add quick toggles in the at-hand strip for the **tagged** species —
+  **★ focal · ⚑ tour · ✓ seen this trip** — so you can filter to them fast.
+- **Count is a result, not a filter:** the `2,780 / 2,780` fraction is distracting at the top —
+  move it to the **bottom** of the filter block (it's an output).
+- **Dark-mode site chips are too dim** — raise site-chip contrast in dark mode (their per-site
+  tints go muddy on the dark background).
+
 ### PR-D · P1 — Mobile layout
 - **Item 7 [done · v1.0.38]:** focusing a site isolates its column (single presence-dot per row, no horizontal scroll); the "only at <site>" toggle (was hide-absent) restores the full table.
 - **Item 4 [done · v1.0.36]:** journal back bar is safe-area-aware, sticky, and the back button is a larger tap target.
 - **Item 2:** **taller tour** with greatest-hits **prose (left)** + larger trip/favorites list (right).
-- **Item 20:** if **no tour species are chosen**, auto-pick one representative per taxonomic group.
-- **Item 21:** region **"special" species should stick** (Big Five, top birds); the **tour view
-  populates with "things to look out for"** for the current region — a sensible default set that
-  the user can then override. (Design with item 20; likely a per-region curated + auto-filled list.)
+- **Item 20/21 [done · v1.0.40]:** curated per-site SPECIALS (Big Five, penguins, endemics from the digest) now lead each site's highlights + the tour, after any user marks — the "things to look out for". 76/81 names resolve. Absent-at-site or unmatched are dropped.
+- **Item 23 — make SPECIALS exportable + in-app editable** (Durrell 2026-07-12): today the
+  per-site specials are a **hardcoded list in app.js** — NOT yet exportable or user-editable.
+  Future PR: expose them as an editable/exportable set (e.g. a "specials" mark tier, or seed
+  them into marks so they ride the JSON export, plus in-app add/remove per site). Verify against
+  the trip digest names.
+
 - **Item 22 — share a tour via JSON:** the tour/focal **marks already ride the JSON
   export/re-import** (that's how `samples/saexplore-favorites.json` works — export → send to
   Shannon → she imports → gets your tour). [done · v1.0.39] "Export tour ⚑" button (section 08) downloads a clean marks-only favorites file (marks + eBird codes, no notes/journal) to share with the Dr.
