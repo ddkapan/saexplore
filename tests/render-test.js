@@ -185,8 +185,9 @@ ok('faster button lowers the interval', w.__S.tourMs < spd0, spd0 + ' -> ' + w._
 d.getElementById('tSlow').click();
 ok('slower button restores the interval', w.__S.tourMs === spd0);
 
-// durable mark for the reload test
-w.__sa.marks['MARKTESTKEY'] = 'tour'; w.__sa.save();
+// importing a favorites JSON applies marks AND lights the strip chip (also seeds the reload test)
+w.__importJSON(JSON.stringify({ v: 2, app: 'saexplore', marks: { k5229384: 'tour', MARKTESTKEY: 'tour' } }));
+ok('importing favorites applies marks + shows the focal/tour chip', w.__sa.marks['k5229384'] === 'tour' && d.getElementById('markToggle').style.display !== 'none');
 
 // references section (embedded, offline)
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
