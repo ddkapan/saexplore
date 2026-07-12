@@ -52,14 +52,20 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   real dark theme.
 
 ### PR-C · P1 — Filter-system unification + at-hand redesign (the structural one)
-- **Items 5, 8:** every filter gets **all/none** in the **same position/order**.
-- **Item 1:** fix sites all/none missing; **collapse redundant subareas 03/04** to one selector.
-- **Items 9, 10:** single filter-state module; non-conflicting composition (see principles).
-- **Item 16 + "order chips in filters-at-hand":** redesign the **at-hand strip (section 07)**
-  with a logical order — **search leads** (most-used), then taxonomic **group/order chips** with
-  **all/none to their left** on the next line. Apply real design judgment; explain the layout.
-- **⌘-click set-union on ALL chips** (generalizes the old "⌘-click multi-site compare", BACKLOG-B):
-  ⌘/Ctrl-click adds a chip to a union selection instead of replacing. Same model for sites, taxa, etc.
+- **[done · v1.0.34] Item 16 + order chips:** at-hand strip (section 07) rebuilt as 3 rows —
+  **search leads**, then **Groups** (all/none left + group chips), then **Sites** (all left +
+  site chips + ★ late Jul). all/none in the same leading position on every row.
+- **[follow-up] Items 5, 8:** harmonise the **section-6** filter controls (abundance, season,
+  year, sort) to the same all/none pattern/order as the strip.
+- **[follow-up] Item 1:** sites are single-focus (all-vs-one), so the strip has "all"; the
+  funnel's section-4 site chips + section-5 group chips **duplicate** the strip (intentional
+  "teach then collapse", but the user calls 03/04 redundant) — decide whether to collapse them.
+- **[follow-up] Items 9, 10:** formalise a single filter-state module; audit that no state is
+  persisted in two places. (Strip + funnel controls already share `S`.)
+- **[follow-up] ⌘-click set-union on ALL chips** (generalises old "⌘-click multi-site compare"):
+  ⌘/Ctrl-click adds a chip to a union selection instead of replacing. Needs single-focus →
+  multi-focus for sites (the deferred multi-site-compare). Hook already stubbed at the site
+  chip onclick.
 
 ### PR-D · P1 — Mobile layout
 - **Item 7:** on phone, focusing a site **isolates that site's column** (see its dots without

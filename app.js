@@ -131,23 +131,38 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="margin-top:18px;border-top:1px solid var(--rule);padding-top:12px"><div class="dlab" style="margin-bottom:8px">Evidence — strongest on the left</div><div id="evLegend" style="display:flex;flex-wrap:wrap;gap:20px"></div></div></div>';
  // 7 results
  h+=sec(7,'The results','the working checklist · columns are sites, rows are organisms')+'<div class="fb" data-body="7" style="padding:0 0 16px 8px">'+
-   '<div class="strip"><span style="font-weight:700;color:var(--soft);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase">Filters at hand</span>'+
-   '<div id="stripTaxa" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
-   '<button id="stripTaxAll" class="chip sans mini">all</button><button id="stripTaxNone" class="chip sans mini">none</button>'+
+   // At-hand strip, redesigned as three stacked rows (search-first hierarchy):
+   //  row 1 — SEARCH leads (most-used action), with live counts on the right
+   //  row 2 — GROUPS (taxa), all/none on the left, then the group chips
+   //  row 3 — SITES, all on the left, the site chips, then the season quick-toggle
+   // all/none sit in the same leading position on every row for muscle-memory consistency.
+   '<div class="strip" style="flex-direction:column;align-items:stretch;gap:9px">'+
+   '<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">'+
+   '<span style="font-weight:700;color:var(--soft);font-size:10px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap">Filters at hand</span>'+
+   '<input id="q" type="search" placeholder="Search any name, eBird code, or type — every language" style="flex:1;min-width:190px;font-size:13px;padding:6px 13px">'+
    '<button id="markToggle" class="chip sans mini" style="display:none;border-color:#b5623c;color:#b5623c"></button>'+
-   '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra)"></button>'+
-   '<input id="q" type="search" placeholder="search name or type…">'+
-   '<div id="stripSites" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
-   '<button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600">★ late Jul</button>'+
    '<span id="seenTally" class="sans" style="font-size:11.5px;font-weight:700;color:#fbf7ee;background:var(--acacia);border:1px solid var(--acacia);border-radius:12px;padding:3px 10px;display:none"></span>'+
-   '<span id="count" style="margin-left:auto;color:var(--soft);font-weight:600"></span></div>'+
+   '<span id="count" style="color:var(--soft);font-weight:600;white-space:nowrap"></span></div>'+
+   '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
+   '<span style="font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft);min-width:40px">Groups</span>'+
+   '<button id="stripTaxAll" class="chip sans mini">all</button><button id="stripTaxNone" class="chip sans mini">none</button>'+
+   '<span style="width:1px;height:15px;background:var(--rule);margin:0 3px"></span>'+
+   '<div id="stripTaxa" style="display:flex;gap:5px;flex-wrap:wrap"></div></div>'+
+   '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
+   '<span style="font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft);min-width:40px">Sites</span>'+
+   '<button id="stripSiteAll" class="chip sans mini">all</button>'+
+   '<span style="width:1px;height:15px;background:var(--rule);margin:0 3px"></span>'+
+   '<div id="stripSites" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
+   '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra)"></button>'+
+   '<button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600;margin-left:auto">★ late Jul</button></div>'+
+   '</div>'+
    '<div id="matrix"></div><div id="status" class="sans" style="font-size:12px;color:var(--soft);margin-top:8px"></div></div>';
  // 8 export
  h+=sec(8,'Field journal','a Grinnell Field Journal page, saved per day')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.33</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.34</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -241,6 +256,8 @@ window.__wire5=function(UNIC,SMETA){
  function paintTaxa(){$$('.chip.tax').forEach(function(b){var on=S.taxa[b.dataset.g];var col=TAXCOL[b.dataset.g];b.style.background=on?col:C.raised;b.style.color=on?'#fff':col;});}
  $$('#taxAll,#stripTaxAll').forEach(function(b){b.onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=1;});paintTaxa();applyFilters();};});
  $$('#taxNone,#stripTaxNone').forEach(function(b){b.onclick=function(){GORDER.forEach(function(p){S.taxa[p[0]]=0;});paintTaxa();applyFilters();};});
+ // Sites are single-focus (all vs one), so their leading control is "all" = clear focus + show every site.
+ var _ssa=$('#stripSiteAll');if(_ssa)_ssa.onclick=function(){setRegion('all');};
  var _abst=$('#absToggle');if(_abst)_abst.onclick=function(){S.hideAbsent=!S.hideAbsent;applyFilters();};
  var _mkt=$('#markToggle');if(_mkt)_mkt.onclick=function(){S.showMarks=!S.showMarks;paintMarkToggle();sortRows();};
 
