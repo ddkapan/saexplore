@@ -159,6 +159,24 @@ try {
 } catch (err) { console.log('  (no eBird taxonomy — skipping bird canonicalisation)'); }
 console.log('eBird: codes attached', ebSet, '| scientific adopted from eBird', ebSciChg);
 
+// ---- restore "Also known as" for genus-collapsed records (aka_fix.json) --------------
+// The coarse-key guard drops GBIF names pulled against a genus key; aka_fix.json carries the
+// RESOLVED species' synonyms/vernaculars (pulled by pull_aka.js) so these species keep an
+// "Also known as". Union: merge into whatever the record already has, deduped.
+let akaN = 0;
+try {
+  const aka = require('./aka_fix.json');
+  for (const k of Object.keys(aka)) {
+    const a = aka[k], rec = NAMES[k] || (NAMES[k] = {});
+    const seen = new Set([norm(NAMES[k] && NAMES[k].sp)].filter(Boolean));
+    if (a.s) { rec.s = rec.s || []; a.s.forEach(x => { if (/\s/.test(x) && !rec.s.some(y => norm(y) === norm(x)) && !seen.has(norm(x))) rec.s.push(x); }); }  // binomials only (drop genus-name noise)
+    if (a.v) { rec.v = rec.v || []; a.v.forEach(x => { if (!rec.v.some(y => norm(y) === norm(x))) rec.v.push(x); }); }
+    if (a.l) { rec.l = rec.l || {}; Object.keys(a.l).forEach(lg => { rec.l[lg] = rec.l[lg] || []; a.l[lg].forEach(x => { if (!rec.l[lg].some(y => norm(y) === norm(x))) rec.l[lg].push(x); }); }); }
+    akaN++;
+  }
+} catch (e) { console.log('  (no aka_fix.json)'); }
+console.log('Also-known-as restored for', akaN, 'genus-collapsed records');
+
 const out = 'window.NAMES=' + JSON.stringify(NAMES) + ';\n' +
   'window.NAMES_LANG=' + JSON.stringify(SA) + ';\n';
 fs.writeFileSync(path.join(DIR, '../../names.js'), out);

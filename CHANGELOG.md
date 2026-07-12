@@ -10,6 +10,21 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.37 — restore "Also known as" for the split species
+
+The genus-collapse cleanup in 1.0.31 dropped the synonym/vernacular block from records keyed
+to a GBIF genus — which stripped "Also known as" from the recently-split species. Restored by
+pulling the **resolved species'** aliases (their old-genus binomials + vernaculars):
+
+- **Black Goshawk** → also *Accipiter melanoleucus*, **Black Sparrowhawk**, Afrikaans
+  *Swartsperwer*; **African Goshawk** → *Accipiter tachiro*; **Little Bittern** → *Ixobrychus
+  minutus*; plus Black-backed Jackal, Rusty-spotted Genet, Flappet Lark, Natal Acraea, African
+  Veined White. The old scientific name (often what field guides still print) is now a synonym.
+- The 17 remaining genus-collapsed records are obscure inverts/plants with no other names in
+  GBIF; they show their species name and are searchable. (Tracked in BACKLOG.)
+
+Built by `tools/reconcile/pull_aka.js` → `aka_fix.json`, folded in by `build_names.js`.
+
 ## 1.0.36 — journal back-nav reachable (Dynamic Island / one-hand)
 
 The field journal opened as a full-screen overlay with its "← Back to explorer" button at

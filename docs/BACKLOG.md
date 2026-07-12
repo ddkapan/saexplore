@@ -37,9 +37,7 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 
 ### PR-B · P1 — Quick wins & copy
 - **Item 6:** "Southern Africa" → **"South Africa"** in header/title/manifest/footer.
-- **Item 14 (regression I introduced):** the coarse-key guard in #33 stripped "Also known as"
-  from some species — **restore it**; pull synonyms for the *resolved species* on genus-collapsed
-  records so every species keeps aliases. Review that all species have an "also known as".
+- **Item 14 [done · v1.0.37]:** restored "Also known as" for the 8 charismatic genus-collapsed species (Black Goshawk→Black Sparrowhawk/Accipiter melanoleucus, etc.) via pull_aka.js→aka_fix.json. 17 obscure inverts/plants have no other GBIF names (show species name, searchable).
 - **Item 13 (partial):** italic-Latin-name audit (quick, safe subset).
 - **Item 17 [done in PR-B]:** map **default layer → satellite**. NOTE: only `cape`/`low` ship
   a satellite tile; the `sa` overview has streets only (falls back gracefully) — **follow-up:
