@@ -10,6 +10,23 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.35 — real dark mode (light text on dark, easy on the eye)
+
+The ◐ toggle already flipped a `data-theme=dark` palette, but only elements using CSS
+variables changed — the **species list, strip, and drawer were built from a JS colour
+object baked to light values**, so they stayed bright (and 1.0.33's safety fix had pinned
+the page to light). Now:
+
+- The colour object points at the **live CSS variables**, so every one of the ~97 inline
+  styles flips with the theme instantly — **the species list is now light text on a dark
+  background**, and so are the filters, drawer, highlights, and map markers.
+- `color-scheme` **follows the app's own toggle** (light by default, dark when you switch),
+  so iOS auto-dark still can't render note-field text invisible, but a deliberate switch to
+  dark now themes the whole app.
+- Toggle it with **◐** (top-right); the choice is remembered.
+  (Follow-ups: the Grinnell journal is still a light "paper" surface by design — print-
+  friendly — and a few hardcoded tertiary grays; tracked in BACKLOG.)
+
 ## 1.0.34 — "Filters at hand" redesigned: search-first, consistent all/none
 
 The at-hand filter strip was a single wrap of mixed controls. Rebuilt as three stacked

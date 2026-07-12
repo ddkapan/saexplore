@@ -6,11 +6,10 @@
 <title>South Africa — Species Explorer · Cal Academy 2026</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#5e7249">
-<!-- Fixed parchment (light) palette via inline styles. Pin color-scheme to light so iOS/Safari
-     dark mode doesn't render form-control text (note fields/inputs) white-on-light and invisible.
-     A true dark theme is a separate task (BACKLOG item 19). -->
-<meta name="color-scheme" content="light">
-<style>:root{color-scheme:light}html,body{background:#f4efe4}input,textarea,select,button{color:#2b2723}</style>
+<!-- color-scheme follows the app's own light/dark toggle (data-theme). Light by default so
+     iOS auto-dark can't render form-control text white-on-light; dark when the user toggles. -->
+<meta name="color-scheme" content="light dark">
+<style>:root{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}input,textarea,select,button{color:var(--ink)}</style>
 <link rel="apple-touch-icon" href="./icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
