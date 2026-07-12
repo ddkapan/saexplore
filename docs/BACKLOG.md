@@ -75,9 +75,7 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   the user can then override. (Design with item 20; likely a per-region curated + auto-filled list.)
 - **Item 22 — share a tour via JSON:** the tour/focal **marks already ride the JSON
   export/re-import** (that's how `samples/saexplore-favorites.json` works — export → send to
-  Shannon → she imports → gets your tour). **Gap:** add a clean one-tap **"Export tour
-  (favorites only)"** — a marks-only file to share with the Dr, distinct from the full
-  field-notes export. (Confirmed by Durrell 2026-07-12.)
+  Shannon → she imports → gets your tour). [done · v1.0.39] "Export tour ⚑" button (section 08) downloads a clean marks-only favorites file (marks + eBird codes, no notes/journal) to share with the Dr.
 
 ### PR-E · P2 — Names & indigenous languages
 - **Item 12:** add SA languages (isiZulu, isiXhosa, Tshivenḓa, Setswana, Xitsonga, siSwati,
