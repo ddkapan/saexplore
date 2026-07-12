@@ -40,7 +40,13 @@ function boot(dom) {
 }
 
 // ---- boot 1 ----
-let { d, w, err } = boot(makeDom());
+const dom1 = makeDom();
+// union name sidecar (names.js) stub for k2498252 (Egyptian Goose) — the distinctive
+// aliases appear in NO corpus common/scientific name, so they deterministically prove
+// OR-search across the union index and the per-species name-expander.
+dom1.window.NAMES = { k2498252: { s: ['Alopochenzz testica'], v: ['Zztest Sheldgoose'], l: { afr: ['Zztestgans'] } } };
+dom1.window.NAMES_LANG = { afr: 'Afrikaans' };
+let { d, w, err } = boot(dom1);
 const rows = () => [].slice.call(d.querySelectorAll('#matrix tbody tr.org'));
 const visible = () => rows().filter(r => !r.classList.contains('hid'));
 
@@ -99,6 +105,24 @@ const z0 = d.getElementById('app').style.zoom;
 d.getElementById('textSize').click();
 ok('text-size button changes app zoom', d.getElementById('app').style.zoom !== z0);
 d.getElementById('textSize').click(); d.getElementById('textSize').click(); // 3-cycle back to base
+
+// ---- union name index: OR-search across all names + per-species name-expander ----
+w.__S.q = 'alopochenzz'; w.__applyFilters(); // synonym alias, in no corpus name
+const aHits = visible();
+ok('OR-search matches a species via a scientific-synonym alias', aHits.length === 1 && /alopochenzz/.test(aHits[0].dataset.txt), aHits.length + ' hits');
+w.__S.q = 'zztestgans'; w.__applyFilters(); // Afrikaans local name
+ok('OR-search matches via a local-language (Afrikaans) name', visible().length === 1, visible().length + '');
+w.__S.q = 'zztest sheldgoose'; w.__applyFilters(); // English vernacular alias
+ok('OR-search matches via an alternate English name', visible().length === 1, visible().length + '');
+w.__S.q = 'qwzxnomatchqp'; w.__applyFilters();
+ok('OR-search: an unmatched query hides everything', visible().length === 0, visible().length + '');
+w.__S.q = ''; w.__applyFilters();
+const gRow = d.querySelector('#matrix tr.org[data-txt*="alopochenzz"]');
+w.__openDrawer(+gRow.dataset.i);
+const dhtml = d.getElementById('drawer').innerHTML;
+ok('name-expander block ("Also known as") renders in the drawer', /Also known as/.test(dhtml));
+ok('name-expander lists synonym, English + local names by source', /Alopochenzz testica/.test(dhtml) && /Zztest Sheldgoose/.test(dhtml) && /Afrikaans/.test(dhtml) && /Zztestgans/.test(dhtml));
+d.querySelector('#drawer .dclose').click();
 
 // hide-absent-at-focus: focusing hides species with no record there; a strip toggle reveals them
 d.querySelector('#matrix thead .colh').click(); // focus the first site

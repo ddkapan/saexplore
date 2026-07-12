@@ -6,8 +6,8 @@
    fully offline. Bump CACHE when data.js or app.js change. */
 importScripts('./precache-list.js');
 
-var CACHE = 'sa-explorer-v7';
-var SHELL = ['./', './index.html', './data.js', './app.js', './manifest.json', './icon.svg'];
+var CACHE = 'sa-explorer-v8';
+var SHELL = ['./', './index.html', './data.js', './names.js', './app.js', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(

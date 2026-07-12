@@ -6,3 +6,7 @@ node_modules
 # regenerable GBIF species cache (see tools/reconcile/README.md)
 tools/reconcile/gcache/
 tools/reconcile/gcache2/
+tools/reconcile/vcache/
+tools/reconcile/scache/
+tools/reconcile/pull.log
+tools/reconcile/corpus_keys.txt
