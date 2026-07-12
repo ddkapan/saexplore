@@ -18,6 +18,9 @@ function ok(name, cond, detail) {
 
 // shared localStorage so we can test persistence across two boots
 const store = {};
+// skip the first-run "seed specials as tour marks" so the mechanics tests start from a
+// known no-marks state (the seeding itself is checked separately, boot with an empty store).
+store['sa_specials_seeded'] = '1';
 function makeDom() {
   const dom = new JSDOM(
     '<!DOCTYPE html><html><head></head><body><div id="app"></div></body></html>',
