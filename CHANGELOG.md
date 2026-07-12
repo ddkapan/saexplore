@@ -10,6 +10,17 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.36 — journal back-nav reachable (Dynamic Island / one-hand)
+
+The field journal opened as a full-screen overlay with its "← Back to explorer" button at
+the very top — tucked under the iPhone Dynamic Island, hard to hit, and scrolled away once
+you moved down the page.
+
+- The journal now respects the **top safe-area inset**, so the bar clears the Island/notch.
+- The top bar (back · day-picker · print) is **sticky** — always reachable, however far you
+  scroll.
+- The **back button is larger and bolder** (a proper tap target).
+
 ## 1.0.35 — real dark mode (light text on dark, easy on the eye)
 
 The ◐ toggle already flipped a `data-theme=dark` palette, but only elements using CSS
