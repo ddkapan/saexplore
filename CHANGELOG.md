@@ -10,6 +10,15 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.47 — offline photos now cover ALL species (2,501, was 1,315)
+
+The precache list was **stale** — it listed only 1,315 thumbnails, but the corpus has **2,501
+unique species photos** (2,197 iNaturalist + 304 Wikimedia). So ~1,186 species — including
+every Wikimedia-sourced one — would only cache when viewed, and were blank offline.
+Regenerated `precache-list.js` from the current `data.js` to cover **every** species photo
+(Wikimedia supports CORS too, so the page precache fetches them the same way). "Save photos
+for offline" now reports out of the full **N / 2,501**. Shell → `sa-shell-v26`.
+
 ## 1.0.46 — site-focus label no longer implies endemicity
 
 Focusing a site showed **"only at Table Mountain"**, which reads like an endemics list —
