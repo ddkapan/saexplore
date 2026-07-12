@@ -2,3 +2,7 @@
 sa_data.js
 sa_app.js
 node_modules
+
+# regenerable GBIF species cache (see tools/reconcile/README.md)
+tools/reconcile/gcache/
+tools/reconcile/gcache2/
