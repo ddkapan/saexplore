@@ -10,6 +10,22 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.34 — "Filters at hand" redesigned: search-first, consistent all/none
+
+The at-hand filter strip was a single wrap of mixed controls. Rebuilt as three stacked
+rows with a clear hierarchy:
+
+- **Row 1 — search leads.** Search is the most-used action, so it's the widest, most
+  obvious control, with the live count beside it. Placeholder now says it matches **any
+  name, eBird code, or type, in every language**.
+- **Row 2 — Groups.** `all` / `none` sit on the **left**, then the taxonomic group chips.
+- **Row 3 — Sites.** `all` (show every site) on the left, then the site chips, then the
+  `★ late Jul` season toggle.
+
+`all` / `none` now occupy the **same leading position on every row** for muscle memory.
+(Follow-ups tracked in BACKLOG: harmonising the section-6 filter controls to match,
+⌘-click set-union across chips, and collapsing the funnel's teaching duplicates.)
+
 ## 1.0.33 — quick wins: title, satellite map, photo border, dark-mode text
 
 - **"South Africa"** (was "Southern Africa") in the header, page title, and manifest — the
