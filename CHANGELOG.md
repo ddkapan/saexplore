@@ -10,6 +10,24 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.41 — "save photos for offline" now works on Chrome (was stuck ~93)
+
+"Save photos for offline" worked on iPad/Safari but stalled around 93 on Chrome. Cause:
+the precache used `cache.add()` with `no-cors`, and **Chrome rejects opaque responses from
+`cache.add()`** (Safari is lenient) — so photos never cached there — while hung/throttled
+requests permanently stalled the workers. Fixed:
+
+- The iNat photos allow **CORS** (2.4 KB each), so the precache now `fetch(cors)` + `cache.put`
+  — real responses that cache on Chrome, with accurate (un-padded) quota. Verified via
+  Chrome DevTools Protocol: the count climbs past 93 to the full set (was hard-stuck at 93).
+- A **per-request timeout** + gentler concurrency (4, small stagger) so a throttled request
+  can't stall the run; it also **resumes** on re-tap (already-cached photos are skipped).
+- On load the app now calls `registration.update()` to **shed a stale/older service worker**
+  promptly — if the app looked broken on a device that had an old cached worker, reopening
+  online (or a hard refresh) now replaces it. Shell cache → `sa-shell-v20`.
+- Also fixed mojibake in the export-panel buttons ("▸", "…") that a prior tooling edit
+  introduced.
+
 ## 1.0.40 — per-site "specials to look out for" (Big Five, penguins, endemics)
 
 The highlights rail + tour sorted each site by abundance — but charismatic species carry

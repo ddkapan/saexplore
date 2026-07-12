@@ -29,7 +29,7 @@ if ("serviceWorker" in navigator) {
     // Register only — do NOT auto-reload on update (that would wipe the user's in-memory
     // filters mid-session). New code is picked up on the next open; the network-first
     // worker already serves the latest shell when online.
-    navigator.serviceWorker.register("./sw.js").catch(function () {});
+    navigator.serviceWorker.register("./sw.js").then(function(reg){try{reg.update();}catch(e){}}).catch(function(){});
 
     // ---- offline-readiness pill ----
     var pill = document.getElementById("offlinePill"), saving = false, hideT = 0;
