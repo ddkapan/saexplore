@@ -17,7 +17,7 @@
    Bump SHELL_CACHE when data.js / names.js / app.js / index.html change. */
 importScripts('./precache-list.js');
 
-var SHELL_CACHE = 'sa-shell-v19';   // ← bump on shell change
+var SHELL_CACHE = 'sa-shell-v20';   // ← bump on shell change
 var MEDIA_CACHE = 'sa-media-v1';    // ← stable; keep across shell bumps
 var SHELL = ['./', './index.html', './data.js', './names.js', './app.js', './manifest.json', './icon.svg'];
 
@@ -28,17 +28,32 @@ function cacheShell(c) {
   }));
 }
 
-// Chunked, resumable image precache: skip anything already cached (survives version bumps),
-// small concurrency, every failure swallowed. Returns when the whole list has been attempted.
+// Chunked, resumable image precache. Fetch CORS (the iNat photos allow it) + cache.put:
+//   - cache.add() REJECTS opaque (no-cors) responses on Chrome — that's why "save photos"
+//     worked on iPad/Safari but not Chrome, and it also bloats the quota with opaque padding.
+//   - a per-request timeout means a hung/throttled request can't permanently stall a worker
+//     (that was the "stuck at ~93" symptom).
+// Skips anything already cached (survives version bumps); every failure is swallowed.
 function precacheImages(cache, urls, onProgress) {
-  var i = 0, done = 0, CONC = 6;
+  var i = 0, done = 0, CONC = 4;   // gentle concurrency so the photo host doesn't throttle us mid-run
+  function one(u) {
+    return new Promise(function (res) {
+      var fin = false; function end() { if (!fin) { fin = true; res(); } }
+      var to = setTimeout(end, 15000);
+      cache.match(u).then(function (hit) {
+        if (hit) { clearTimeout(to); return end(); }
+        fetch(u, { mode: 'cors', cache: 'no-cache' }).then(function (resp) {
+          if (resp && resp.ok) return cache.put(u, resp.clone());
+          // fallback: opaque via put (put accepts opaque; add does not)
+          return fetch(u, { mode: 'no-cors' }).then(function (r) { return cache.put(u, r); });
+        }).catch(function () {}).then(function () { clearTimeout(to); end(); });
+      }).catch(function () { clearTimeout(to); end(); });
+    });
+  }
   function worker() {
     if (i >= urls.length) return Promise.resolve();
     var u = urls[i++];
-    return cache.match(u).then(function (hit) {
-      if (hit) return;
-      return cache.add(new Request(u, { mode: 'no-cors' })).catch(function () {});
-    }).then(function () { done++; if (onProgress && done % 25 === 0) onProgress(done); return worker(); });
+    return one(u).then(function () { done++; if (onProgress && done % 20 === 0) onProgress(done); return new Promise(function (r) { setTimeout(r, 25); }).then(worker); });
   }
   var ws = []; for (var k = 0; k < CONC && k < urls.length; k++) ws.push(worker());
   return Promise.all(ws);
