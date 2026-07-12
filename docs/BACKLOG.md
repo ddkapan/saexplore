@@ -85,6 +85,9 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 ### PR-F · P2 — Import / interop
 - **Item 3:** fix the dead **eBird import** link; **import a full iNaturalist user's
   observations** (join via iNat id / eBird code now carried). Ties to got-connection.
+  **Shannon's call (2026-07-12): use per-list (per-day) eBird checklist URLs** — trip reports
+  are per-day, and she's unlikely to build a trip report herself. So eBird import targets the
+  **per-day checklist** we already ship (J4), not trip-report import.
 
 ### PR-G · P2 — Carried-over data & backbone (was BACKLOG A/C)
 - DATA_PASS bake-in of `tools/reconcile/genus_fix.json` into `data.js` (correct s/k/o/f;
@@ -95,15 +98,27 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 - Regional-envelope candidate pool + **"possible here" toggle** (left of `rare`, default off)
   + search-failover + **`origin`** native/introduced/invasive category + **top-surprises** live filter.
 - BOLD + book/local-name crosswalks (Roberts/Sinclair) as more `names.js` columns.
+- **Online crisp-tile map layer** (Shannon's call #2): keep the baked tiles as the offline
+  floor (accept softness), but when online load sharp tiles so zoom is crisp. Online-only
+  upgrade over the baked base — must not break offline.
 
 ### PR-H · P3 — Final polish
 - **Item 13 (full):** formatting/QA sweep (italics, spacing), desktop-web + (phone) captures.
 
 ---
 
-## Open questions for Shannon (non-blocking)
-1. eBird trip-report vs per-day URLs (gates full eBird import in PR-F).
-2. Offline map zoom softness (baked tile) vs online crisp tiles (breaks offline).
+## Shannon's calls (both resolved 2026-07-12)
+1. **eBird: per-list (per-day) URLs.** Trip reports are per-day; she won't build one. eBird
+   import targets the per-day checklist (PR-F).
+2. **Maps: bake in the tiles.** Accept zoom **softness offline**; when **online, allow crisp
+   zooming** (load sharp tiles). So: baked tiles are the offline floor, online upgrades to
+   crisp. → new PR-G/PR-D item: online-only crisp-tile layer over the baked offline base.
+
+## Blue-sky / 3.0 (beyond current scope — parking good ideas)
+- **The app builds the eBird trip report itself.** Aggregate the per-day checklists (which we
+  already collect) into a shareable trip report / assist eBird submission. Shannon is unlikely
+  to build trip reports by hand — having the app do it would be a genuinely great feature.
+- (Add future big swings here as they come up.)
 
 ## Done this session (merged to main)
 - v1.0.29 #31 union name index (OR-search + name-expander).
