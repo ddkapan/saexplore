@@ -10,6 +10,29 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.30 — genus-collapse fix: prefer the resolved species, never fail to genus
+
+Follow-up to the name index. Some corpus records were matched to a GBIF **genus** key
+during the build (recent splits: *Accipiter* → *Aerospiza* / *Astur* / *Tachyspiza*,
+etc.), so the scientific name shown was a bare genus and the account/Wikipedia pulled the
+*genus* article — hiding the species. Rule applied (Shannon's): **prefer the species-level
+name even when it's a synonym; a collision must never fail over to the genus.**
+
+- **25 genus-collapsed records resolved to species** (`names.js` `sp`), e.g. Black Goshawk
+  → *Astur melanoleucus*, African Goshawk → *Aerospiza tachiro*, Little Sparrowhawk →
+  *Tachyspiza minulla*, Black-backed Jackal → *Lupulella mesomelas*, Common Protea →
+  *Protea afra*. The table, drawer header, species accounts, journal, search, and the
+  GBIF/iNat/Wikipedia links all prefer the species now. The genus stays in the search
+  haystack — union, never exclude.
+- **Whole-corpus iNat-id audit** (all 2,148 ids, 30/call). Beyond `o.s`, the id behind the
+  "Normally" account + photo could itself be a **genus** (African Goshawk, Flappet Lark,
+  Thrush Nightingale) or a **different species** (*Passerina filiformis* was pulling
+  *P. corymbosa*). Those are re-pointed to the correct species id (`sp` `spii`); the fetch
+  and links use it. Verified two other flags were only synonyms/spelling variants (no
+  change). One bare-phylum record (*Tracheophyta*) is flagged for DATA_PASS review.
+- Built by `tools/reconcile/build_names.js` from `genus_fix.json` (the resolution
+  crosswalk, so a future DATA_PASS can bake it into `data.js` at source). sw cache → v9.
+
 ## 1.0.29 — union name index: OR-search across every name + name-expander
 
 First working slice of the name backbone (`docs/NAME_BACKBONE.md`). The principle is

@@ -105,11 +105,33 @@ for (const o of U) {
   if (rec.s || rec.v || rec.l) NAMES[o.k] = rec;
 }
 
+// ---- genus-collapse fix (genus_fix.json) ----------------------------------
+// Some corpus records were matched to a GBIF *genus* key during the build (recent
+// splits: Accipiter→Aerospiza/Astur/Tachyspiza, etc.), so o.s is a bare genus and the
+// account/Wikipedia pull the genus article — hiding the species. We resolve each to its
+// species and attach `sp` (species binomial the app prefers for display + Wikipedia) and,
+// where the corpus iNat id was itself a genus / the wrong species, `spii` (species iNat
+// id, to override the "Normally" fetch). Union, never exclude: the genus stays in the row
+// haystack; the species name is *added* and preferred. See docs/BACKLOG.md §C.
+let fixApplied = 0, fixSkip = 0;
+try {
+  const fix = require('./genus_fix.json');
+  for (const k of Object.keys(fix)) {
+    const f = fix[k];
+    if (f.skip || f.unresolved || (!f.sp && !f.spii)) { fixSkip++; continue; }
+    const rec = NAMES[k] || (NAMES[k] = {});
+    if (f.sp) rec.sp = f.sp;      // corpus o.s was a bare genus → prefer this species name
+    if (f.spii) rec.spii = f.spii; // corpus o.ii was a genus / wrong species → use this for the account + links
+    fixApplied++;
+  }
+} catch (e) { console.log('  (no genus_fix.json — skipping genus-collapse fix)'); }
+
 const out = 'window.NAMES=' + JSON.stringify(NAMES) + ';\n' +
   'window.NAMES_LANG=' + JSON.stringify(SA) + ';\n';
 fs.writeFileSync(path.join(DIR, '../../names.js'), out);
 
 const bytes = Buffer.byteLength(out);
+console.log('genus-collapse fix: applied', fixApplied, '| skipped', fixSkip);
 console.log('NAMES keys:', Object.keys(NAMES).length, 'of', U.length);
 console.log('  with synonyms:', withSyn, '| with English vernacular:', withVern, '| with SA local:', withLocal);
 console.log('  names.js size:', (bytes / 1024).toFixed(1), 'KB');

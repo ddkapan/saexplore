@@ -44,7 +44,12 @@ const dom1 = makeDom();
 // union name sidecar (names.js) stub for k2498252 (Egyptian Goose) — the distinctive
 // aliases appear in NO corpus common/scientific name, so they deterministically prove
 // OR-search across the union index and the per-species name-expander.
-dom1.window.NAMES = { k2498252: { s: ['Alopochenzz testica'], v: ['Zztest Sheldgoose'], l: { afr: ['Zztestgans'] } } };
+dom1.window.NAMES = {
+  k2498252: { s: ['Alopochenzz testica'], v: ['Zztest Sheldgoose'], l: { afr: ['Zztestgans'] } },
+  // genus-collapse fix: k3242735 is stored at genus rank (s='Astur'); the sidecar
+  // resolves it to a species binomial the app must prefer for display + links.
+  k3242735: { sp: 'Astur melanoleucus', spii: 424242 },
+};
 dom1.window.NAMES_LANG = { afr: 'Afrikaans' };
 let { d, w, err } = boot(dom1);
 const rows = () => [].slice.call(d.querySelectorAll('#matrix tbody tr.org'));
@@ -123,6 +128,22 @@ const dhtml = d.getElementById('drawer').innerHTML;
 ok('name-expander block ("Also known as") renders in the drawer', /Also known as/.test(dhtml));
 ok('name-expander lists synonym, English + local names by source', /Alopochenzz testica/.test(dhtml) && /Zztest Sheldgoose/.test(dhtml) && /Afrikaans/.test(dhtml) && /Zztestgans/.test(dhtml));
 d.querySelector('#drawer .dclose').click();
+
+// ---- genus-collapse fix: prefer the resolved species name (sp) over the bare genus ----
+const gcRow = [].slice.call(d.querySelectorAll('#matrix tr.org')).find(r => {
+  const cd = r.querySelector('td:nth-child(3) div'); return cd && /Black Goshawk/.test(cd.textContent);
+});
+ok('genus-collapsed row exists (Black Goshawk)', !!gcRow);
+if (gcRow) {
+  const tableSci = gcRow.querySelector('td:nth-child(3) div:nth-child(2)').textContent;
+  ok('table shows the resolved species, not the genus', tableSci === 'Astur melanoleucus', tableSci);
+  w.__openDrawer(+gcRow.dataset.i);
+  const drw = d.getElementById('drawer');
+  ok('drawer header shows the resolved species', /Astur melanoleucus/.test(drw.querySelector('div[style*=italic]').textContent));
+  ok('Wikipedia link points at the species, not the genus', /wiki\/Astur_melanoleucus/.test(drw.innerHTML) && !/wiki\/Astur"/.test(drw.innerHTML));
+  ok('resolved species is searchable via OR-search', (function () { w.__S.q = 'astur melanoleucus'; w.__applyFilters(); const n = visible().length; w.__S.q = ''; w.__applyFilters(); return n >= 1; })());
+  d.querySelector('#drawer .dclose').click();
+}
 
 // hide-absent-at-focus: focusing hides species with no record there; a strip toggle reveals them
 d.querySelector('#matrix thead .colh').click(); // focus the first site

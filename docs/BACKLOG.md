@@ -42,6 +42,19 @@ is a filter, not a wall** (memory: `union-not-exclusion`). None built yet.
   global import is untouched (Shannon open-Q #1).
 
 ## C. Data quality (DATA_PASS pipeline — do NOT hand-edit `data.js`)
+- **[app-fixed · v1.0.30 → still needs a DATA_PASS bake-in] Genus-collapsed records.**
+  26 rows were matched to a GBIF *genus* key (o.s a bare genus, sometimes blank order/
+  family). Resolved to species in the sidecar (`tools/reconcile/genus_fix.json` →
+  `names.js` `sp`/`spii`); the app prefers the species everywhere. A DATA_PASS should bake
+  the crosswalk into `data.js` at source (correct `s`, `k`, `o`, `f`) so it survives regen,
+  and **change the build rule: on a genus/collision, keep the species even if a synonym —
+  never fail over to the genus.**
+- **[P2] Wrong-species iNat id (photo).** `k7311303` (*Passerina filiformis*) shipped a
+  *P. corymbosa* photo (o.ii pointed to the wrong species); account/links re-pointed in
+  v1.0.30 but `o.p` still needs a photo re-pull. Whole-corpus o.ii audit (all 2,148 ids)
+  found only this one genuine wrong-species photo — the method is in `tools/reconcile/`.
+- **[P3] Bare-phylum record** `k7707728` = *Tracheophyta* (no common name / iNat id) —
+  review or remove.
 - **[P2] 4 internal corpus dupes** (two keys → one species): *Ficus thonningii*,
   *Rapanea melanophloeos*, *Oscularia falciformis*, *Senecio barbertonicus*.
 - **[P2] 5 corpus rows with malformed (non-numeric) keys.**

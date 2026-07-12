@@ -10,7 +10,8 @@ PWA** (the app only loads `index.html` · `data.js` · `app.js` · `sw.js`).
 | `match.js` | resolve a list of field names → corpus records (by scientific/common), report hits/misses. Used to build `samples/saexplore-favorites.json`. |
 | `build.js` | assemble the favorites preload (`marks` keyed by corpus key). |
 | `build_aliases.js` | from the GBIF species cache, build `idmap` (every corpus key → GBIF **accepted** key) + `idmeta` (per-accepted metadata). |
-| `build_names.js` | from the vernacular + synonym caches (`vcache/`, `scache/`), build the shipped **`../../names.js`** sidecar (`window.NAMES`): per corpus key `s[]` synonyms, `v[]` English vernaculars, `l{}` SA local-language names. Union, never exclude. |
+| `build_names.js` | from the vernacular + synonym caches (`vcache/`, `scache/`), build the shipped **`../../names.js`** sidecar (`window.NAMES`): per corpus key `s[]` synonyms, `v[]` English vernaculars, `l{}` SA local-language names — plus `sp`/`spii` from `genus_fix.json`. Union, never exclude. |
+| `genus_fix.json` | resolution crosswalk for records matched to a GBIF **genus** key (o.s a bare genus) or whose iNat id (`o.ii`) is a genus / wrong species. `sp` = species name the app prefers for display + links; `spii` = correct species iNat id for the account. A DATA_PASS should bake these into `data.js` at source. |
 | `idmap.json` | `{idmap: {corpusKey → acceptedKey}, acceptedList: [...]}` — 2,775 corpus keys → 2,771 accepted. The identity spine. |
 | `idmeta.json` | per-accepted-key: `{acc, gbif canonical, rank, kingdom, class, field name, ourKeys[]}`. |
 
@@ -51,6 +52,22 @@ node build_names.js               # → ../../names.js  (shipped, precached by s
 `build_names.js` ships English vernaculars (`v`) + the 10 SA official languages (`l`);
 other foreign-language vernaculars stay in the cache. To widen the union, edit the `SA`
 whitelist in `build_names.js` and rebuild — nothing is lost, only what's *shipped* changes.
+
+### Genus-collapse fix + o.ii audit (`genus_fix.json`)
+Two failure modes where a record doesn't end up at a species:
+
+1. **`o.s` is a bare genus** — GBIF matched the species to a genus key. Scan:
+   `node -e '…UNIC…'` for single-word `o.s`; resolve each via iNat id / iNat search →
+   `sp` (+`spii` where the iNat id was itself a genus). 26 found; 25 resolved, 1 phylum flagged.
+2. **`o.s` is fine but `o.ii` is a genus / wrong species** (bad account, photo, links).
+   Audit *all* iNat ids in batches of 30:
+   ```sh
+   node -e '…extract ids → ii_chunks.json, mkdir iicache…'
+   node -e '…GET api.inaturalist.org/v1/taxa/{30 ids} per batch → iicache/batchN.json…'
+   node -e '…compare rank + species epithet vs o.s; flag genus / mismatch…'
+   ```
+   Of 2,148 ids: 2 genuine fixes (Thrush Nightingale genus id; *Passerina filiformis*
+   pulling *P. corymbosa*) → `spii`; the rest were synonyms or spelling variants.
 
 ## Next (per NAME_BACKBONE.md)
 Add **eBird + BOLD + book** name columns (`v`/`s` already carry GBIF's), pull the
