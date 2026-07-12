@@ -10,6 +10,23 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.32 — offline rescue (the app survives updates + airplane mode)
+
+The service worker was keeping the app shell **and** ~1,300 bird photos in a single
+versioned cache that `activate` deleted on every update — so each new version wiped
+everything and re-downloaded from scratch, and if the device went offline mid-refresh the
+content vanished. Rewritten for reliability:
+
+- **Two caches:** a small **versioned shell cache** (index.html, data.js, names.js, app.js,
+  manifest, icon) and a **stable media cache** for photos/accounts that is **never wiped on
+  a version bump** — bird photos persist across updates and don't re-download.
+- **Resilient install:** the shell is cached item-by-item (one bad URL can't reject the whole
+  install), and the worker only takes over **after** the shell is safely stored. Photo
+  precache is chunked, best-effort, and never blocks or fails the install.
+- **Offline-readiness pill:** a small indicator shows whether the app is saved for offline,
+  with a **"save photos for offline"** action + progress — so you can confirm it's ready
+  before a flight. Shell cache → `sa-shell-v11`; media cache `sa-media-v1` (stable).
+
 ## 1.0.31 — eBird is canonical for birds (join key + names)
 
 Birds are indexed on **eBird/Clements**, so an exported file joins straight to eBird
