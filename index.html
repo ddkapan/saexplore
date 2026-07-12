@@ -17,13 +17,46 @@
 <script src="./data.js"></script>
 <script src="./names.js"></script>
 <script src="./app.js"></script>
+<!-- offline-readiness pill: tells the user whether the app is saved for the flight -->
+<div id="offlinePill" hidden style="position:fixed;z-index:9999;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);font:600 12px/1.2 system-ui,-apple-system,sans-serif;background:#fbf7ee;color:#2b2723;border:1px solid #cfc5b2;border-radius:14px;padding:7px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer;max-width:82vw;display:flex;align-items:center;gap:7px"></div>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () {
-    // Register only — do NOT auto-reload on update (that would wipe the user's
-    // in-memory filters mid-session). New code is picked up on the next open;
-    // the network-first worker already serves the latest shell when online.
+    // Register only — do NOT auto-reload on update (that would wipe the user's in-memory
+    // filters mid-session). New code is picked up on the next open; the network-first
+    // worker already serves the latest shell when online.
     navigator.serviceWorker.register("./sw.js").catch(function () {});
+
+    // ---- offline-readiness pill ----
+    var pill = document.getElementById("offlinePill"), saving = false, hideT = 0;
+    function sw(cb) { navigator.serviceWorker.ready.then(function (reg) { cb(reg.active || (navigator.serviceWorker.controller)); }).catch(function () {}); }
+    function post(msg) { sw(function (w) { w && w.postMessage(msg); }); }
+    function show(html, bg) { pill.innerHTML = html; pill.style.background = bg || "#fbf7ee"; pill.hidden = false; }
+    function render(s) {
+      if (saving) return;
+      var mediaOK = s.mediaTotal ? s.media >= Math.floor(s.mediaTotal * 0.97) : true;
+      var shellOK = s.shell >= s.shellTotal;
+      if (shellOK && mediaOK) {
+        show('<span style="color:#5e7249">●</span> Saved for offline');
+        clearTimeout(hideT); hideT = setTimeout(function () { pill.hidden = true; }, 4000);
+      } else if (shellOK) {
+        show('<span style="color:#b5623c">●</span> Save photos for offline <b style="text-decoration:underline">↓</b>' +
+             '<span style="color:#9a917f;font-weight:400">&nbsp;' + s.media + '/' + s.mediaTotal + '</span>', "#fbf7ee");
+        pill.onclick = function () { if (!saving) { saving = true; show('<span style="color:#b5623c">◍</span> Saving photos… 0%'); post({ type: "save-offline" }); } };
+      } else {
+        show('<span style="color:#b5623c">◍</span> Preparing offline…');
+        clearTimeout(hideT); hideT = setTimeout(status, 2500);
+      }
+    }
+    function status() { post({ type: "cache-status" }); }
+    navigator.serviceWorker.addEventListener("message", function (e) {
+      var d = e.data || {};
+      if (d.type === "cache-status") render(d);
+      else if (d.type === "save-progress") { saving = true; show('<span style="color:#b5623c">◍</span> Saving photos… ' + Math.round(d.done / d.total * 100) + '%'); }
+      else if (d.type === "save-offline-done") { saving = false; status(); }
+    });
+    // give the worker a moment to install/claim, then report
+    setTimeout(status, 1800);
   });
 }
 </script>
