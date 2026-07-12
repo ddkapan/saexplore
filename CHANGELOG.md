@@ -10,6 +10,14 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.38 — phone: focusing a site isolates its column
+
+On a phone, focusing a site still showed the full wide table, so you had to scroll sideways
+to find that site's presence dots. Now focusing a site collapses the matrix to just that
+column — one presence dot per row, no horizontal scrolling — and lists only the species
+recorded there. The "only at <site>" toggle in the strip flips back to the full table
+(all sites). Tied to the existing hide-absent toggle, so it's one clear control.
+
 ## 1.0.37 — restore "Also known as" for the split species
 
 The genus-collapse cleanup in 1.0.31 dropped the synonym/vernacular block from records keyed

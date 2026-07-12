@@ -66,14 +66,18 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   chip onclick.
 
 ### PR-D · P1 — Mobile layout
-- **Item 7:** on phone, focusing a site **isolates that site's column** (see its dots without
-  horizontal scrolling); "show all sites" toggle returns the full table (auto-scroll to focus).
+- **Item 7 [done · v1.0.38]:** focusing a site isolates its column (single presence-dot per row, no horizontal scroll); the "only at <site>" toggle (was hide-absent) restores the full table.
 - **Item 4 [done · v1.0.36]:** journal back bar is safe-area-aware, sticky, and the back button is a larger tap target.
 - **Item 2:** **taller tour** with greatest-hits **prose (left)** + larger trip/favorites list (right).
 - **Item 20:** if **no tour species are chosen**, auto-pick one representative per taxonomic group.
 - **Item 21:** region **"special" species should stick** (Big Five, top birds); the **tour view
   populates with "things to look out for"** for the current region — a sensible default set that
   the user can then override. (Design with item 20; likely a per-region curated + auto-filled list.)
+- **Item 22 — share a tour via JSON:** the tour/focal **marks already ride the JSON
+  export/re-import** (that's how `samples/saexplore-favorites.json` works — export → send to
+  Shannon → she imports → gets your tour). **Gap:** add a clean one-tap **"Export tour
+  (favorites only)"** — a marks-only file to share with the Dr, distinct from the full
+  field-notes export. (Confirmed by Durrell 2026-07-12.)
 
 ### PR-E · P2 — Names & indigenous languages
 - **Item 12:** add SA languages (isiZulu, isiXhosa, Tshivenḓa, Setswana, Xitsonga, siSwati,
