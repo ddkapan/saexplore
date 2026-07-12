@@ -10,6 +10,29 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.28 — favorites preload + name-backbone design
+
+A small, testable step toward the shared "value-add" workflow and the naming spine.
+
+- **Favorites preload (`samples/saexplore-favorites.json`).** A marks-only JSON that
+  pins 47 focal/tour species from the Cal Academy itinerary (29 tour + 18 focal),
+  matched to the corpus by scientific name. **Import is non-destructive** — it sets the
+  focal/tour pins and leaves notes / checklist / journal untouched — so it's a clean way
+  to test the JSON round-trip and to seed a device from a laptop-prepared list.
+- **Fix:** importing a JSON now **repaints the focal/tour strip chip** (previously the
+  pins applied and rows floated, but the `★ N focal/tour` chip stayed hidden until the
+  next interaction).
+- **Design note `docs/NAME_BACKBONE.md`.** Captures the naming architecture we're
+  prototyping on this two-biome trip but designing globally: **union every name, never
+  exclude; authoritative name as the key with all other names (GBIF · iNat · eBird ·
+  BOLD · field-guide books · local/indigenous) to the right; OR-match; keep both names
+  when a source disagrees; cross-link concept conflicts rather than merging them.**
+  Narrowing (possible-here toggle, origin native/introduced/invasive, top-surprises,
+  taxa/abundance/region) is always a **filter over the one union, not a data wall.**
+  Investigated live against GBIF/iNat: confirmed backbone-version key drift
+  (*Bubulcus*↔*Ardea ibis*, *Icthyophaga*↔*Haliaeetus vocifer*) is why union-by-name,
+  not dedup-by-key, is the right spine.
+
 ## 1.0.27 — focal/tour tiers, highlights, tour & map (Shannon's field review, PR-C)
 
 Third of three review PRs. The trip-planning value-add: mark the species you care
