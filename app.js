@@ -164,7 +164,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal â¸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚡</button><button id="impJson" class="btn sans">Importâ¦</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.39</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.40</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -301,6 +301,23 @@ window.__wire5=function(UNIC,SMETA){
  // kept "to the right" of the corpus name. aliasHay = every alias, space-joined
  // + lowercased, so OR-search matches a species via key OR any of its names.
  var OBYK={};UNIC.forEach(function(o){OBYK[o.k]=o;});
+ // Curated per-site "specials to look out for" (from the trip digest / brochure). Charismatic
+ // species carry abundance _e=0, so pure abundance-sorting buries them — this surfaces the
+ // iconic ones (Big Five, penguins, endemic birds) in each site's highlights + the tour.
+ var SPECIALS={
+  kirstenbosch:["Cape Sugarbird","Orange-breasted Sunbird","Cape Spurfowl","Forest Canary","Cape Batis","African Olive-Pigeon","African Goshawk","Spotted Eagle-Owl","Cape Grysbok","Rock Hyrax"],
+  tablemtn:["Cape Sugarbird","Orange-breasted Sunbird","Cape Rock-Thrush","Rock Hyrax","Cape Spurfowl"],
+  capepoint:["African Oystercatcher","Kelp Gull","Hartlaub's Gull","Cape Cormorant","Common Ostrich","Cape Sugarbird","Chacma Baboon","Cape Mountain Zebra","Bontebok","Eland"],
+  boulders:["African Penguin","Crowned Cormorant","Cape Cormorant","African Oystercatcher","Swift Tern","Rock Hyrax"],
+  houtbay:["Cape Fur Seal","Cape Cormorant","Bank Cormorant","Kelp Gull","Hartlaub's Gull","African Oystercatcher"],
+  moholoholo:["Cape Vulture","Verreaux's Eagle","African Fish-Eagle","Jackal Buzzard","Narina Trogon","Knysna Turaco","Purple-crested Turaco","Southern Bald Ibis","Malachite Sunbird"],
+  blyde:["Cape Vulture","Common Hippopotamus","Nile Crocodile","Greater Kudu","Blue Wildebeest","Waterbuck"],
+  karongwe:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Cheetah","Southern Giraffe","Plains Zebra","Greater Kudu","Spotted Hyena"],
+  kruger_letaba:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Common Hippopotamus","Southern Giraffe","Plains Zebra","African Fish-Eagle","Bateleur"],
+  kruger_mdluli:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Nyala","Vervet Monkey","Southern Giraffe","Impala"]};
+ var SPECIALK={};(function(){var idx={};function nm(s){return (s||'').toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();}
+  UNIC.forEach(function(o){[o.c,o.s].forEach(function(n){if(n&&!idx[nm(n)])idx[nm(n)]=o.k;});var N=window.NAMES&&window.NAMES[o.k];if(N){var al=(N.sp?[N.sp]:[]).concat(N.s||[],N.v||[]);al.forEach(function(a){if(!idx[nm(a)])idx[nm(a)]=o.k;});}});
+  Object.keys(SPECIALS).forEach(function(s){SPECIALK[s]=SPECIALS[s].map(function(n){return idx[nm(n)];}).filter(Boolean);});})();
  function ebOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.ebk)?n.ebk:'';}
  function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.sp)a.push(n.sp);if(n.ebk)a.push(n.ebk);if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
  function aliasHay(o){var a=aliasList(o);return a.length?(' '+a.join(' ').toLowerCase()):'';}
@@ -413,7 +430,12 @@ window.__wire5=function(UNIC,SMETA){
   var tag=(!g&&uniq)?' <span style="font-size:9px;color:#8a6a2f;border:1px solid #d9c98f;border-radius:6px;padding:0 4px;white-space:nowrap">only here</span>':'';
   return '<div class="hl" data-oi="'+o.i+'" style="display:flex;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--rule);cursor:pointer">'+(o.p?'<img src="'+esc(o.p[0])+'" style="width:34px;height:34px;flex-shrink:0;border-radius:4px;object-fit:cover;border-left:3px solid '+TAXCOL[o.g]+'">':'<div style="width:34px;height:34px;flex-shrink:0;border-radius:4px;border-left:3px solid '+TAXCOL[o.g]+';background:'+C.raised+'"></div>')+'<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:600;color:'+C.ink+';line-height:1.2">'+pre+esc(o.c||o.s)+tag+'</div><div style="font-size:10px;color:'+C.soft+';font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(sciOf(o))+'</div></div><div style="flex-shrink:0">'+badges(o)+'</div></div>';}
  function markSort(a,b){var r={tour:0,focal:1};return ((r[markOf(a)]==null?9:r[markOf(a)])-(r[markOf(b)]==null?9:r[markOf(b)]))||((b._e||0)-(a._e||0));}
- function siteHighlights(sk){var here=UNIC.filter(function(o){return presentAt(o,sk);});var mkd=here.filter(function(o){return markOf(o);}).sort(markSort);var rest=here.filter(function(o){return !markOf(o);}).sort(function(a,b){return (b._e||0)-(a._e||0);});return mkd.concat(rest).slice(0,7);}
+ function siteHighlights(sk){var here=UNIC.filter(function(o){return presentAt(o,sk);});var hereK={};here.forEach(function(o){hereK[o.k]=o;});
+  var mkd=here.filter(function(o){return markOf(o);}).sort(markSort);var used={};mkd.forEach(function(o){used[o.k]=1;});
+  // curated specials present here (Big Five, penguins, endemics) come right after the user's marks
+  var spec=(SPECIALK[sk]||[]).map(function(k){return hereK[k];}).filter(function(o){return o&&!used[o.k];});spec.forEach(function(o){used[o.k]=1;});
+  var rest=here.filter(function(o){return !used[o.k];}).sort(function(a,b){return (b._e||0)-(a._e||0);});
+  return mkd.concat(spec,rest).slice(0,8);}
  function renderRails(){var L=$('#mapLeft'),R=$('#mapRight');if(!L||!R)return;
   if(!S.focus){L.innerHTML='<div style="color:var(--soft);font-size:12px;line-height:1.5"><b style="color:'+C.ink+';font-family:var(--serif);font-size:15px">The itinerary</b><br>Ten localities, Cape winter to Kruger dry season. <b style="color:'+C.terra+'">Tap a stop</b> (or a map dot) to read its field account here and see its highlights.<br><br>Or press <b>▶ Play tour</b> to walk the route.</div>';
    var marked=UNIC.filter(function(o){return markOf(o);}).sort(markSort);var seenk={};var hl=marked.slice(0,8);hl.forEach(function(o){seenk[o.k]=1;});
