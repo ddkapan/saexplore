@@ -7,6 +7,9 @@
  *           genus) now prefer the resolved species (names.js sp/spii) for the table,
  *           drawer header, account + links. A whole-corpus iNat-id audit caught the
  *           residual cases (genus / wrong-species o.ii). Union: the genus stays searchable.
+ * v1.0.31 — eBird canonical for birds: every Aves carries its eBird species code (the
+ *           join key, in exports + searchable + linked); eBird scientific names become
+ *           canonical (iNat/GBIF form → synonym). Coarse-key vernacular noise dropped.
  */
 (function(){var st=document.createElement("style");st.textContent="\n"+
 ":root{--paper:#f4efe4;--raised:#fbf7ee;--ink:#2b2723;--soft:#6b6459;--rule:#cfc5b2;--acacia:#5e7249;--terra:#b5623c;--museum:#9c7a2f;--genomic:#7a5aa6;--serif:\"Iowan Old Style\",\"Palatino Linotype\",Palatino,Georgia,serif}\n"+
@@ -141,7 +144,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.30</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.31</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -275,7 +278,9 @@ window.__wire5=function(UNIC,SMETA){
  // Union name index (names.js sidecar): synonyms + English + local vernaculars,
  // kept "to the right" of the corpus name. aliasHay = every alias, space-joined
  // + lowercased, so OR-search matches a species via key OR any of its names.
- function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.sp)a.push(n.sp);if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
+ var OBYK={};UNIC.forEach(function(o){OBYK[o.k]=o;});
+ function ebOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.ebk)?n.ebk:'';}
+ function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.sp)a.push(n.sp);if(n.ebk)a.push(n.ebk);if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
  function aliasHay(o){var a=aliasList(o);return a.length?(' '+a.join(' ').toLowerCase()):'';}
  // Genus-collapse fix (names.js `sp`/`spii`): some corpus records were matched to a GBIF
  // *genus* key, so o.s is a bare genus and o.ii can be a genus / wrong-species iNat id.
@@ -453,7 +458,7 @@ window.__wire5=function(UNIC,SMETA){
    '<div style="margin-bottom:13px"><div class="dlab">Where on this trip</div>'+whereSites.length+' site'+(whereSites.length>1?'s':'')+': '+esc(whereSites.join(', '))+'</div>'+
    spark+
    '<div style="margin-bottom:13px" class="dwiki"><div class="dlab">Normally</div><span style="color:'+C.soft+'">loading…</span></div>'+
-   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
+   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
    '<div style="margin-bottom:13px"><div class="dlab">Seen on this trip</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+ckchips+'</div></div>'+
    '<div style="margin-bottom:13px"><div class="dlab">iNaturalist observation</div><input class="inatobs sans" data-k="'+o.k+'" value="'+esc(iok)+'" placeholder="paste an iNat observation URL / id" style="width:100%;border:1px solid '+C.rule+';border-radius:6px;padding:6px 8px;font-size:12px;background:'+C.raised+';color:'+C.ink+'"></div>'+
    '<div style="margin-bottom:8px"><div class="dlab">My notes</div><textarea class="noteta" data-nk="'+nk+'" placeholder="What you saw, where, with whom…">'+esc(notes[nk]||'')+'</textarea></div>'+
@@ -487,12 +492,15 @@ window.__wire5=function(UNIC,SMETA){
  var _tsb=$('#textSize');if(_tsb)_tsb.onclick=function(){uidx=(uidx+1)%UIS.length;applyScale();};applyScale();
 
  // ---------- observer notebook: JSON backup (offline; export is the save mechanism) ----------
- function collectNotes(){return {v:2,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs,marks:marks};}
+ // eBird species codes for every species referenced in the export — the join key so an
+ // exported file lines up with eBird checklists / trip reports (birds are canonical on eBird).
+ function refEbird(){var m={};function add(k){k=String(k||'').replace(/^sp:/,'').split('|')[0];if(k&&!m[k]){var o=OBYK[k];if(o){var cd=ebOf(o);if(cd)m[k]=cd;}}}Object.keys(marks).forEach(add);seen.forEach(add);Object.keys(notes).forEach(add);return m;}
+ function collectNotes(){return {v:2,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs,marks:marks,ebird:refEbird()};}
  function exportJSON(){try{var blob=new Blob([JSON.stringify(collectNotes(),null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='saexplore-fieldnotes.json';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},0);}catch(e){window.alert&&alert('Export failed: '+e.message);}}
  function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=d.journal;if(d.inatobs)inatobs=d.inatobs;if(d.marks)marks=d.marks;save();buildMatrix();updateSeenOrder();paintSeenTally();paintMarkToggle();renderRails();applyFilters();window.alert&&alert('Field notes imported.');}catch(e){window.alert&&alert('Import failed: '+e.message);}}
  var ej=$('#expJson');if(ej)ej.onclick=exportJSON;
  var ij=$('#impJson'),iff=$('#impFile');if(ij&&iff){ij.onclick=function(){iff.click();};iff.onchange=function(){var f=iff.files&&iff.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importJSON(r.result);};r.readAsText(f);};}
- window.__exportJSON=exportJSON;window.__importJSON=importJSON;
+ window.__exportJSON=exportJSON;window.__importJSON=importJSON;window.__collectNotes=collectNotes;
 
  // ---------- Grinnell Field Journal ----------
  // A saveable page per day: narrative → species accounts (only species with a field

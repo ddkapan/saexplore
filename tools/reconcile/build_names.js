@@ -55,9 +55,15 @@ for (const o of U) {
   if (!/^\d+$/.test(raw)) continue;
   const have = new Set([norm(o.c), norm(o.s)].filter(Boolean));
 
+  // Don't attach GBIF synonyms/vernaculars pulled against a coarse key — when the corpus
+  // key resolves above species (kingdom→genus), those are higher-taxon names, not the
+  // organism's ("Animals" for a plover keyed to Animalia; "Proteas" for a Protea genus key).
+  const accRank = (idmap[o.k] && meta[idmap[o.k]] && meta[idmap[o.k]].rank) || '';
+  const coarse = ['KINGDOM', 'PHYLUM', 'CLASS', 'ORDER', 'SUBORDER', 'SUPERFAMILY', 'FAMILY', 'SUBFAMILY', 'GENUS'].includes(accRank);
+
   // ---- synonyms (scientific aliases) ----
   const syn = [];
-  const sj = readJSON(path.join(DIR, 'scache', raw + '.json'));
+  const sj = coarse ? null : readJSON(path.join(DIR, 'scache', raw + '.json'));
   if (sj && sj.results) {
     for (const r of sj.results) {
       const nm = (r.canonicalName || r.scientificName || '').trim();
@@ -78,7 +84,7 @@ for (const o of U) {
   // ---- vernaculars (English + SA local) ----
   const vern = [];
   const local = {};
-  const vj = readJSON(path.join(DIR, 'vcache', raw + '.json'));
+  const vj = coarse ? null : readJSON(path.join(DIR, 'vcache', raw + '.json'));
   if (vj && vj.results) {
     for (const r of vj.results) {
       let lang = (r.language || '').toLowerCase();
@@ -125,6 +131,33 @@ try {
     fixApplied++;
   }
 } catch (e) { console.log('  (no genus_fix.json — skipping genus-collapse fix)'); }
+
+// ---- eBird canonicalisation for birds ------------------------------------
+// For Aves, eBird/Clements is the authoritative index (so exports join eBird
+// checklists / trip reports on the species code). Attach `ebk` (the eBird code,
+// the join key — already in the corpus site data) and make the eBird scientific
+// name canonical; the previous (iNat/GBIF) scientific drops to a synonym. Common
+// names already track eBird. iNat stays as a synonym. See CHANGELOG 1.0.31.
+let ebSet = 0, ebSciChg = 0;
+try {
+  const codes = require('./ebird_codes.json');       // corpusKey -> eBird code
+  const etax = require('./ebird_taxonomy.json');      // code -> {com, sci, cat, …}
+  for (const o of U) {
+    const cd = codes[o.k]; if (!cd) continue;
+    const e = etax[cd]; if (!e) continue;
+    const rec = NAMES[o.k] || (NAMES[o.k] = {});
+    rec.ebk = cd;
+    if (e.cat === 'species' && e.sci && norm(e.sci) !== norm(o.s)) {
+      const prev = rec.sp || o.s;                     // the scientific we'd have shown
+      if (prev && norm(prev) !== norm(e.sci)) {       // keep it (iNat/GBIF form) as a synonym
+        rec.s = rec.s || []; if (!rec.s.some(x => norm(x) === norm(prev))) rec.s.unshift(prev);
+      }
+      rec.sp = e.sci; ebSciChg++;
+    }
+    ebSet++;
+  }
+} catch (err) { console.log('  (no eBird taxonomy — skipping bird canonicalisation)'); }
+console.log('eBird: codes attached', ebSet, '| scientific adopted from eBird', ebSciChg);
 
 const out = 'window.NAMES=' + JSON.stringify(NAMES) + ';\n' +
   'window.NAMES_LANG=' + JSON.stringify(SA) + ';\n';

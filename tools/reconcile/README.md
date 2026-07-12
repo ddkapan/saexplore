@@ -12,6 +12,9 @@ PWA** (the app only loads `index.html` · `data.js` · `app.js` · `sw.js`).
 | `build_aliases.js` | from the GBIF species cache, build `idmap` (every corpus key → GBIF **accepted** key) + `idmeta` (per-accepted metadata). |
 | `build_names.js` | from the vernacular + synonym caches (`vcache/`, `scache/`), build the shipped **`../../names.js`** sidecar (`window.NAMES`): per corpus key `s[]` synonyms, `v[]` English vernaculars, `l{}` SA local-language names — plus `sp`/`spii` from `genus_fix.json`. Union, never exclude. |
 | `genus_fix.json` | resolution crosswalk for records matched to a GBIF **genus** key (o.s a bare genus) or whose iNat id (`o.ii`) is a genus / wrong species. `sp` = species name the app prefers for display + links; `spii` = correct species iNat id for the account. A DATA_PASS should bake these into `data.js` at source. |
+| `pull_ebird.js` | fetch the eBird/Clements taxonomy (one call, needs `EBIRD_API_TOKEN`) and reduce to our codes → `ebird_taxonomy.json`. Birds are canonicalised on eBird so exports join eBird data. |
+| `ebird_codes.json` | corpus key → eBird species code (the join key; extracted from the corpus site data). |
+| `ebird_taxonomy.json` | eBird code → `{com, sci, family, order}` for our 585 codes. Taxonomy © Cornell Lab / eBird. |
 | `idmap.json` | `{idmap: {corpusKey → acceptedKey}, acceptedList: [...]}` — 2,775 corpus keys → 2,771 accepted. The identity spine. |
 | `idmeta.json` | per-accepted-key: `{acc, gbif canonical, rank, kingdom, class, field name, ourKeys[]}`. |
 
@@ -68,6 +71,16 @@ Two failure modes where a record doesn't end up at a species:
    ```
    Of 2,148 ids: 2 genuine fixes (Thrush Nightingale genus id; *Passerina filiformis*
    pulling *P. corymbosa*) → `spii`; the rest were synonyms or spelling variants.
+
+### Regenerate the eBird layer (birds canonical on eBird)
+```sh
+node -e '…extract corpus Aves eBird codes → ebird_codes.json…'   # from data.js site data
+export EBIRD_API_TOKEN=xxxx     # https://ebird.org/api/keygen
+node pull_ebird.js             # → ebird_taxonomy.json (one call, filtered to our codes)
+node build_names.js            # folds ebk + eBird-canonical sci into ../../names.js
+```
+`build_names.js` attaches `ebk` (the join key) to every bird and makes the eBird
+scientific name canonical (old form → synonym). Common names already track eBird.
 
 ## Next (per NAME_BACKBONE.md)
 Add **eBird + BOLD + book** name columns (`v`/`s` already carry GBIF's), pull the
