@@ -10,6 +10,17 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.44 — intro summary, "Use it offline" card, dark-mode journal
+
+- **A one-paragraph summary at the top** — what the app is, that it runs a museum
+  naturalist's field notes **in reverse** (you start from the filed record), and that in the
+  **Grinnell** tradition you then take your own notes, per day and per species.
+- **"Use it offline · as an app" card** — one place for the app-like steps: **1** save the
+  photos (button, drives the same page-side precache + shows the count), **2** Add to Home
+  Screen / Install, **3** notes & reference. Dismissible ("hide ✕", remembered).
+- **The field journal now honours dark mode** — its light "paper" surfaces flip to dark with
+  the ◐ toggle (print still renders white). Shell cache → `sa-shell-v23`.
+
 ## 1.0.43 — "save photos for offline" actually completes now
 
 The previous fix helped Chrome but the photo save still only got partway (and, with Wi‑Fi
