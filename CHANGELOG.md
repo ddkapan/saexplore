@@ -10,6 +10,20 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.42 — filters round 2: season-on, tag filters, count moved, dark chips
+
+Follow-up to the at-hand redesign:
+
+- **★ late Jul is now a top-row quick filter and on by default** — the app opens on the
+  trip window (what's actually around late July), not all 2,780 records.
+- **Tagged quick-filters** in the top row: **★ focal · ⚑ tour · ✓ seen this trip**. They're
+  explicit picks, so they show your tagged species **regardless of season/site/abundance**
+  (still honouring search + groups). Union: turn on any combination.
+- **The count is a result, not a filter** — the `N / 2,780` fraction moved from the top of
+  the strip to the **bottom**, under a divider.
+- **Dark-mode site chips** were muddy on the dark background; their per-site tints are now
+  lightened for dark mode (and repaint when you toggle ◐). Shell cache → `sa-shell-v21`.
+
 ## 1.0.41 — "save photos for offline" now works on Chrome (was stuck ~93)
 
 "Save photos for offline" worked on iPad/Safari but stalled around 93 on Chrome. Cause:
