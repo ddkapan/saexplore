@@ -1,0 +1,95 @@
+{
+ "k4851857": {
+  "sp": "Aerospiza tachiro",
+  "spii": 1578973,
+  "note": "corpus iNat id 1577579 is the GENUS Aerospiza; African Goshawk = Aerospiza tachiro (syn. Accipiter tachiro, GBIF sp k2480635)"
+ },
+ "k3242735": {
+  "sp": "Astur melanoleucus"
+ },
+ "k1077111": {
+  "sp": "Oxythyrea marginalis"
+ },
+ "k1924522": {
+  "sp": "Chrysoritis palmus"
+ },
+ "k2480339": {
+  "sp": "Thinornis tricollaris"
+ },
+ "k3260067": {
+  "sp": "Monolepta bioculata"
+ },
+ "k7707728": {
+  "skip": true,
+  "note": "bare phylum Tracheophyta, no common name / iNat id — unresolvable; flag for DATA_PASS review/removal"
+ },
+ "k4776169": {
+  "sp": "Cenaeus carnifex"
+ },
+ "k9144169": {
+  "sp": "Chazeauiana undulata"
+ },
+ "k8065276": {
+  "sp": "Eriophyes inermae"
+ },
+ "k2642664": {
+  "sp": "Codium stephensiae"
+ },
+ "k2654889": {
+  "sp": "Phymatolithon foveatum"
+ },
+ "k2480817": {
+  "sp": "Butorides atricapilla"
+ },
+ "k4852732": {
+  "sp": "Tachyspiza minulla"
+ },
+ "k10960770": {
+  "sp": "Genetta fieldiana"
+ },
+ "k11935801": {
+  "sp": "Stephenia natalica"
+ },
+ "k5428464": {
+  "sp": "Protea afra"
+ },
+ "k2480909": {
+  "sp": "Botaurus minutus",
+  "spii": 1578961,
+  "conflict": "corpus iNat id 1583065 resolves to Botaurus sturmii (Dwarf Bittern) — a name/id mismatch; resolved to Little Bittern (Botaurus minutus) by the stored common name"
+ },
+ "k4833484": {
+  "sp": "Lupulella mesomelas"
+ },
+ "k2429911": {
+  "sp": "Tomopterna adiastola"
+ },
+ "k4698180": {
+  "sp": "Pseudanaphaeis gidica"
+ },
+ "k4749499": {
+  "sp": "Anthia omoplata"
+ },
+ "k4850619": {
+  "sp": "Amirafra rufocinnamomea",
+  "spii": 1583762,
+  "note": "corpus iNat id 1583746 is the GENUS Amirafra; Flappet Lark = Amirafra rufocinnamomea (syn. Mirafra rufocinnamomea, GBIF sp k2490596)"
+ },
+ "k4407266": {
+  "sp": "Hycleus oculatus"
+ },
+ "k2128481": {
+  "sp": "Colomerus antidesmae"
+ },
+ "k2889810": {
+  "sp": "Ximenia afra"
+ },
+ "k2492542": {
+  "spii": 13075,
+  "note": "o.ii 13066 is the GENUS Luscinia; Thrush Nightingale species = Luscinia luscinia (iNat 13075)"
+ },
+ "k7311303": {
+  "spii": 591421,
+  "note": "o.ii 577680 = Passerina corymbosa (Common Gonna), a DIFFERENT species; correct Passerina filiformis (Brown Gonna) = iNat 591421. NOTE: o.p photo also from the wrong species — needs a DATA_PASS photo re-pull"
+ }
+}
