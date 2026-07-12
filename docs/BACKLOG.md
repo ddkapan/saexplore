@@ -132,6 +132,35 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   floor (accept softness), but when online load sharp tiles so zoom is crisp. Online-only
   upgrade over the baked base — must not break offline.
 
+### PR-I · P2 — Data sources: photos, BOLD, live source breakdown (findings 2026-07-12)
+Three related threads Durrell raised. **Suggested order: (a) live Sources panel → (b) BOLD pull → (c) photo backfill.**
+
+**(a) Live, filter-aware "Sources" breakdown panel** (self-contained, no external pulls — do first).
+- Today: per-row evidence glyphs (museum voucher `m` · genomic `g` · iNat `i` · eBird `e`) + a
+  static legend; no breakdown of the *filtered set*. The old source-breakdown detail was lost.
+- Build a compact panel (§6 or pinned by the count) that **recomputes on every filter**: 4 bars =
+  share of the current N species carrying each evidence type + raw counts, e.g. eBird 92% (1,338),
+  iNat 73%, museum voucher 38% (8,288 specimens), genomic/BOLD 6% (363 barcodes). Filter to Birds →
+  eBird ~100%; Plants → museum dominates; focus a site / late-July → recomputes. Data is already in
+  `o.src` + `o.st[site].m` (m[0]=specimens, m[1]=genomic) + `.i`. It's the natural home for improved BOLD.
+
+**(b) BOLD is under-pulled + unlabeled — diagnosis.**
+- Genomic/barcode evidence EXISTS but sparse: **210/2,780 species, 363 records, institution usually "?"**.
+- Cause: it came from **GBIF `MATERIAL_SAMPLE` occurrences** (a thin slice), NOT from BOLD directly.
+  BOLD itself is rich — e.g. **Nymphalidae/South Africa: 588 barcode records, 62 species, 83 BINs,
+  15 depositories** (BOLD v4 `API_Public/stats?taxon=&geo=`).
+- Fix: pull **BOLD v4 API** (`stats`/`specimen`/`sequence`) per taxon (or GBIF filtered to BOLD's
+  datasetKey) → add barcode coverage, **BIN counts**, and a properly-labelled **"BOLD"** source
+  (fits name-backbone: source to the right). Also carries CC specimen images (feeds (c)).
+
+**(c) Photo backfill for the 270 photoless species** (Insecta 83, Other 66, Plantae 55, Mollusca 50,
+  Reptilia 5, Arachnida 5, Mammalia 3, fish 2, Amphibia 1).
+- CC images DO exist — probe of *Promeces longipes* (photoless beetle): **GBIF has 872 occurrences
+  with images**, first is CC BY-NC iNat. Sources ranked: **GBIF occurrence media** (`mediaType=StillImage`
+  + license whitelist CC0/BY/BY-NC/BY-SA — best single source) → EOL → **BOLD specimen images** → more
+  Wikimedia → broader-grade iNat → **PhyloPic CC0 silhouettes** as a universal fallback so nothing is
+  blank offline. Build-time pass; keep the CC-license discipline. Then regenerate `precache-list.js`.
+
 ### PR-H · P3 — Final polish
 - **Item 13 (full):** formatting/QA sweep (italics, spacing), desktop-web + (phone) captures.
 
