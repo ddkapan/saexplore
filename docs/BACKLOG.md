@@ -75,6 +75,13 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 - **Dark-mode site chips are too dim** — raise site-chip contrast in dark mode (their per-site
   tints go muddy on the dark background).
 
+### PR-D2 · P1 — In-app "app-like things" section (Durrell 2026-07-12)
+- Consolidate the app/offline setup into one clear in-app section: **"To use offline: (1)
+  cache the photos [button], (2) Add to Home Screen, (3) use it for notes as well as
+  reference."** Surfaces the offline pill + a home-screen hint + what the app does (notes +
+  reference), so Shannon sees it in-app (not only in HOWTO.md). Likely near section 08 / the
+  export panel, or a new intro card.
+
 ### PR-D · P1 — Mobile layout
 - **Item 7 [done · v1.0.38]:** focusing a site isolates its column (single presence-dot per row, no horizontal scroll); the "only at <site>" toggle (was hide-absent) restores the full table.
 - **Item 4 [done · v1.0.36]:** journal back bar is safe-area-aware, sticky, and the back button is a larger tap target.

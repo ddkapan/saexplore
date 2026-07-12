@@ -10,6 +10,21 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.43 — "save photos for offline" actually completes now
+
+The previous fix helped Chrome but the photo save still only got partway (and, with Wi‑Fi
+off, pretended to run). Two deeper causes:
+
+- **The precache ran inside the service worker, which iOS terminates after ~30s** — so it
+  stopped wherever it happened to be. It now runs **from the page**, which lives as long as
+  the app is open, and shows **"keep the app open"**.
+- **Progress counted attempts, not actual photos, and never checked connectivity.** It now
+  reports the **real cached count** (`N / 1315`) read back from the cache, **detects offline**
+  ("You're offline — connect to Wi‑Fi, then tap to save photos"), **retries** throttled
+  photos over a few passes, and **resumes** on re-tap (skips what's already saved). Verified
+  via CDP: climbs well past the old ~93 with an accurate count. `precache-list.js` is now in
+  the app shell; shell cache → `sa-shell-v22`.
+
 ## 1.0.42 — filters round 2: season-on, tag filters, count moved, dark chips
 
 Follow-up to the at-hand redesign:
