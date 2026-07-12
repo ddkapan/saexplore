@@ -10,11 +10,14 @@ dropped. Priorities: **P1** next up · **P2** soon · **P3** when convenient.
 Spec: `docs/NAME_BACKBONE.md`. Principle: **union every name, never exclude; narrowing
 is a filter, not a wall** (memory: `union-not-exclusion`). None built yet.
 
-- **[P1] Union index sidecar** — enrich the 2,780 with `nm:{field,gbif,inat,ebird,book…}`
-  + `accepted`/`altKeys`. GBIF-canonical resolution is done (`tools/reconcile/idmap.json`,
-  2,775→2,771 accepted); still need iNat + eBird (+ later book) name columns.
-- **[P1] Per-species name-expander** — show every alias by source (match whichever book).
-- **[P1] OR-search across all names** — a query hits a node via key *or* any alias.
+- **[done · v1.0.29] Union index sidecar (`names.js`)** — `window.NAMES` keyed by corpus
+  key: `s[]` synonyms, `v[]` English vernaculars, `l{}` SA local names. 2,550/2,780 taxa
+  carry aliases. Built by `tools/reconcile/build_names.js` from GBIF synonyms +
+  vernaculars. **Still to add:** eBird, BOLD, book name columns (extend the same sidecar).
+- **[done · v1.0.29] Per-species name-expander** — "Also known as" block in the drawer,
+  aliases grouped + source-labelled (scientific / English / by language).
+- **[done · v1.0.29] OR-search across all names** — a query hits a node via key *or* any
+  alias (folded into each row's `data-txt` haystack).
 - **[P2] Regional-envelope candidate pool** — per sub-region 2σ ellipse → GBIF/iNat facet,
   **all taxa** (bats, microbes, everything), each a background node + `plausibility`.
   Method validated on the Cape (`tools/reconcile/`).

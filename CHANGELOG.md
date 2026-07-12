@@ -10,6 +10,29 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.29 — union name index: OR-search across every name + name-expander
+
+First working slice of the name backbone (`docs/NAME_BACKBONE.md`). The principle is
+**union, never exclude**: every alias we can find is kept and placed "to the right" of
+the corpus name as provenance — narrowing is a filter, never a data wall.
+
+- **Union name sidecar (`names.js`).** A build-time pull of GBIF **synonyms** +
+  **vernacular names** (multilingual), keyed by corpus usageKey, folded into
+  `window.NAMES` — 2,550 of 2,780 taxa now carry aliases (2,016 with scientific
+  synonyms, 1,922 with alternate English names, 1,470 with **South African local
+  names**: Afrikaans, isiZulu, isiXhosa, Setswana, Sepedi, Sesotho, siSwati,
+  Tshivenḓa, Xitsonga, isiNdebele). Built by `tools/reconcile/build_names.js`; the
+  full multilingual union is a one-line whitelist change away (cache retained).
+- **OR-search across all names.** A query now hits a species via its key **or any
+  alias** — search *kolgans* (Afrikaans) → Egyptian Goose, *isibululu* (isiZulu) →
+  Puff Adder, an eBird 4-letter code, or a superseded scientific name. Shannon's books
+  each use different names; now they all resolve to the same row.
+- **Per-species name-expander.** The detail drawer gains a collapsible **"Also known
+  as"** block listing other scientific names, alternate English names, and local names
+  grouped by language, each source-labelled.
+- Loaded before `app.js` and precached by the service worker (`sa-explorer-v8`);
+  degrades gracefully if the sidecar is absent (search falls back to corpus names).
+
 ## 1.0.28 — favorites preload + name-backbone design
 
 A small, testable step toward the shared "value-add" workflow and the naming spine.

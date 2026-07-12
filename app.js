@@ -1,8 +1,8 @@
 /* Southern Africa — Species Explorer · app.js
  * Offline PWA, no dependencies. index.html loads data.js then this file.
  * CSS string IIFE -> window.APP5 (builds the funnel shell) -> window.__wire5 (renders + wires).
- * v1.0.28 — favorites preload (JSON import) + import repaints the focal/tour chip;
- *           name-backbone design note (docs/NAME_BACKBONE.md).
+ * v1.0.29 — union name index (names.js sidecar): OR-search across every alias
+ *           (synonyms + English + local SA vernaculars) + a per-species name-expander.
  */
 (function(){var st=document.createElement("style");st.textContent="\n"+
 ":root{--paper:#f4efe4;--raised:#fbf7ee;--ink:#2b2723;--soft:#6b6459;--rule:#cfc5b2;--acacia:#5e7249;--terra:#b5623c;--museum:#9c7a2f;--genomic:#7a5aa6;--serif:\"Iowan Old Style\",\"Palatino Linotype\",Palatino,Georgia,serif}\n"+
@@ -137,7 +137,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.28</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.29</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -268,10 +268,23 @@ window.__wire5=function(UNIC,SMETA){
 
  // ---------- matrix ----------
  function cellHTML(o,s){var ck=o.k+'|'+s.key;var pres=presentAt(o,s.key);var isSeen=seen.has(ck);return '<td class="cell'+(isSeen?' seen':'')+'" data-oi="'+o.i+'" data-site="'+s.key+'" data-pres="'+(pres?1:0)+'">'+(isSeen?'<span style="display:inline-block;width:14px;height:14px;line-height:14px;font-size:10px;color:#fff;background:'+C.acacia+';border-radius:3px">✓</span>':(pres?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+TAXCOL[o.g]+'"></span>':''))+'</td>';}
+ // Union name index (names.js sidecar): synonyms + English + local vernaculars,
+ // kept "to the right" of the corpus name. aliasHay = every alias, space-joined
+ // + lowercased, so OR-search matches a species via key OR any of its names.
+ function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
+ function aliasHay(o){var a=aliasList(o);return a.length?(' '+a.join(' ').toLowerCase()):'';}
+ // Per-species name-expander: every alias, grouped + source-labelled, for the drawer.
+ function namesHTML(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return'';var LG=window.NAMES_LANG||{};var rows=[];
+  function esci(x){return '<i>'+esc(x)+'</i>';}
+  if(n.s&&n.s.length)rows.push('<div style="margin:2px 0"><span style="color:'+C.soft+'">also scientific:</span> '+n.s.map(esci).join(', ')+'</div>');
+  if(n.v&&n.v.length)rows.push('<div style="margin:2px 0"><span style="color:'+C.soft+'">also called:</span> '+n.v.map(esc).join(', ')+'</div>');
+  if(n.l)Object.keys(n.l).forEach(function(lg){rows.push('<div style="margin:2px 0"><span style="color:'+C.soft+'">'+esc(LG[lg]||lg)+':</span> '+n.l[lg].map(esc).join(', ')+'</div>');});
+  if(!rows.length)return'';
+  return '<details class="sans" style="padding:8px 18px 0"><summary style="cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.5px;color:'+C.acacia+';text-transform:uppercase">Also known as</summary><div style="font-size:12.5px;line-height:1.5;padding:6px 0 0">'+rows.join('')+'</div></details>';}
  function buildMatrix(){
   var thead='<tr><th style="width:3px;padding:0"></th><th style="width:38px;padding:4px"></th><th style="text-align:left;padding:5px 8px;font-size:11px;color:'+C.soft+';font-weight:600" id="mxCount">species</th><th style="padding:4px 6px;font-size:10px;color:'+C.soft+';font-weight:500">evidence</th>'+SITES.map(function(s){return '<th class="colh" data-site="'+s.key+'" data-rk="'+s.rk+'" style="padding:4px 5px;font-size:10px;color:'+sitecol(s.key)+';font-weight:600;white-space:nowrap;cursor:pointer;border-bottom:2px solid '+sitecol(s.key)+';vertical-align:bottom">'+esc(s.short.replace('Kruger–','K–'))+'</th>';}).join('')+'</tr>';
   var body=UNIC.map(function(o){var cells=SITES.map(function(s){return cellHTML(o,s);}).join('');
-   return '<tr class="org tx-'+o.g+'" data-i="'+o.i+'" data-g="'+o.g+'" data-txt="'+esc((o.c+' '+o.s).toLowerCase())+'" style="border-bottom:1px solid '+C.rule+'"><td style="width:3px;padding:0;background:'+TAXCOL[o.g]+'"></td>'+
+   return '<tr class="org tx-'+o.g+'" data-i="'+o.i+'" data-g="'+o.g+'" data-txt="'+esc((o.c+' '+o.s).toLowerCase()+aliasHay(o))+'" style="border-bottom:1px solid '+C.rule+'"><td style="width:3px;padding:0;background:'+TAXCOL[o.g]+'"></td>'+
     '<td style="padding:3px 4px">'+(o.p?'<img loading="lazy" src="'+esc(o.p[0])+'" style="width:30px;height:30px;object-fit:cover;border-radius:4px;background:'+C.raised+'">':'<div style="width:30px;height:30px;border-radius:4px;background:'+C.raised+'"></div>')+'</td>'+
     '<td style="padding:4px 8px;cursor:pointer;min-width:190px"><div style="font-size:13.5px;font-weight:500;line-height:1.15">'+markStarHTML(o)+esc(o.c||o.s)+'</div><div style="font-size:11px;color:'+C.soft+';font-style:italic">'+esc(o.c?o.s:'')+'</div><div class="sans" style="font-size:9.5px;color:#9a917f;letter-spacing:.2px">'+esc([o.cl,o.o,o.f].filter(Boolean).join(' · '))+'</div></td>'+
     '<td style="white-space:nowrap;padding:0 5px">'+badges(o)+'</td>'+cells+'</tr>';}).join('');
@@ -301,7 +314,7 @@ window.__wire5=function(UNIC,SMETA){
    frag.appendChild(r);});
   tb.appendChild(frag);
  }
- window.__sortRows=sortRows;
+ window.__sortRows=sortRows;window.__applyFilters=function(){applyFilters();};
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;
@@ -419,6 +432,7 @@ window.__wire5=function(UNIC,SMETA){
   drawer.className='tx-'+o.g;drawer.classList.add('open');
   drawer.innerHTML='<button class="dclose" style="position:absolute;top:10px;right:14px;font-size:24px;line-height:1;cursor:pointer;color:'+C.soft+';background:none;border:none;z-index:3">×</button>'+
    '<div style="padding:16px 18px 12px;border-bottom:1px solid '+C.rule+'"><div style="font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.1">'+esc(o.c||o.s)+'</div><div style="font-style:italic;color:'+C.soft+';font-size:14px">'+esc(o.s)+'</div><div class="sans" style="font-size:10.5px;color:#9a917f;letter-spacing:.3px;margin-top:2px">'+esc([o.cl,o.o,o.f].filter(Boolean).join(' · '))+'</div></div>'+
+   namesHTML(o)+
    '<div style="padding:0 18px">'+evband+'</div>'+
    '<div class="sans" style="padding:10px 18px 0;display:flex;gap:7px;align-items:center"><span style="font-size:10px;font-weight:700;letter-spacing:.5px;color:'+C.soft+';text-transform:uppercase">Mark</span>'+
     '<button class="markbtn" data-m="focal" style="border:1px solid #b5623c;background:'+C.raised+';color:#b5623c;border-radius:12px;padding:3px 11px;cursor:pointer;font:inherit;font-size:12px;font-weight:600">★ focal</button>'+
