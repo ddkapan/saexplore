@@ -135,7 +135,9 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 ### PR-I · P2 — Data sources: photos, BOLD, live source breakdown (findings 2026-07-12)
 Three related threads Durrell raised. **Suggested order: (a) live Sources panel → (b) BOLD pull → (c) photo backfill.**
 
-**(a) Live, filter-aware "Sources" breakdown panel** (self-contained, no external pulls — do first).
+**(a) Live, filter-aware "Sources" breakdown panel** — ✅ DONE v1.0.48 (#TBD). Collapsible
+"Sources in view" panel by the count; 4 evidence bars + species counts + specimen/barcode
+tallies over visible sites; recomputes in `applyFilters`. Below is the original spec.
 - Today: per-row evidence glyphs (museum voucher `m` · genomic `g` · iNat `i` · eBird `e`) + a
   static legend; no breakdown of the *filtered set*. The old source-breakdown detail was lost.
 - Build a compact panel (§6 or pinned by the count) that **recomputes on every filter**: 4 bars =

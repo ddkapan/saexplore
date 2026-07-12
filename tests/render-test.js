@@ -107,6 +107,19 @@ ok('abundance is multi-select (S.ab set)', !!(w.__S.ab && w.__S.ab.has(5)));
 d.querySelector('#abChips button[data-ab="5"]').click(); // toggle off -> no abundance filter
 ok('deselecting abundance shows all again', visible().length === beforeAb, visible().length + '');
 
+// ---- filter-aware Sources breakdown panel ----
+ok('Sources toggle + panel present', !!d.getElementById('srcToggle') && !!d.getElementById('srcPanel'));
+d.getElementById('srcToggle').click(); // open it
+const srcHtml = d.getElementById('srcPanel').innerHTML;
+ok('Sources panel lists all four evidence types', /Museum voucher/.test(srcHtml) && /Genomic/.test(srcHtml) && /iNaturalist/.test(srcHtml) && /eBird/.test(srcHtml));
+ok('Sources panel shows per-type share + species counts', /% ·/.test(srcHtml) && /spp/.test(srcHtml));
+// filter to birds only → eBird share should climb toward 100%
+const birdPct = () => { const m = d.getElementById('srcPanel').innerHTML.match(/eBird<\/span><span[^>]*>(\d+)%/); return m ? +m[1] : -1; };
+const allBirdsPct = birdPct();
+Object.keys(w.__S.taxa).forEach(g => { w.__S.taxa[g] = 0; }); w.__S.taxa.Aves = 1; w.__applyFilters();
+ok('Sources panel recomputes on filter (Birds → eBird share rises)', birdPct() > allBirdsPct, birdPct() + '% vs ' + allBirdsPct + '%');
+Object.keys(w.__S.taxa).forEach(g => { w.__S.taxa[g] = 1; }); w.__applyFilters();
+
 // text-size stepper present and changes the explorer zoom
 ok('text-size control present', !!d.getElementById('textSize'));
 const z0 = d.getElementById('app').style.zoom;
