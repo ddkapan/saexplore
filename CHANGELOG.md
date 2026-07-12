@@ -10,6 +10,14 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.46 — site-focus label no longer implies endemicity
+
+Focusing a site showed **"only at Table Mountain"**, which reads like an endemics list —
+but it's just the species *recorded there* (many are widespread; African Black Duck proves
+it). Relabelled: the isolated view is now **"<site> list"** and the full view **"all sites ·
+<site>"**, with a tooltip that says plainly it isn't an endemics list. (Reconsidering the
+grayed all-sites view is queued.) Shell → `sa-shell-v25`.
+
 ## 1.0.45 — highlights live in the list: seeded, always-visible, float to top
 
 The season-default filter (1.0.42) was hiding your marked/highlight species from the main
