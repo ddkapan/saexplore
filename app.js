@@ -142,9 +142,13 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">'+
    '<span style="font-weight:700;color:var(--soft);font-size:10px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap">Filters at hand</span>'+
    '<input id="q" type="search" placeholder="Search any name, eBird code, or type — every language" style="flex:1;min-width:190px;font-size:13px;padding:6px 13px">'+
+   '<span style="width:1px;height:15px;background:var(--rule);margin:0 1px"></span>'+
+   '<button class="tagf chip sans mini" data-tag="focal" title="only your ★ focal picks">★</button>'+
+   '<button class="tagf chip sans mini" data-tag="tour" title="only ⚑ tour picks">⚑</button>'+
+   '<button class="tagf chip sans mini" data-tag="seen" title="only species seen this trip">✓</button>'+
+   '<button class="tripBtn chip sans mini" title="only species around in the trip window (late Jul) — on by default">★ late Jul</button>'+
    '<button id="markToggle" class="chip sans mini" style="display:none;border-color:#b5623c;color:#b5623c"></button>'+
-   '<span id="seenTally" class="sans" style="font-size:11.5px;font-weight:700;color:#fbf7ee;background:var(--acacia);border:1px solid var(--acacia);border-radius:12px;padding:3px 10px;display:none"></span>'+
-   '<span id="count" style="color:var(--soft);font-weight:600;white-space:nowrap"></span></div>'+
+   '<span id="seenTally" class="sans" style="font-size:11.5px;font-weight:700;color:#fbf7ee;background:var(--acacia);border:1px solid var(--acacia);border-radius:12px;padding:3px 10px;display:none"></span></div>'+
    '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+
    '<span style="font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft);min-width:40px">Groups</span>'+
    '<button id="stripTaxAll" class="chip sans mini">all</button><button id="stripTaxNone" class="chip sans mini">none</button>'+
@@ -155,8 +159,8 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<button id="stripSiteAll" class="chip sans mini">all</button>'+
    '<span style="width:1px;height:15px;background:var(--rule);margin:0 3px"></span>'+
    '<div id="stripSites" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
-   '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra)"></button>'+
-   '<button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600;margin-left:auto">★ late Jul</button></div>'+
+   '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra);margin-left:auto"></button></div>'+
+   '<div style="display:flex;justify-content:flex-end;border-top:1px dashed var(--rule);padding-top:6px;margin-top:1px"><span id="count" style="font-size:11px;color:var(--soft);font-weight:600"></span></div>'+
    '</div>'+
    '<div id="matrix"></div><div id="status" class="sans" style="font-size:12px;color:var(--soft);margin-top:8px"></div></div>';
  // 8 export
@@ -164,7 +168,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.41</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.42</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -237,7 +241,7 @@ window.__wire5=function(UNIC,SMETA){
  function seenSpeciesCount(){return Object.keys(seenSpeciesMap()).length;}
  function updateSeenOrder(){var m=seenSpeciesMap();seenOrder=seenOrder.filter(function(k){return m[k];});Object.keys(m).forEach(function(k){if(seenOrder.indexOf(k)<0)seenOrder.push(k);});save();}
  // ---------- state ----------
- var S={region:'all',focus:null,taxa:{},q:'',months:new Set([0,1,2,3,4,5,6,7,8,9,10,11]),tripwin:false,ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'satellite',zoom:1,panX:0,panY:0,tourMs:3200};
+ var S={region:'all',focus:null,taxa:{},q:'',months:new Set([6]),tripwin:true,tags:new Set(),ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'satellite',zoom:1,panX:0,panY:0,tourMs:3200};
  GORDER.forEach(function(p){S.taxa[p[0]]=1;});
  var GY=SMETA.gbifYears||[1838,2026];
  window.__S=S;
@@ -266,7 +270,9 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- site chips (funnel + strip) ----------
  function buildSiteChips(){['#siteChips','#stripSites'].forEach(function(sel,idx){var box=$(sel);if(!box)return;box.innerHTML='';SITES.forEach(function(s){var b=document.createElement('button');b.className='chip site mini';b.dataset.site=s.key;b.textContent=idx===0?s.short:s.short.replace('Kruger–','K–');box.appendChild(b);});});
   $$('.chip.site').forEach(function(b){b.onclick=function(e){if(e&&(e.metaKey||e.ctrlKey)){return;}if(S.focus===b.dataset.site)clearFocus();else focusSite(b.dataset.site);};});paintSiteChips();}
- function paintSiteChips(){$$('.chip.site').forEach(function(b){var s=SI[b.dataset.site],on=(S.region==='all'||s.rk===S.region);var isFocus=S.focus===s.key,dim=S.focus&&!isFocus;b.style.display=on?'':'none';if(isFocus){b.style.background=C.terra;b.style.color='#fff';b.style.borderColor=C.terra;}else{b.style.background=C.raised;b.style.color=sitecol(s.key);b.style.borderColor=sitecol(s.key);}b.style.opacity=dim?'.4':'1';});}
+ // site tints are mid-toned; on the dark background they go muddy, so lighten them for dark mode.
+ function siteChipCol(k){var c=sitecol(k);if(document.documentElement.dataset.theme!=='dark')return c;var m=c.match(/\d+/g);if(!m)return c;return 'rgb('+Math.round(+m[0]+(255-+m[0])*.5)+','+Math.round(+m[1]+(255-+m[1])*.5)+','+Math.round(+m[2]+(255-+m[2])*.5)+')';}
+ function paintSiteChips(){$$('.chip.site').forEach(function(b){var s=SI[b.dataset.site],on=(S.region==='all'||s.rk===S.region);var isFocus=S.focus===s.key,dim=S.focus&&!isFocus;b.style.display=on?'':'none';if(isFocus){b.style.background=C.terra;b.style.color='#fff';b.style.borderColor=C.terra;}else{b.style.background=C.raised;b.style.color=siteChipCol(s.key);b.style.borderColor=siteChipCol(s.key);}b.style.opacity=dim?'.4':'1';});}
 
  // ---------- abundance ----------
  (function(){var box=$('#abChips');if(!box)return;var LB=['','rare','scarce','uncommon','frequent','common'];for(var i=1;i<=5;i++){var b=document.createElement('button');b.dataset.ab=i;b.title=LB[i];b.style.cssText='border:1px solid '+C.rule+';background:'+C.raised+';border-radius:9px;padding:3px 8px;cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:'+C.soft;b.textContent=Array(i+1).join('●');box.appendChild(b);b.onclick=function(){var v=+this.dataset.ab;if(S.ab.has(v))S.ab.delete(v);else S.ab.add(v);paintAb();applyFilters();};}paintAb();})();
@@ -280,6 +286,9 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- season / sort ----------
  var SEAS=[[11,0,1],[2,3,4],[5,6,7],[8,9,10]];
  $$('.tripBtn').forEach(function(b){b.onclick=function(){S.tripwin=!S.tripwin;if(S.tripwin)S.months=new Set([6]);else S.months=new Set([0,1,2,3,4,5,6,7,8,9,10,11]);paintSeason();applyFilters();};});
+ // tagged quick-filters: ★ focal · ⚑ tour · ✓ seen this trip (union — any active tag shows)
+ function paintTags(){var COL={focal:'#b5623c',tour:'#5e7249',seen:'#5e7249'};$$('.tagf').forEach(function(b){var t=b.dataset.tag,on=S.tags.has(t),c=COL[t];b.style.background=on?c:C.raised;b.style.color=on?'#fff':c;b.style.borderColor=c;b.style.fontWeight='700';});}
+ $$('.tagf').forEach(function(b){b.onclick=function(){var t=b.dataset.tag;if(S.tags.has(t))S.tags.delete(t);else S.tags.add(t);paintTags();applyFilters();};});paintTags();
  $$('.allyrBtn').forEach(function(b){b.onclick=function(){S.tripwin=false;S.months=new Set([0,1,2,3,4,5,6,7,8,9,10,11]);paintSeason();applyFilters();};});
  $$('.seasonchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:system-ui,sans-serif';c.onclick=function(){var mm=SEAS[+c.dataset.se];var allon=mm.every(function(m){return S.months.has(m);});mm.forEach(function(m){if(allon)S.months.delete(m);else S.months.add(m);});S.tripwin=false;paintSeason();applyFilters();};});
  function paintSeason(){$$('.tripBtn').forEach(function(b){b.style.background=S.tripwin?'#2f4f86':C.raised;b.style.color=S.tripwin?'#fff':'#2f4f86';});var sc=['#c0392b','#cf7d3a','#3f6fb0','#8e6fb0'];$$('.seasonchip').forEach(function(c){var mm=SEAS[+c.dataset.se];var on=mm.some(function(m){return S.months.has(m);});var col=sc[+c.dataset.se];c.style.background=on?col:C.raised;c.style.color=on?'#fff':col;c.style.borderColor=col;});}
@@ -371,14 +380,21 @@ window.__wire5=function(UNIC,SMETA){
  window.__sortRows=sortRows;window.__applyFilters=function(){applyFilters();};
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
- function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;
+ function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;var sm=S.tags.size?seenSpeciesMap():null;
   $$('#matrix tr.org').forEach(function(tr){var o=UNIC[+tr.dataset.i];var ok=!!S.taxa[o.g];
-   if(ok&&S.q)ok=textOK(o,tr);
-   if(ok&&S.ab.size)ok=S.ab.has(o._e);
-   if(ok)ok=seasonOK(o);
-   if(ok)ok=yearOK(o);
-   if(ok)ok=colKeys.some(function(k){return presentAt(o,k);});
-   if(ok&&S.focus&&S.hideAbsent&&!presentAt(o,S.focus))ok=false;
+   if(ok&&S.tags.size){
+    // Tagged quick-filters are explicit user picks — show them regardless of the discovery
+    // filters (season / abundance / year / site), but still honour taxa + search.
+    ok=(S.tags.has('focal')&&markOf(o)==='focal')||(S.tags.has('tour')&&markOf(o)==='tour')||(S.tags.has('seen')&&!!(sm&&sm[o.k]));
+    if(ok&&S.q)ok=textOK(o,tr);
+   }else{
+    if(ok&&S.q)ok=textOK(o,tr);
+    if(ok&&S.ab.size)ok=S.ab.has(o._e);
+    if(ok)ok=seasonOK(o);
+    if(ok)ok=yearOK(o);
+    if(ok)ok=colKeys.some(function(k){return presentAt(o,k);});
+    if(ok&&S.focus&&S.hideAbsent&&!presentAt(o,S.focus))ok=false;
+   }
    tr.classList.toggle('hid',!ok);tr.style.opacity='1';if(ok)vis++;});
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
   var cnt=$('#count');if(cnt)cnt.textContent=vis.toLocaleString()+' / '+UNIC.length.toLocaleString();var mc=$('#mxCount');if(mc)mc.textContent=vis.toLocaleString()+' species';
@@ -529,7 +545,7 @@ window.__wire5=function(UNIC,SMETA){
 
  // ---------- theme ----------
  var root=document.documentElement;try{var th=localStorage.getItem('sa_theme');if(th)root.dataset.theme=th;}catch(e){}
- $('#themeToggle').onclick=function(){root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('sa_theme',root.dataset.theme);}catch(e){}renderMap();};
+ $('#themeToggle').onclick=function(){root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('sa_theme',root.dataset.theme);}catch(e){}renderMap();paintSiteChips();};
  // ---------- text size (readability on a phone) ----------
  var UIS=[1,1.18,1.36],uidx=0;try{var _sv=parseFloat(localStorage.getItem('sa_uiscale'));if(_sv){var _k=UIS.indexOf(_sv);uidx=_k<0?0:_k;}}catch(e){}
  function applyScale(){var z=UIS[uidx];['#app','#journal'].forEach(function(sel){var el=$(sel);if(el)el.style.zoom=z;});var ts=$('#textSize');if(ts)ts.innerHTML='A<span class="tsx">'+(uidx===0?'+':uidx===1?'++':'∅')+'</span>';try{localStorage.setItem('sa_uiscale',z);}catch(e){}}

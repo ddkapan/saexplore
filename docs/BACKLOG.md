@@ -65,7 +65,7 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   multi-focus for sites (the deferred multi-site-compare). Hook already stubbed at the site
   chip onclick.
 
-### PR-C2 · P1 — At-hand strip, round 2 (Durrell 2026-07-12)
+### PR-C2 · P1 — At-hand strip, round 2 [done · v1.0.42] (Durrell 2026-07-12)
 - **Season default-on + promoted:** move **★ late Jul** up with the quick filters (row 1) and
   **default it ON** (S.tripwin true / months = late-July window) — it's the trip's default view.
 - **Tagged quick-filters:** add quick toggles in the at-hand strip for the **tagged** species —
