@@ -49,7 +49,9 @@
 "#drawer{position:fixed;top:0;right:0;height:100%;width:min(500px,94vw);background:var(--paper);z-index:71;box-shadow:-8px 0 34px rgba(30,26,22,.28);transform:translateX(100%);transition:transform .2s;overflow:auto;border-left:5px solid var(--soft)}\n"+
 "#drawer.open{transform:none}\n"+
 ".dlab{font-size:9.5px;font-weight:700;letter-spacing:.5px;color:var(--acacia);text-transform:uppercase;margin-bottom:4px;font-family:system-ui,sans-serif}\n"+
-"#journal{position:fixed;inset:0;background:#d9d2c2;z-index:90;display:none;overflow:auto}\n"+
+"#journal{position:fixed;inset:0;background:#d9d2c2;z-index:90;display:none;overflow:auto;padding-top:env(safe-area-inset-top,0px)}\n"+
+"#journal .jscope{position:sticky;top:0;z-index:6;background:#d9d2c2;padding:10px 0 8px;box-shadow:0 6px 10px -8px rgba(43,39,35,.35)}\n"+
+"#journal .jclose{font-size:14px;padding:9px 16px;font-weight:700}\n"+
 ".jmast{max-width:820px;margin:0 auto 4px}.jmast .obs{font-family:system-ui,sans-serif;font-size:12px;color:#6b6459;letter-spacing:.2px}\n"+
 ".jday{background:#fbf9f2;border:1px solid #d8cdb6;box-shadow:0 3px 16px rgba(43,39,35,.18);padding:38px 46px;margin-bottom:22px;font-family:var(--serif);color:#2b2723}\n"+
 ".jloc{font-size:23px;font-weight:600;line-height:1.12}.jdate{font-family:system-ui,sans-serif;font-size:12.5px;color:#6b6459;margin-top:2px}\n"+
@@ -162,7 +164,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.35</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.36</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+

@@ -70,8 +70,7 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 ### PR-D · P1 — Mobile layout
 - **Item 7:** on phone, focusing a site **isolates that site's column** (see its dots without
   horizontal scrolling); "show all sites" toggle returns the full table (auto-scroll to focus).
-- **Item 4:** journal → Explorer **back** affordance moved out of the Dynamic-Island zone;
-  larger, safe-area-aware hit target.
+- **Item 4 [done · v1.0.36]:** journal back bar is safe-area-aware, sticky, and the back button is a larger tap target.
 - **Item 2:** **taller tour** with greatest-hits **prose (left)** + larger trip/favorites list (right).
 - **Item 20:** if **no tour species are chosen**, auto-pick one representative per taxonomic group.
 - **Item 21:** region **"special" species should stick** (Big Five, top birds); the **tour view
