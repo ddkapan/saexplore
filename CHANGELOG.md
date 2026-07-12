@@ -10,6 +10,17 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.33 — quick wins: title, satellite map, photo border, dark-mode text
+
+- **"South Africa"** (was "Southern Africa") in the header, page title, and manifest — the
+  trip is South Africa specifically.
+- **Map defaults to satellite** where a satellite tile exists (Cape / Lowveld); the country
+  overview still falls back to the basic tile (no satellite tile baked for it yet).
+- **Darker gray border** on the drawer photo for definition against the parchment.
+- **Dark-mode fix:** note/input text was rendering white-on-light (invisible) on dark-mode
+  devices; the app now pins `color-scheme: light` so its fixed parchment palette renders
+  consistently. A full dark theme is tracked separately.
+
 ## 1.0.32 — offline rescue (the app survives updates + airplane mode)
 
 The service worker was keeping the app shell **and** ~1,300 bird photos in a single

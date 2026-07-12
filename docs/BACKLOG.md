@@ -41,11 +41,15 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   from some species — **restore it**; pull synonyms for the *resolved species* on genus-collapsed
   records so every species keeps aliases. Review that all species have an "also known as".
 - **Item 13 (partial):** italic-Latin-name audit (quick, safe subset).
-- **Item 17:** map **default layer → satellite** (currently `streets`).
-- **Item 18:** **photo borders darker (gray)** — thumbnails/drawer images currently use a
-  taxon-coloured left border; switch to a darker neutral gray.
-- **Item 19:** **dark-mode note** — add proper dark-mode handling / theme note (bigger; may
-  land in PR-H polish, but capture the intent here).
+- **Item 17 [done in PR-B]:** map **default layer → satellite**. NOTE: only `cape`/`low` ship
+  a satellite tile; the `sa` overview has streets only (falls back gracefully) — **follow-up:
+  bake an `sa` satellite tile** so the opening view is satellite too.
+- **Item 18 [done in PR-B]:** darker gray border on the drawer photo (`#9a917f`).
+- **Item 19:** **dark mode.** Reported bug: **site/species-account note text invisible in dark
+  mode** (form-control text renders white-on-light). **PR-B applies a minimal safe fix**
+  (`color-scheme: light` + explicit input color) so nothing goes invisible. **Still on the list:
+  a full dark-mode audit of every view** (accounts, journal, drawer, chips) and, if wanted, a
+  real dark theme.
 
 ### PR-C · P1 — Filter-system unification + at-hand redesign (the structural one)
 - **Items 5, 8:** every filter gets **all/none** in the **same position/order**.
@@ -63,6 +67,10 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 - **Item 4:** journal → Explorer **back** affordance moved out of the Dynamic-Island zone;
   larger, safe-area-aware hit target.
 - **Item 2:** **taller tour** with greatest-hits **prose (left)** + larger trip/favorites list (right).
+- **Item 20:** if **no tour species are chosen**, auto-pick one representative per taxonomic group.
+- **Item 21:** region **"special" species should stick** (Big Five, top birds); the **tour view
+  populates with "things to look out for"** for the current region — a sensible default set that
+  the user can then override. (Design with item 20; likely a per-region curated + auto-filled list.)
 
 ### PR-E · P2 — Names & indigenous languages
 - **Item 12:** add SA languages (isiZulu, isiXhosa, Tshivenḓa, Setswana, Xitsonga, siSwati,

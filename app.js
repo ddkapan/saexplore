@@ -1,4 +1,4 @@
-/* Southern Africa — Species Explorer · app.js
+/* South Africa — Species Explorer · app.js
  * Offline PWA, no dependencies. index.html loads data.js then this file.
  * CSS string IIFE -> window.APP5 (builds the funnel shell) -> window.__wire5 (renders + wires).
  * v1.0.29 — union name index (names.js sidecar): OR-search across every alias
@@ -83,7 +83,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  function sec(n,title,cap){return '<div class="fh" data-sec="'+n+'"><span class="tri">▾</span><span class="ix">0'+n+'</span><h2>'+title+'</h2><span class="cap">— '+cap+'</span></div>';}
  var h='';
  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">'+
-   '<div><h1 style="font-size:30px;margin:0 0 4px;font-weight:600;letter-spacing:-.2px">Southern Africa — Species Explorer</h1>'+
+   '<div><h1 style="font-size:30px;margin:0 0 4px;font-weight:600;letter-spacing:-.2px">South Africa — Species Explorer</h1>'+
    '<p class="sans" style="margin:0;font-size:13px;color:var(--soft)">Cal Academy field guide · 20 Jul – 1 Aug 2026 · ten localities, Cape winter to Kruger dry season.</p></div>'+
    '<div style="display:flex;align-items:center;gap:12px"><span class="sans" style="font-size:11.5px;color:var(--soft);max-width:210px;text-align:right;line-height:1.35">Read down the sections to orient. Collapse each <b style="color:var(--terra)">▾</b> as you learn it — the list rises to fill the screen.</span>'+
    '<button id="openJournal" class="btn pri sans">Field journal ▸</button></div></div>';
@@ -147,7 +147,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.32</span> · built 2026-07-11 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.33</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -220,7 +220,7 @@ window.__wire5=function(UNIC,SMETA){
  function seenSpeciesCount(){return Object.keys(seenSpeciesMap()).length;}
  function updateSeenOrder(){var m=seenSpeciesMap();seenOrder=seenOrder.filter(function(k){return m[k];});Object.keys(m).forEach(function(k){if(seenOrder.indexOf(k)<0)seenOrder.push(k);});save();}
  // ---------- state ----------
- var S={region:'all',focus:null,taxa:{},q:'',months:new Set([0,1,2,3,4,5,6,7,8,9,10,11]),tripwin:false,ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'streets',zoom:1,panX:0,panY:0,tourMs:3200};
+ var S={region:'all',focus:null,taxa:{},q:'',months:new Set([0,1,2,3,4,5,6,7,8,9,10,11]),tripwin:false,ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'satellite',zoom:1,panX:0,panY:0,tourMs:3200};
  GORDER.forEach(function(p){S.taxa[p[0]]=1;});
  var GY=SMETA.gbifYears||[1838,2026];
  window.__S=S;
@@ -457,7 +457,7 @@ window.__wire5=function(UNIC,SMETA){
     '<button class="markbtn" data-m="tour" style="border:1px solid #5e7249;background:'+C.raised+';color:#5e7249;border-radius:12px;padding:3px 11px;cursor:pointer;font:inherit;font-size:12px;font-weight:600">⚑ tour</button>'+
     '<span style="font-size:10.5px;color:'+C.soft+'">focal = my interest · tour = shared highlight</span></div>'+
    '<div class="sans" style="padding:14px 18px;font-size:13px">'+
-   (med?'<div style="margin-bottom:13px"><img class="dphoto" src="'+esc(med)+'" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px;background:'+C.raised+'"><div style="font-size:10.5px;color:'+C.soft+';margin-top:3px">'+esc(o.p[2]||'')+(o.p[1]?(' · '+o.p[1].toUpperCase()):'')+' · via iNaturalist</div></div>':'')+
+   (med?'<div style="margin-bottom:13px"><img class="dphoto" src="'+esc(med)+'" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid #9a917f;background:'+C.raised+'"><div style="font-size:10.5px;color:'+C.soft+';margin-top:3px">'+esc(o.p[2]||'')+(o.p[1]?(' · '+o.p[1].toUpperCase()):'')+' · via iNaturalist</div></div>':'')+
    '<div style="margin-bottom:13px"><div class="dlab">Where on this trip</div>'+whereSites.length+' site'+(whereSites.length>1?'s':'')+': '+esc(whereSites.join(', '))+'</div>'+
    spark+
    '<div style="margin-bottom:13px" class="dwiki"><div class="dlab">Normally</div><span style="color:'+C.soft+'">loading…</span></div>'+
@@ -561,7 +561,7 @@ window.__wire5=function(UNIC,SMETA){
    '<div class="jlab">Journal</div><textarea class="jnarr jnoteta" data-jk="'+esc(jk)+'" placeholder="What happened, who we met, conditions, effort…" style="min-height:80px">'+esc(J.note||'')+'</textarea>'+
    '<div class="jlab">Species accounts</div><div class="jaccounts" style="margin-bottom:12px">'+accountsHTML(s)+'</div>'+
    '<div class="jlab">The day’s checklist</div>'+checklistHTML(s)+addHTML(jk)+
-   '<div class="jctrl" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">Southern Africa Species Explorer · Grinnell Field Journal · records on the GBIF Backbone</div>'+
+   '<div class="jctrl" style="margin-top:22px;border-top:1px solid #cfc5b2;padding-top:8px;font-size:10.5px;color:#9a917f">South Africa Species Explorer · Grinnell Field Journal · records on the GBIF Backbone</div>'+
   '</div>';}
  // ----- delegated wiring (attached to #journal once) -----
  function wireJournal(jn){if(jn.__wired)return;jn.__wired=1;
