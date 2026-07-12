@@ -148,7 +148,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div><div class="dlab">Specimen year</div><div class="dual" id="yrD"><span class="trk"></span><span class="bnd" id="yrBnd"></span><input type="range" id="yrLo"><input type="range" id="yrHi"></div><div class="yrlab" style="font-size:11px;color:var(--soft)"><span id="yrLoLab"></span> – <span id="yrHiLab"></span> · museum records</div></div>'+
    '<div><div class="dlab">Season</div><div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap"><button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600">★ late Jul</button><button class="allyrBtn" style="border:1px solid var(--rule);background:var(--raised);color:var(--soft);border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit">all yr</button><span class="seasonchip" data-se="0">Summer</span><span class="seasonchip" data-se="1">Autumn</span><span class="seasonchip" data-se="2">Winter</span><span class="seasonchip" data-se="3">Spring</span></div></div>'+
    '<div><div class="dlab">Sort</div><div style="display:flex;gap:5px"><span class="sortchip" data-sort="az">A→Z</span><span class="sortchip" data-sort="za">Z→A</span><span class="sortchip" data-sort="tax">taxonomic</span></div></div></div>'+
-   '<div style="margin-top:18px;border-top:1px solid var(--rule);padding-top:12px"><div class="dlab" style="margin-bottom:8px">Evidence — strongest on the left</div><div id="evLegend" style="display:flex;flex-wrap:wrap;gap:20px"></div></div></div>';
+   '<div style="margin-top:18px;border-top:1px solid var(--rule);padding-top:12px"><div class="dlab" style="margin-bottom:8px">Evidence — strongest first</div><div id="evLegend" style="display:flex;flex-wrap:wrap;gap:20px"></div></div></div>';
  // 7 results
  h+=sec(7,'The results','the working checklist · columns are sites, rows are organisms')+'<div class="fb" data-body="7" style="padding:0 0 16px 8px">'+
    // At-hand strip, redesigned as three stacked rows (search-first hierarchy):
@@ -186,7 +186,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.44</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.45</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -345,6 +345,10 @@ window.__wire5=function(UNIC,SMETA){
  var SPECIALK={};(function(){var idx={};function nm(s){return (s||'').toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();}
   UNIC.forEach(function(o){[o.c,o.s].forEach(function(n){if(n&&!idx[nm(n)])idx[nm(n)]=o.k;});var N=window.NAMES&&window.NAMES[o.k];if(N){var al=(N.sp?[N.sp]:[]).concat(N.s||[],N.v||[]);al.forEach(function(a){if(!idx[nm(a)])idx[nm(a)]=o.k;});}});
   Object.keys(SPECIALS).forEach(function(s){SPECIALK[s]=SPECIALS[s].map(function(n){return idx[nm(n)];}).filter(Boolean);});})();
+ // First run (no marks yet): seed the curated per-site specials as ⚑ tour marks, so you see &
+ // can edit "the choices" in the main list (they float to the top, un-star any you don't want).
+ // Runs once — guarded so it never clobbers your own marks or re-seeds after you clear them.
+ (function(){try{if(!Object.keys(marks).length&&!localStorage.getItem('sa_specials_seeded')){var did=false;Object.keys(SPECIALK).forEach(function(s){SPECIALK[s].forEach(function(k){if(k&&!marks[k]){marks[k]='tour';did=true;}});});if(did)save();localStorage.setItem('sa_specials_seeded','1');}}catch(e){}})();
  function ebOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.ebk)?n.ebk:'';}
  function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.sp)a.push(n.sp);if(n.ebk)a.push(n.ebk);if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
  function aliasHay(o){var a=aliasList(o);return a.length?(' '+a.join(' ').toLowerCase()):'';}
@@ -404,6 +408,10 @@ window.__wire5=function(UNIC,SMETA){
     // Tagged quick-filters are explicit user picks — show them regardless of the discovery
     // filters (season / abundance / year / site), but still honour taxa + search.
     ok=(S.tags.has('focal')&&markOf(o)==='focal')||(S.tags.has('tour')&&markOf(o)==='tour')||(S.tags.has('seen')&&!!(sm&&sm[o.k]));
+    if(ok&&S.q)ok=textOK(o,tr);
+   }else if(ok&&S.showMarks&&markOf(o)){
+    // pinned highlights (focal/tour) stay visible regardless of season/site/abundance/year —
+    // so your choices always show (and float to the top) where they're easy to see & edit.
     if(ok&&S.q)ok=textOK(o,tr);
    }else{
     if(ok&&S.q)ok=textOK(o,tr);

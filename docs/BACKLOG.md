@@ -97,6 +97,14 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
   export/re-import** (that's how `samples/saexplore-favorites.json` works — export → send to
   Shannon → she imports → gets your tour). [done · v1.0.39] "Export tour ⚑" button (section 08) downloads a clean marks-only favorites file (marks + eBird codes, no notes/journal) to share with the Dr.
 
+### PR-D3 · P1 — site-focus labels + evidence caption (Durrell 2026-07-12, late)
+- **"only at <site>" wrongly implies endemicity.** It's really *species expected/recorded at*
+  that site (many are widespread — African Black Duck proves it). Relabel: e.g. **"<site>
+  list"** / **"at <site>"**, and the other state **"all sites (<site> highlighted)"**. Also
+  reconsider that all-sites view — the grayed-out non-focus columns aren't very useful.
+- **[done · this PR] evidence caption** "strongest on the left" broke when the legend wraps on
+  a narrow screen (iNat under museum) → changed to "strongest first".
+
 ### PR-E · P2 — Names & indigenous languages
 - **Item 12:** add SA languages (isiZulu, isiXhosa, Tshivenḓa, Setswana, Xitsonga, siSwati,
   Sesotho, Sepedi, isiNdebele, + SA Sign where data exists, English, Afrikaans) with

@@ -10,6 +10,20 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.45 — highlights live in the list: seeded, always-visible, float to top
+
+The season-default filter (1.0.42) was hiding your marked/highlight species from the main
+list. Now:
+
+- **Focal/tour marks always show and float to the top** of the list, regardless of the
+  season/site/abundance filters — so your choices are always where they're easy to see, tap,
+  and edit.
+- **First run seeds the curated per-site specials as ⚑ tour marks** (52 of them — Big Five,
+  penguins, endemics), so you open onto "the choices" pinned at the top and can un-star any
+  you don't want. Runs once; never clobbers your own marks or re-seeds after you clear them.
+- **Evidence caption fix:** "strongest on the left" broke when the legend wraps on a narrow
+  screen (iNaturalist ended up under museum data) → now "strongest first". Shell → `sa-shell-v24`.
+
 ## 1.0.44 — intro summary, "Use it offline" card, dark-mode journal
 
 - **A one-paragraph summary at the top** — what the app is, that it runs a museum
