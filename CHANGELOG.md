@@ -10,6 +10,35 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.49 — real DNA-barcode coverage (BOLD): 210 → 1,819 species
+
+The "genomic" evidence was never a BOLD pull — it came from GBIF material samples, a thin slice:
+**210 species, 363 records**, holder usually "?". Now every species carries real barcode data.
+
+**1,819 of 2,780 species barcoded (65%, was 7.6%) · 72,733 records (was 363) · 14,232 of them
+South African · 1,343 with a named holding institution.** New `bold.js` sidecar (80 KB). The
+barcode glyph now lights from BOLD; each species drawer shows its record count, the South-African
+share, who holds them, and a link into BOLD; the Sources panel counts it all live.
+
+**Source: BOLD's specimens as published to GBIF by iBOL — not BOLD's own API.** BOLD v4 quotas at
+~300 calls (and its record endpoints are offline), and it matches names as exact strings, so it
+misses synonyms and is weak on plants. GBIF matches on the **backbone**, catching synonyms and
+subspecies — which is why plant coverage lands at **81%**. Full reasoning in
+`tools/reconcile/pull_bold.js`.
+
+Three traps caught while building this, all now guarded (see `docs/BACKLOG.md` §PR-I b):
+- **A quota reply is plain text, not JSON.** The first puller read it as "no barcodes" and cached
+  **259 false zeros**. Failed fetches are now never cached.
+- **A corpus key is not always a species key.** 27 aren't: 25 genus, one PHYLUM, and one
+  **KINGDOM** — the White-fronted Plover is keyed `k1` (*Animalia*), which counted the entire
+  animal kingdom as **22,188,596 barcodes**. Ranks are now verified against GBIF
+  (`check_ranks.js`) and coarse keys re-resolved by name.
+- **25 species stay blank on purpose.** GBIF's backbone has no species record for them (which is
+  why they were genus-collapsed); the available fallbacks silently return genus-wide counts, so
+  under-reporting 0.9% beats inventing a number.
+
+Shell → `sa-shell-v28`. +6 render tests (82 pass). (BACKLOG §PR-I b.)
+
 ## 1.0.48 — live, filter-aware "Sources in view" panel
 
 New collapsible **Sources in view** panel pinned by the result count (§7 strip). It shows, for

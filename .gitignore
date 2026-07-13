@@ -9,6 +9,8 @@ tools/reconcile/gcache2/
 tools/reconcile/vcache/
 tools/reconcile/scache/
 tools/reconcile/iicache/
+tools/reconcile/boldcache/
+tools/reconcile/bold_pull.log
 tools/reconcile/pull.log
 tools/reconcile/iipull.log
 tools/reconcile/ii_chunks.json

@@ -54,6 +54,13 @@ dom1.window.NAMES = {
   k3242735: { sp: 'Astur melanoleucus', spii: 424242, ebk: 'blagos1' },
 };
 dom1.window.NAMES_LANG = { afr: 'Afrikaans' };
+// Barcode sidecar (bold.js) stub. [n, z, inst?] = records · South-African share · top holder.
+// k2498252 (Egyptian Goose) has corpus src 'ei' — NO genomic evidence — so it proves the
+// barcode sidecar ALONE lights the genomic glyph. k3242735 has no named institution.
+dom1.window.BOLD = {
+  k2498252: [267, 9, 'Iziko South African Museum'],
+  k3242735: [12, 5],
+};
 let { d, w, err } = boot(dom1);
 const rows = () => [].slice.call(d.querySelectorAll('#matrix tbody tr.org'));
 const visible = () => rows().filter(r => !r.classList.contains('hid'));
@@ -111,7 +118,7 @@ ok('deselecting abundance shows all again', visible().length === beforeAb, visib
 ok('Sources toggle + panel present', !!d.getElementById('srcToggle') && !!d.getElementById('srcPanel'));
 d.getElementById('srcToggle').click(); // open it
 const srcHtml = d.getElementById('srcPanel').innerHTML;
-ok('Sources panel lists all four evidence types', /Museum voucher/.test(srcHtml) && /Genomic/.test(srcHtml) && /iNaturalist/.test(srcHtml) && /eBird/.test(srcHtml));
+ok('Sources panel lists all four evidence types', /Museum voucher/.test(srcHtml) && /DNA barcode/.test(srcHtml) && /iNaturalist/.test(srcHtml) && /eBird/.test(srcHtml));
 ok('Sources panel shows per-type share + species counts', /% ·/.test(srcHtml) && /spp/.test(srcHtml));
 // filter to birds only → eBird share should climb toward 100%
 const birdPct = () => { const m = d.getElementById('srcPanel').innerHTML.match(/eBird<\/span><span[^>]*>(\d+)%/); return m ? +m[1] : -1; };
@@ -119,6 +126,30 @@ const allBirdsPct = birdPct();
 Object.keys(w.__S.taxa).forEach(g => { w.__S.taxa[g] = 0; }); w.__S.taxa.Aves = 1; w.__applyFilters();
 ok('Sources panel recomputes on filter (Birds → eBird share rises)', birdPct() > allBirdsPct, birdPct() + '% vs ' + allBirdsPct + '%');
 Object.keys(w.__S.taxa).forEach(g => { w.__S.taxa[g] = 1; }); w.__applyFilters();
+
+// ---- DNA-barcode (BOLD via iBOL) sidecar ----
+const srcNow = () => d.getElementById('srcPanel').innerHTML;
+ok('Sources panel labels the barcode row as BOLD + calls out the South-African share',
+  /DNA barcode · BOLD/.test(srcNow()) && /from SA/.test(srcNow()));
+// Egyptian Goose: corpus src is 'ei' (no genomic) — the sidecar alone must light the glyph.
+const egRow = d.querySelector('#matrix tr.org[data-txt*="alopochenzz"]');
+const egLit = (egRow.querySelector('td:nth-child(4)').innerHTML.match(/opacity:1[;"]/g) || []).length;
+ok('barcode data alone lights the genomic glyph (species has no corpus genomic evidence)', egLit === 3, egLit + ' lit glyphs (expect m off; g+i+e on)');
+w.__openDrawer(+egRow.dataset.i);
+const bHtml = d.getElementById('drawer').innerHTML;
+ok('drawer shows the barcode block with record count', /DNA barcodes · BOLD/.test(bHtml) && /267<\/b> barcode records/.test(bHtml));
+ok('drawer calls out the South-African subset', /9<\/b> from South Africa/.test(bHtml));
+ok('drawer names the holding institution', /Iziko South African Museum/.test(bHtml));
+ok('drawer links out to BOLD', /boldsystems\.org[^"]*Alopochen/.test(bHtml));
+d.querySelector('#drawer .dclose').click();
+// a species with barcodes but no named depository must not render an empty "mostly at" line
+const bgRow = [].slice.call(d.querySelectorAll('#matrix tr.org')).find(r => {
+  const cd = r.querySelector('td:nth-child(3) div'); return cd && /Black Goshawk/.test(cd.textContent);
+});
+w.__openDrawer(+bgRow.dataset.i);
+const gHtml = d.getElementById('drawer').innerHTML;
+ok('no institution → no dangling "mostly at" line', /12<\/b> barcode records/.test(gHtml) && !/mostly at/.test(gHtml));
+d.querySelector('#drawer .dclose').click();
 
 // text-size stepper present and changes the explorer zoom
 ok('text-size control present', !!d.getElementById('textSize'));

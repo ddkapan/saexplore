@@ -189,7 +189,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.48</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.49</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -237,7 +237,7 @@ window.__wire5=function(UNIC,SMETA){
   else s+='<circle cx="6" cy="6" r="3.4" fill="none" stroke="#3e8a7e" stroke-width="1.5"/>';
   return s+'</svg>';}
  window.__GLYPH=glyph;
- function badges(o){return ['m','g','i','e'].map(function(k){return glyph(k,o.src.indexOf(k)>=0?1:0);}).join('');}
+ function badges(o){return ['m','g','i','e'].map(function(k){return glyph(k,hasEv(o,k)?1:0);}).join('');}
  // ---------- precompute per-org ----------
  UNIC.forEach(function(o,i){o.i=i;o._sites=Object.keys(o.st);var me=0,yrs=[];o._sites.forEach(function(k){var s=o.st[k];if(s.e&&s.e[4]>me)me=s.e[4];if(s.i&&s.i[2]>me)me=s.i[2];var m=s.m;if(m){if(m[4]&&m[4].length)m[4].forEach(function(y){yrs.push(y);});else if(m[3]&&m[3][0])yrs.push(m[3][0]);}});o._e=me||0;o._yr=yrs;});
  UNIC.sort(function(a,b){var d=(order[a.g]==null?9:order[a.g])-(order[b.g]==null?9:order[b.g]);if(d)return d;return (a.c||a.s).localeCompare(b.c||b.s);});
@@ -275,7 +275,7 @@ window.__wire5=function(UNIC,SMETA){
  (function(){var el=$('#saStats');if(!el)return;el.innerHTML='<span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">~9,000</b>&nbsp; fynbos plant species, ~70% endemic</span><span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">10</b>&nbsp; localities</span><span><b style="font-family:var(--serif);font-size:16px;color:var(--ink)">'+UNIC.length.toLocaleString()+'</b>&nbsp; organisms on file</span>';})();
 
  // ---------- evidence legend ----------
- (function(){var el=$('#evLegend');if(!el)return;var rows=[['m','Museum voucher','A physical specimen held in a collection.'],['g','Genomic','A sequence from a specimen; links to the collection event.'],['i','iNaturalist','Photographed, community-verified sightings.'],['e','eBird','Reviewer-vetted bird records.']];el.innerHTML=rows.map(function(r){return '<div style="max-width:230px">'+glyph(r[0],1)+' <b>'+r[1]+'</b><div style="color:var(--soft);line-height:1.4;margin-top:2px">'+r[2]+'</div></div>';}).join('');})();
+ (function(){var el=$('#evLegend');if(!el)return;var rows=[['m','Museum voucher','A physical specimen held in a collection.'],['g','DNA barcode','A sequenced specimen — from BOLD (the barcode library), or a GBIF material sample.'],['i','iNaturalist','Photographed, community-verified sightings.'],['e','eBird','Reviewer-vetted bird records.']];el.innerHTML=rows.map(function(r){return '<div style="max-width:230px">'+glyph(r[0],1)+' <b>'+r[1]+'</b><div style="color:var(--soft);line-height:1.4;margin-top:2px">'+r[2]+'</div></div>';}).join('');})();
 
  // ---------- taxa chips ----------
  function buildTaxa(){['#taxaChips','#stripTaxa'].forEach(function(sel){var box=$(sel);if(!box)return;box.innerHTML='';GORDER.forEach(function(p){var b=document.createElement('button');b.className='chip tax mini';b.dataset.g=p[0];b.textContent=p[1];b.style.borderColor=TAXCOL[p[0]];box.appendChild(b);});});
@@ -362,6 +362,14 @@ window.__wire5=function(UNIC,SMETA){
  // fetch, and links. The genus stays searchable (o.s is still in the row haystack).
  function sciOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.sp)?n.sp:o.s;}
  function iiOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.spii)?n.spii:o.ii;}
+ // DNA-barcode coverage (bold.js sidecar): [n, z, inst?] = barcode records · how many are South
+ // African · top holding institution. These are BOLD specimens as published to GBIF by iBOL.
+ // The corpus's own `g` evidence came from GBIF material samples — a thin slice (210 species) —
+ // so barcode evidence is the UNION of the two: this is much the deeper source.
+ function boldOf(o){var b=window.BOLD&&window.BOLD[o.k];return (b&&b[0]>0)?b:null;}
+ function boldURL(o){return 'https://v4.boldsystems.org/index.php/Public_SearchTerms?query='+encodeURIComponent(sciOf(o));}
+ // Species-level evidence test. 'g' (genomic/barcode) is true if EITHER source has it.
+ function hasEv(o,k){return k==='g'?(o.src.indexOf('g')>=0||!!boldOf(o)):(o.src.indexOf(k)>=0);}
  // Per-species name-expander: every alias, grouped + source-labelled, for the drawer.
  function namesHTML(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return'';var LG=window.NAMES_LANG||{};var rows=[];
   function esci(x){return '<i>'+esc(x)+'</i>';}
@@ -407,7 +415,7 @@ window.__wire5=function(UNIC,SMETA){
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;var sm=S.tags.size?seenSpeciesMap():null;
-  var srcN={m:0,g:0,i:0,e:0},srcRec={m:0,g:0};
+  var srcN={m:0,g:0,i:0,e:0},srcRec={m:0,g:0,za:0};
   $$('#matrix tr.org').forEach(function(tr){var o=UNIC[+tr.dataset.i];var ok=!!S.taxa[o.g];
    if(ok&&S.tags.size){
     // Tagged quick-filters are explicit user picks — show them regardless of the discovery
@@ -428,9 +436,11 @@ window.__wire5=function(UNIC,SMETA){
    }
    tr.classList.toggle('hid',!ok);tr.style.opacity='1';
    if(ok){vis++;
-    if(o.src.indexOf('m')>=0)srcN.m++;if(o.src.indexOf('g')>=0)srcN.g++;
-    if(o.src.indexOf('i')>=0)srcN.i++;if(o.src.indexOf('e')>=0)srcN.e++;
-    for(var _c=0;_c<colKeys.length;_c++){var _st=o.st[colKeys[_c]];if(_st&&_st.m){srcRec.m+=_st.m[0]||0;srcRec.g+=_st.m[1]||0;}}
+    if(hasEv(o,'m'))srcN.m++;if(hasEv(o,'g'))srcN.g++;
+    if(hasEv(o,'i'))srcN.i++;if(hasEv(o,'e'))srcN.e++;
+    // specimens are site-scoped (sum over the sites shown); BOLD barcodes are species-scoped.
+    for(var _c=0;_c<colKeys.length;_c++){var _st=o.st[colKeys[_c]];if(_st&&_st.m)srcRec.m+=_st.m[0]||0;}
+    var _b=boldOf(o);if(_b){srcRec.g+=_b[0];srcRec.za+=_b[1]||0;}
    }});
   renderSources(vis,srcN,srcRec);
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
@@ -443,7 +453,9 @@ window.__wire5=function(UNIC,SMETA){
  // carry each kind of evidence, plus the specimen/barcode tallies summed over the sites shown.
  function renderSources(n,cnt,rec){var p=$('#srcPanel');if(!p)return;
   if(!n){p.innerHTML='<span style="font-size:11px;color:var(--soft)">No species in view — widen the filters.</span>';return;}
-  var rows=[['m','Museum voucher',cnt.m,rec.m,'specimens'],['g','Genomic / barcode',cnt.g,rec.g,'barcodes'],['i','iNaturalist',cnt.i,0,''],['e','eBird',cnt.e,0,'']];
+  var rows=[['m','Museum voucher',cnt.m,rec.m,'specimens'],
+   ['g','DNA barcode · BOLD',cnt.g,rec.g,'barcodes'+(rec.za?(' · '+rec.za.toLocaleString()+' from SA'):'')],
+   ['i','iNaturalist',cnt.i,0,''],['e','eBird',cnt.e,0,'']];
   p.innerHTML='<div style="display:flex;flex-direction:column;gap:9px;max-width:520px">'+rows.map(function(r){
     var pct=Math.round(r[2]/n*100),lit=r[2]>0,recTxt=(r[3]>0?' · '+r[3].toLocaleString()+' '+r[4]:'');
     return '<div style="opacity:'+(lit?1:.4)+'"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11px;margin-bottom:3px">'+
@@ -451,7 +463,7 @@ window.__wire5=function(UNIC,SMETA){
       '<span style="color:var(--soft);text-align:right">'+pct+'% · '+r[2].toLocaleString()+' spp'+recTxt+'</span></div>'+
       '<div style="height:8px;background:var(--rule);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+C.acacia+';border-radius:4px"></div></div></div>';
   }).join('')+'</div>'+
-  '<div style="font-size:10px;color:var(--soft);margin-top:9px;line-height:1.45;max-width:520px">Share of the <b>'+n.toLocaleString()+'</b> species in view carrying each kind of evidence — recomputes as you filter. Specimen &amp; barcode tallies are summed over the sites shown. <b>Genomic/barcode is sparse</b> (pulled from GBIF material samples, not BOLD directly) — a fuller BOLD sync is planned.</div>';
+  '<div style="font-size:10px;color:var(--soft);margin-top:9px;line-height:1.45;max-width:520px">Share of the <b>'+n.toLocaleString()+'</b> species in view carrying each kind of evidence — recomputes as you filter. <b>Specimens</b> are summed over the sites shown. <b>Barcodes</b> are BOLD specimen records per species, counted worldwide (with the South-African share called out) — a species barcoded anywhere is still barcoded. Open any species for who holds them.</div>';
  }
  function colVisibility(){var iso=S.focus&&S.hideAbsent;$$('#matrix .colh, #matrix .cell').forEach(function(el){var s=SI[el.dataset.site];var show=iso?(el.dataset.site===S.focus):(S.region==='all'||(s&&s.rk===S.region));el.style.display=show?'':'none';});}
 
@@ -552,7 +564,19 @@ window.__wire5=function(UNIC,SMETA){
   var mK=firstWith('m'),mU='';if(mK)mU='https://www.gbif.org/occurrence/search?basisOfRecord=PRESERVED_SPECIMEN&'+(_gk?('taxonKey='+_gk):('q='+encodeURIComponent(o.s)));
   var gU=gn>0?('https://www.gbif.org/occurrence/search?basisOfRecord=MATERIAL_SAMPLE&'+(_gk?('taxonKey='+_gk):('q='+encodeURIComponent(o.s)))):'';
   function ev(k,lit,txt,url){var link=lit&&url;return '<'+(link?'a':'div')+' style="display:flex;flex-direction:column;align-items:center;gap:2px;font-family:system-ui,sans-serif;font-size:10px;color:'+C.soft+';text-decoration:none;opacity:'+(lit?'1':'.32')+'"'+(link?(' href="'+url+'" target="_blank" rel="noopener"'):'')+'>'+glyph(k,lit?1:0)+'<span>'+txt+'</span></'+(link?'a':'div')+'>';}
-  var evband='<div style="display:flex;gap:16px;padding:9px 0;border-top:1px solid '+C.rule+';border-bottom:1px solid '+C.rule+'">'+ev('m',sp>0,'voucher'+(sp>0?' '+sp:''),mU)+ev('g',gn>0,'genomic'+(gn>0?' '+gn:''),gU)+ev('i',o.src.indexOf('i')>=0,'iNat'+(nObs?' '+nObs:''),iU)+ev('e',o.src.indexOf('e')>=0,'eBird',eU)+'</div>';
+  // genomic: BOLD is the deeper source (barcode records), GBIF material samples the fallback.
+  var _bd=boldOf(o),_bn=_bd?_bd[0]:0,_glit=(_bn>0||gn>0);
+  var gLab=_bn>0?('barcode '+_bn):(gn>0?('genomic '+gn):'barcode');
+  var gLink=_bn>0?boldURL(o):gU;
+  var evband='<div style="display:flex;gap:16px;padding:9px 0;border-top:1px solid '+C.rule+';border-bottom:1px solid '+C.rule+'">'+ev('m',sp>0,'voucher'+(sp>0?' '+sp:''),mU)+ev('g',_glit,gLab,gLink)+ev('i',o.src.indexOf('i')>=0,'iNat'+(nObs?' '+nObs:''),iU)+ev('e',o.src.indexOf('e')>=0,'eBird',eU)+'</div>';
+  // Barcode detail — records, the South-African share, and who holds them (Shannon's question).
+  var boldline='';
+  if(_bd){var _bits=[];_bits.push('<b>'+_bd[0].toLocaleString()+'</b> barcode record'+(_bd[0]===1?'':'s'));
+   if(_bd[1])_bits.push('<b>'+_bd[1].toLocaleString()+'</b> from South Africa');
+   boldline='<div style="margin-bottom:13px"><div class="dlab">DNA barcodes · BOLD</div>'+
+    '<div style="font-size:12px;color:'+C.soft+';line-height:1.5">'+_bits.join(' · ')+
+    (_bd[2]?('<br>mostly at <b>'+esc(_bd[2])+'</b>'):'')+
+    '<br><a href="'+boldURL(o)+'" target="_blank" rel="noopener" style="color:'+C.acacia+'">open in BOLD ↗</a></div></div>';}
   var spark='';if(monthly){var mx=Math.max.apply(null,monthly)||1;spark='<div style="margin-bottom:13px"><div class="dlab">Season'+(tr>=0.3?' · good in late July':tr>0?' · possible late July':' · scarce late July')+'</div><div style="display:flex;align-items:flex-end;gap:3px;height:40px">'+monthly.map(function(v,k){return '<div title="'+MN[k]+'" style="flex:1;border-radius:1px;background:'+([6,7].indexOf(k)>=0?C.terra:C.rule)+';height:'+Math.max(2,Math.round(v/mx*40))+'px"></div>';}).join('')+'</div></div>';}
   var ckchips=SITES.map(function(s){var ck=o.k+'|'+s.key;var on=seen.has(ck);var known=presentAt(o,s.key);return '<span class="ckchip" data-key="'+ck+'" data-known="'+(known?1:0)+'" style="background:'+(on?sitecol(s.key):C.raised)+';color:'+(on?'#fff':sitecol(s.key))+';border-color:'+sitecol(s.key)+';opacity:'+(known?'1':'.5')+'">'+(on?'✓ ':'')+esc(s.short.replace('Kruger–','K–'))+'</span>';}).join('');
   var nk='sp:'+o.k;var iok=inatobs[o.k]||'';
@@ -569,8 +593,9 @@ window.__wire5=function(UNIC,SMETA){
    (med?'<div style="margin-bottom:13px"><img class="dphoto" src="'+esc(med)+'" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid #9a917f;background:'+C.raised+'"><div style="font-size:10.5px;color:'+C.soft+';margin-top:3px">'+esc(o.p[2]||'')+(o.p[1]?(' · '+o.p[1].toUpperCase()):'')+' · via iNaturalist</div></div>':'')+
    '<div style="margin-bottom:13px"><div class="dlab">Where on this trip</div>'+whereSites.length+' site'+(whereSites.length>1?'s':'')+': '+esc(whereSites.join(', '))+'</div>'+
    spark+
+   boldline+
    '<div style="margin-bottom:13px" class="dwiki"><div class="dlab">Normally</div><span style="color:'+C.soft+'">loading…</span></div>'+
-   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
+   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'',_bd?'<a href="'+boldURL(o)+'" target="_blank" rel="noopener" title="'+_bd[0]+' barcode records in BOLD">BOLD</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
    '<div style="margin-bottom:13px"><div class="dlab">Seen on this trip</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+ckchips+'</div></div>'+
    '<div style="margin-bottom:13px"><div class="dlab">iNaturalist observation</div><input class="inatobs sans" data-k="'+o.k+'" value="'+esc(iok)+'" placeholder="paste an iNat observation URL / id" style="width:100%;border:1px solid '+C.rule+';border-radius:6px;padding:6px 8px;font-size:12px;background:'+C.raised+';color:'+C.ink+'"></div>'+
    '<div style="margin-bottom:8px"><div class="dlab">My notes</div><textarea class="noteta" data-nk="'+nk+'" placeholder="What you saw, where, with whom…">'+esc(notes[nk]||'')+'</textarea></div>'+
