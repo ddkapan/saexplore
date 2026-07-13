@@ -82,6 +82,21 @@ node build_names.js            # folds ebk + eBird-canonical sci into ../../name
 `build_names.js` attaches `ebk` (the join key) to every bird and makes the eBird
 scientific name canonical (old form → synonym). Common names already track eBird.
 
+### Regenerate the DNA-barcode layer (`bold.js`)
+```sh
+node pull_bold.js       # → boldcache/<key>.json, one GBIF call per species (resumable)
+node build_bold.js      # → ../../bold.js   { corpusKey: [records, fromSA, topInstitution?] }
+```
+Source is **BOLD's specimens as published to GBIF by iBOL** (dataset `040c5662…`), *not*
+BOLD's own API — BOLD v4 quotas at ~300 calls and its record endpoints are offline. Full
+reasoning in the header of `pull_bold.js`; read it before "improving" this.
+
+⚠️ **Two traps this script exists to avoid.** (1) A failed fetch must NEVER be cached — BOLD
+answers a quota breach with a *plain-text* sentence, and an earlier version stored 259 species
+as "0 barcodes". Failures here are simply not written, so re-running retries them. (2) 28 corpus
+keys are GBIF **genus** keys (see `genus_fix.json`); passing one as `taxonKey` counts the whole
+genus, so they're resolved to species keys first.
+
 ## Next (per NAME_BACKBONE.md)
 Add **eBird + BOLD + book** name columns (`v`/`s` already carry GBIF's), pull the
 per-sub-region **envelope candidate pool** (2σ ellipse → GBIF/iNat facet, all taxa), and

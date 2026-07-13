@@ -146,14 +146,32 @@ tallies over visible sites; recomputes in `applyFilters`. Below is the original 
   eBird ~100%; Plants → museum dominates; focus a site / late-July → recomputes. Data is already in
   `o.src` + `o.st[site].m` (m[0]=specimens, m[1]=genomic) + `.i`. It's the natural home for improved BOLD.
 
-**(b) BOLD is under-pulled + unlabeled — diagnosis.**
-- Genomic/barcode evidence EXISTS but sparse: **210/2,780 species, 363 records, institution usually "?"**.
-- Cause: it came from **GBIF `MATERIAL_SAMPLE` occurrences** (a thin slice), NOT from BOLD directly.
-  BOLD itself is rich — e.g. **Nymphalidae/South Africa: 588 barcode records, 62 species, 83 BINs,
-  15 depositories** (BOLD v4 `API_Public/stats?taxon=&geo=`).
-- Fix: pull **BOLD v4 API** (`stats`/`specimen`/`sequence`) per taxon (or GBIF filtered to BOLD's
-  datasetKey) → add barcode coverage, **BIN counts**, and a properly-labelled **"BOLD"** source
-  (fits name-backbone: source to the right). Also carries CC specimen images (feeds (c)).
+**(b) BOLD is under-pulled + unlabeled** — ✅ DONE v1.0.49 (#TBD). Original diagnosis + what the
+build actually found (the plan below changed once the APIs were probed — recorded here because
+the surprises matter):
+- Genomic/barcode evidence EXISTED but was sparse: **210/2,780 species, 363 records, institution
+  usually "?"**. Cause confirmed: it came from **GBIF `MATERIAL_SAMPLE` occurrences** (a thin
+  slice), NOT from BOLD.
+- **Plan was: pull BOLD's v4 API. That does not scale.** Two hard blockers, both hit:
+  1. Only `stats` is live — `specimen`/`combined` (record downloads) return a *"BOLD Public
+     Offline"* page. So no bulk pull by family; it's one call **per species**.
+  2. BOLD **quotas at ~300 calls**, then replies with the **plain-text** line *"You have exceeded
+     your allowed request quota."* — neither JSON nor HTML. ⚠️ A first version of the puller read
+     that as a miss and **cached 259 species as "0 barcodes"** (false zeros). Caught by noticing
+     the barcoded count had frozen. **Rule: never cache a failed fetch.** Fixed + purged.
+  3. Even when it answers, `stats?taxon=<name>` matches an **exact name string** → misses synonyms
+     and is weak on plants (*Protea cynaroides* → 2 records).
+- **Shipped instead: the same BOLD records via GBIF/iBOL** (dataset `040c5662…`, 23.5M records,
+  865k South African). GBIF matches on the **backbone**, so it catches synonyms + subspecies the
+  name string misses (*Protea cynaroides* → **32**; *Ilex mitis* → **16**). No quota. **One call
+  returns count + holding institutions + per-country split.** Note it's not record-identical to
+  BOLD's own stats (GBIF rolls up subspecies: elephant 117 vs BOLD's 16) — so we use **one source
+  only**, not a mix.
+- **Given up: BIN counts.** GBIF's iBOL BIN dataset keys on BIN pseudo-taxa, not species, so BINs
+  can't be joined per species. We report *barcode records*, not BINs. (Future: enrich BINs from
+  BOLD's `stats` for just the ~50 focal/tour species — well under the quota.)
+- Genus-collapse trap avoided: 28 corpus keys are **genus** GBIF keys; using them as `taxonKey`
+  would have counted the whole genus. Resolved to species keys first.
 
 **(c) Photo backfill for the 270 photoless species** (Insecta 83, Other 66, Plantae 55, Mollusca 50,
   Reptilia 5, Arachnida 5, Mammalia 3, fish 2, Amphibia 1).

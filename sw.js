@@ -14,12 +14,12 @@
    This is why "content disappeared from the cache" happened before: a single versioned cache
    was deleted on every bump and re-populated by a precache that could be interrupted offline.
 
-   Bump SHELL_CACHE when data.js / names.js / app.js / index.html change. */
+   Bump SHELL_CACHE when data.js / names.js / bold.js / app.js / index.html change. */
 importScripts('./precache-list.js');
 
-var SHELL_CACHE = 'sa-shell-v27';   // ← bump on shell change
+var SHELL_CACHE = 'sa-shell-v28';   // ← bump on shell change
 var MEDIA_CACHE = 'sa-media-v1';    // ← stable; keep across shell bumps
-var SHELL = ['./', './index.html', './data.js', './names.js', './app.js', './precache-list.js', './manifest.json', './icon.svg'];
+var SHELL = ['./', './index.html', './data.js', './names.js', './bold.js', './app.js', './precache-list.js', './manifest.json', './icon.svg'];
 
 // Cache the shell resiliently: per-item, so one failed URL doesn't reject the whole install.
 function cacheShell(c) {
