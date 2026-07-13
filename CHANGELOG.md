@@ -10,6 +10,18 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.48 — live, filter-aware "Sources in view" panel
+
+New collapsible **Sources in view** panel pinned by the result count (§7 strip). It shows, for
+the species **currently in view**, the share carrying each kind of evidence — museum voucher,
+genomic/barcode, iNaturalist, eBird — as four bars with per-type species counts, plus the
+**specimen and barcode tallies summed over the sites shown**. It **recomputes on every filter**:
+narrow to Birds and eBird climbs to ~100%; focus a site or the late-July window and the counts
+follow. Restores the source breakdown that was lost, and honestly flags that genomic/barcode
+coverage is sparse (pulled from GBIF material samples, not BOLD directly) — a fuller BOLD sync
+is the next PR-I step. Data all came from `o.src` + per-site `o.st[k].m`; no new pulls. Shell →
+`sa-shell-v27`. +4 render tests. (BACKLOG §PR-I a.)
+
 ## 1.0.47 — offline photos now cover ALL species (2,501, was 1,315)
 
 The precache list was **stale** — it listed only 1,315 thumbnails, but the corpus has **2,501

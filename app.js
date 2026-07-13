@@ -178,7 +178,10 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<span style="width:1px;height:15px;background:var(--rule);margin:0 3px"></span>'+
    '<div id="stripSites" style="display:flex;gap:5px;flex-wrap:wrap"></div>'+
    '<button id="absToggle" class="chip sans mini" style="display:none;border-color:var(--terra);color:var(--terra);margin-left:auto"></button></div>'+
-   '<div style="display:flex;justify-content:flex-end;border-top:1px dashed var(--rule);padding-top:6px;margin-top:1px"><span id="count" style="font-size:11px;color:var(--soft);font-weight:600"></span></div>'+
+   '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--rule);padding-top:6px;margin-top:1px;gap:10px;flex-wrap:wrap">'+
+   '<button id="srcToggle" class="sans" style="background:none;border:none;padding:0;cursor:pointer;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--soft)">▸ Sources in view</button>'+
+   '<span id="count" style="font-size:11px;color:var(--soft);font-weight:600"></span></div>'+
+   '<div id="srcPanel" class="sans" style="display:none;border-top:1px dashed var(--rule);padding:9px 2px 3px"></div>'+
    '</div>'+
    '<div id="matrix"></div><div id="status" class="sans" style="font-size:12px;color:var(--soft);margin-top:8px"></div></div>';
  // 8 export
@@ -186,7 +189,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.47</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.48</span> · built 2026-07-12 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=genomic sample · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -308,6 +311,7 @@ window.__wire5=function(UNIC,SMETA){
  function paintTags(){var COL={focal:'#b5623c',tour:'#5e7249',seen:'#5e7249'};$$('.tagf').forEach(function(b){var t=b.dataset.tag,on=S.tags.has(t),c=COL[t];b.style.background=on?c:C.raised;b.style.color=on?'#fff':c;b.style.borderColor=c;b.style.fontWeight='700';});}
  $$('.tagf').forEach(function(b){b.onclick=function(){var t=b.dataset.tag;if(S.tags.has(t))S.tags.delete(t);else S.tags.add(t);paintTags();applyFilters();};});paintTags();
  $$('.allyrBtn').forEach(function(b){b.onclick=function(){S.tripwin=false;S.months=new Set([0,1,2,3,4,5,6,7,8,9,10,11]);paintSeason();applyFilters();};});
+ (function(){var t=$('#srcToggle'),p=$('#srcPanel');if(!t||!p)return;t.onclick=function(){var open=p.style.display==='none';p.style.display=open?'':'none';t.textContent=(open?'▾':'▸')+' Sources in view';};})();
  $$('.seasonchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:system-ui,sans-serif';c.onclick=function(){var mm=SEAS[+c.dataset.se];var allon=mm.every(function(m){return S.months.has(m);});mm.forEach(function(m){if(allon)S.months.delete(m);else S.months.add(m);});S.tripwin=false;paintSeason();applyFilters();};});
  function paintSeason(){$$('.tripBtn').forEach(function(b){b.style.background=S.tripwin?'#2f4f86':C.raised;b.style.color=S.tripwin?'#fff':'#2f4f86';});var sc=['#c0392b','#cf7d3a','#3f6fb0','#8e6fb0'];$$('.seasonchip').forEach(function(c){var mm=SEAS[+c.dataset.se];var on=mm.some(function(m){return S.months.has(m);});var col=sc[+c.dataset.se];c.style.background=on?col:C.raised;c.style.color=on?'#fff':col;c.style.borderColor=col;});}
  $$('.sortchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 10px;font-size:11.5px;cursor:pointer;color:'+C.soft+';font-family:system-ui,sans-serif';c.onclick=function(){S.sort=c.dataset.sort;$$('.sortchip').forEach(function(x){x.style.background=C.raised;x.style.color=C.soft;x.style.borderColor=C.rule;});c.style.background=C.ink;c.style.color=C.paper;c.style.borderColor=C.ink;sortRows();};});
@@ -403,6 +407,7 @@ window.__wire5=function(UNIC,SMETA){
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;var sm=S.tags.size?seenSpeciesMap():null;
+  var srcN={m:0,g:0,i:0,e:0},srcRec={m:0,g:0};
   $$('#matrix tr.org').forEach(function(tr){var o=UNIC[+tr.dataset.i];var ok=!!S.taxa[o.g];
    if(ok&&S.tags.size){
     // Tagged quick-filters are explicit user picks — show them regardless of the discovery
@@ -421,11 +426,32 @@ window.__wire5=function(UNIC,SMETA){
     if(ok)ok=colKeys.some(function(k){return presentAt(o,k);});
     if(ok&&S.focus&&S.hideAbsent&&!presentAt(o,S.focus))ok=false;
    }
-   tr.classList.toggle('hid',!ok);tr.style.opacity='1';if(ok)vis++;});
+   tr.classList.toggle('hid',!ok);tr.style.opacity='1';
+   if(ok){vis++;
+    if(o.src.indexOf('m')>=0)srcN.m++;if(o.src.indexOf('g')>=0)srcN.g++;
+    if(o.src.indexOf('i')>=0)srcN.i++;if(o.src.indexOf('e')>=0)srcN.e++;
+    for(var _c=0;_c<colKeys.length;_c++){var _st=o.st[colKeys[_c]];if(_st&&_st.m){srcRec.m+=_st.m[0]||0;srcRec.g+=_st.m[1]||0;}}
+   }});
+  renderSources(vis,srcN,srcRec);
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
   var cnt=$('#count');if(cnt)cnt.textContent=vis.toLocaleString()+' / '+UNIC.length.toLocaleString();var mc=$('#mxCount');if(mc)mc.textContent=vis.toLocaleString()+' species';
   var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all ten sites':'in the '+(S.region==='cape'?'Cape':'Lowveld'));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
   var at=$('#absToggle');if(at){if(S.focus){var _sn=SI[S.focus].short;at.style.display='';at.textContent=S.hideAbsent?(_sn+' list'):('all sites · '+_sn);at.title=S.hideAbsent?('The species recorded at '+_sn+' (many are widespread — not an endemics list). Tap to show all sites.'):('Every site’s species, '+_sn+' highlighted. Tap for just the '+_sn+' list.');}else at.style.display='none';}
+ }
+ // ---------- filter-aware source breakdown ----------
+ // Recomputed by applyFilters on every filter change: what share of the species now in view
+ // carry each kind of evidence, plus the specimen/barcode tallies summed over the sites shown.
+ function renderSources(n,cnt,rec){var p=$('#srcPanel');if(!p)return;
+  if(!n){p.innerHTML='<span style="font-size:11px;color:var(--soft)">No species in view — widen the filters.</span>';return;}
+  var rows=[['m','Museum voucher',cnt.m,rec.m,'specimens'],['g','Genomic / barcode',cnt.g,rec.g,'barcodes'],['i','iNaturalist',cnt.i,0,''],['e','eBird',cnt.e,0,'']];
+  p.innerHTML='<div style="display:flex;flex-direction:column;gap:9px;max-width:520px">'+rows.map(function(r){
+    var pct=Math.round(r[2]/n*100),lit=r[2]>0,recTxt=(r[3]>0?' · '+r[3].toLocaleString()+' '+r[4]:'');
+    return '<div style="opacity:'+(lit?1:.4)+'"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11px;margin-bottom:3px">'+
+      '<span style="color:var(--ink);font-weight:600;white-space:nowrap">'+glyph(r[0],lit?1:0)+' '+r[1]+'</span>'+
+      '<span style="color:var(--soft);text-align:right">'+pct+'% · '+r[2].toLocaleString()+' spp'+recTxt+'</span></div>'+
+      '<div style="height:8px;background:var(--rule);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+C.acacia+';border-radius:4px"></div></div></div>';
+  }).join('')+'</div>'+
+  '<div style="font-size:10px;color:var(--soft);margin-top:9px;line-height:1.45;max-width:520px">Share of the <b>'+n.toLocaleString()+'</b> species in view carrying each kind of evidence — recomputes as you filter. Specimen &amp; barcode tallies are summed over the sites shown. <b>Genomic/barcode is sparse</b> (pulled from GBIF material samples, not BOLD directly) — a fuller BOLD sync is planned.</div>';
  }
  function colVisibility(){var iso=S.focus&&S.hideAbsent;$$('#matrix .colh, #matrix .cell').forEach(function(el){var s=SI[el.dataset.site];var show=iso?(el.dataset.site===S.focus):(S.region==='all'||(s&&s.rk===S.region));el.style.display=show?'':'none';});}
 
