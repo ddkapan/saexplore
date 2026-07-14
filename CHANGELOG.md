@@ -10,6 +10,41 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.51 — photo backfill: no species is blank any more (270 → 0)
+
+270 species rendered as an empty grey square. They weren't missing because no image exists —
+they were missing because the corpus only took iNaturalist's **taxon default photo**, so a
+species with no default photo got nothing even when its *observations* had photos. (The photoless
+beetle *Promeces longipes* has **872** GBIF occurrences with images.)
+
+**All 270 now carry an image: 92 real CC photos + 178 CC0 silhouettes. Zero blanks.**
+
+- **92 photos** — 77 from **GBIF occurrence media**, 15 from **Wikimedia Commons**.
+- **178 silhouettes** from **PhyloPic** (CC0), for species that genuinely have no CC photo
+  anywhere (*Cephalelus* leafhoppers, *Tolypocladium* fungi). They land at a **useful** taxonomic
+  level — Cicadellidae, Stylommatophora, Geometridae — not a generic blob; only **1** of 2,780
+  falls back to "biota".
+- **A silhouette is never passed off as a photo.** The drawer says *"Silhouette — no photo of this
+  species is available"*, the thumbnail is contained (not cropped) on a pale tile, and it's
+  credited to PhyloPic/CC0. Regression-tested.
+
+Fixes found along the way:
+- **The drawer credited every photo "via iNaturalist"** — hardcoded. That became a lie the moment
+  photos could come from Wikimedia or PhyloPic. It now uses the real attribution.
+- **Silhouettes were invisible in dark mode** — PhyloPic art is black on transparent, so it
+  vanished into the dark page. (Inverting flips the tile too, giving white-on-white; so they now
+  get a fixed pale tile with the black artwork.)
+- **Wrong-species guard.** A Wikimedia free-text search happily returns a photo of a *different*
+  species, so a Commons hit is only accepted if the filename carries a name we know to be this
+  species — accepted, resolved, or a synonym GBIF confirms resolves to the same species. That is
+  how *Elaiophis inornatus* legitimately matches `Lycodonomorphus_inornatus.jpg` (same snake,
+  older genus). **A wrong photo is worse than no photo** — Shannon would key off it in the field.
+- **`precache-list.js` now has a generator** (`tools/reconcile/gen_precache.js`). It was once
+  hand-made and went stale (1.0.47), leaving ~1,186 species blank offline. Now **2,675 urls** —
+  and the 178 silhouettes dedupe to just 82 shared images.
+
+Shell → `sa-shell-v30`. +7 render tests (90 pass). (BACKLOG §PR-I c.)
+
 ## 1.0.50 — fix the dead BOLD link (it pointed at NOTFOUND)
 
 Durrell hit `boldsystems.org/NOTFOUND?query=Loxodonta%20africana`. Two separate faults:

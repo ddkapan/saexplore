@@ -97,6 +97,23 @@ as "0 barcodes". Failures here are simply not written, so re-running retries the
 keys are GBIF **genus** keys (see `genus_fix.json`); passing one as `taxonKey` counts the whole
 genus, so they're resolved to species keys first.
 
+### Backfill species photos (`data.js` `o.p`)
+```sh
+node pull_photos.js     # → photocache/<key>.json  (GBIF media → Wikimedia → PhyloPic silhouette)
+node apply_photos.js    # folds them into ../../data.js  (never overwrites an existing photo)
+node gen_precache.js    # → ../../precache-list.js   ← ALWAYS run after ANY photo change
+```
+Chain: **GBIF occurrence media** (richest — iNat observation photos the taxon-default-photo pass
+missed) → **Wikimedia Commons** → **PhyloPic** CC0 silhouette so nothing is ever blank offline.
+Silhouettes set `o.sil=1` and the app labels them as drawings, never as photos.
+
+⚠️ **Three traps.** (1) **Species-exact only** — a genus/kingdom taxonKey returns photos of the
+WRONG ANIMAL; the same `rankcache.json` guard as `pull_bold.js` applies. (2) **CORS-only hosts** —
+the offline precache fetches with `cors`, so an image from a host without `Access-Control-Allow-
+Origin` caches as a *blank*; only whitelisted hosts are accepted. (3) **Commons free-text search
+returns other species** — a hit is accepted only if the filename carries a name we know for this
+species (accepted / resolved / GBIF-confirmed synonym). A wrong photo is worse than no photo.
+
 ## Next (per NAME_BACKBONE.md)
 Add **eBird + BOLD + book** name columns (`v`/`s` already carry GBIF's), pull the
 per-sub-region **envelope candidate pool** (2σ ellipse → GBIF/iNat facet, all taxa), and

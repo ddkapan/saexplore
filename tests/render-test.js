@@ -301,6 +301,32 @@ ok('importing favorites applies marks + shows the focal/tour chip', w.__sa.marks
 // references section (embedded, offline)
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
+// ---- photo backfill: every species has an image, and a silhouette is never sold as a photo ----
+const UN = w.__UNIC || [];
+ok('no species is left without an image', UN.length ? UN.every(o => o.p && o.p[0]) : true,
+  UN.filter(o => !o.p || !o.p[0]).length + ' blank');
+const silIdx = UN.findIndex(o => o.sil);
+ok('the corpus carries silhouettes, flagged with o.sil', silIdx >= 0, UN.filter(o => o.sil).length + ' silhouettes');
+if (silIdx >= 0) {
+  const silRow = d.querySelector('#matrix tr.org[data-i="' + silIdx + '"]');
+  ok('silhouette thumbnails are contained, not cropped like a photo',
+    /object-fit:contain/.test(silRow.querySelector('td:nth-child(2)').innerHTML));
+  w.__openDrawer(silIdx);
+  const sh = d.getElementById('drawer').innerHTML;
+  ok('drawer says plainly that a silhouette is NOT a photo of the species', /Silhouette — no photo of this species is available/.test(sh));
+  ok('silhouette credits PhyloPic + CC0', /PhyloPic/.test(sh) && /CC0/i.test(sh));
+  ok('silhouette is NOT mislabelled "via iNaturalist"', !/via iNaturalist/.test(sh));
+  d.querySelector('#drawer .dclose').click();
+}
+// a Wikimedia-sourced photo must not claim to come from iNaturalist either (the old hardcoded bug)
+const wmIdx = UN.findIndex(o => o.p && /wikimedia/.test(o.p[0]));
+if (wmIdx >= 0) {
+  w.__openDrawer(wmIdx);
+  const wh = d.getElementById('drawer').innerHTML;
+  ok('a Wikimedia photo is not credited to iNaturalist', !/via iNaturalist/.test(wh));
+  d.querySelector('#drawer .dclose').click();
+}
+
 // ---- boot 2: notebook round-trip survives reload ----
 const b2 = boot(makeDom());
 ok('boot 2: check survived reload', b2.w.__sa.seen.size === 1, b2.w.__sa.seen.size + '');

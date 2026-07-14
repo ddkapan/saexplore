@@ -53,6 +53,11 @@
 "#journal .jscope{position:sticky;top:0;z-index:6;background:#d9d2c2;padding:10px 0 8px;box-shadow:0 6px 10px -8px rgba(43,39,35,.35)}\n"+
 "#journal .jclose{font-size:14px;padding:9px 16px;font-weight:700}\n"+
 // dark mode: flip the journal's light-paper surfaces (print stays white via @media print)
+// PhyloPic silhouettes are BLACK artwork on a TRANSPARENT background, so on the dark theme they
+// vanish into the page. Inverting them isn't the answer either (it flips the tile too, leaving a
+// white shape on a white tile). Instead: always give a silhouette a light tile and keep the black
+// artwork — high contrast in both themes, and the pale tile reads as "drawing, not photograph".
+"img.sil{background:#d7d1c2 !important;opacity:.95}\n"+
 "[data-theme=dark] #journal{background:#1b1915}\n"+
 "[data-theme=dark] #journal .jscope{background:#1b1915}\n"+
 "[data-theme=dark] #journal .jday{background:#26231e;border-color:#3c382f;color:#ede7da}\n"+
@@ -189,7 +194,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.50</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.51</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -389,7 +394,9 @@ window.__wire5=function(UNIC,SMETA){
   var thead='<tr><th style="width:3px;padding:0"></th><th style="width:38px;padding:4px"></th><th style="text-align:left;padding:5px 8px;font-size:11px;color:'+C.soft+';font-weight:600" id="mxCount">species</th><th style="padding:4px 6px;font-size:10px;color:'+C.soft+';font-weight:500">evidence</th>'+SITES.map(function(s){return '<th class="colh" data-site="'+s.key+'" data-rk="'+s.rk+'" style="padding:4px 5px;font-size:10px;color:'+sitecol(s.key)+';font-weight:600;white-space:nowrap;cursor:pointer;border-bottom:2px solid '+sitecol(s.key)+';vertical-align:bottom">'+esc(s.short.replace('Kruger–','K–'))+'</th>';}).join('')+'</tr>';
   var body=UNIC.map(function(o){var cells=SITES.map(function(s){return cellHTML(o,s);}).join('');
    return '<tr class="org tx-'+o.g+'" data-i="'+o.i+'" data-g="'+o.g+'" data-txt="'+esc((o.c+' '+o.s).toLowerCase()+aliasHay(o))+'" style="border-bottom:1px solid '+C.rule+'"><td style="width:3px;padding:0;background:'+TAXCOL[o.g]+'"></td>'+
-    '<td style="padding:3px 4px">'+(o.p?'<img loading="lazy" src="'+esc(o.p[0])+'" style="width:30px;height:30px;object-fit:cover;border-radius:4px;background:'+C.raised+'">':'<div style="width:30px;height:30px;border-radius:4px;background:'+C.raised+'"></div>')+'</td>'+
+    // Silhouettes are transparent PNGs — `cover` would crop the animal's outline to a blob, so
+    // they're contained and inset instead. Photos still fill the square.
+    '<td style="padding:3px 4px">'+(o.p?'<img loading="lazy" class="'+(o.sil?'sil':'')+'" src="'+esc(o.p[0])+'" title="'+(o.sil?'silhouette — no photo of this species available':'')+'" style="width:30px;height:30px;object-fit:'+(o.sil?'contain;padding:3px':'cover')+';border-radius:4px;background:'+C.raised+'">':'<div style="width:30px;height:30px;border-radius:4px;background:'+C.raised+'"></div>')+'</td>'+
     '<td style="padding:4px 8px;cursor:pointer;min-width:190px"><div style="font-size:13.5px;font-weight:500;line-height:1.15">'+markStarHTML(o)+esc(o.c||o.s)+'</div><div style="font-size:11px;color:'+C.soft+';font-style:italic">'+esc(o.c?sciOf(o):'')+'</div><div class="sans" style="font-size:9.5px;color:#9a917f;letter-spacing:.2px">'+esc([o.cl,o.o,o.f].filter(Boolean).join(' · '))+'</div></td>'+
     '<td style="white-space:nowrap;padding:0 5px">'+badges(o)+'</td>'+cells+'</tr>';}).join('');
   $('#matrix').innerHTML='<div style="overflow:auto;border:1px solid '+C.rule+';border-radius:8px;max-height:calc(100vh - 30px);background:'+C.raised+'"><table class="mx"><thead>'+thead+'</thead><tbody>'+body+'</tbody></table></div>';
@@ -418,7 +425,7 @@ window.__wire5=function(UNIC,SMETA){
    frag.appendChild(r);});
   tb.appendChild(frag);
  }
- window.__sortRows=sortRows;window.__applyFilters=function(){applyFilters();};
+ window.__sortRows=sortRows;window.__applyFilters=function(){applyFilters();};window.__UNIC=UNIC;
  function paintSeenTally(){var t=$('#seenTally');if(!t)return;var n=seenSpeciesCount();t.style.display=n?'':'none';t.textContent='✓ '+n+' seen this trip';}
  // ---------- filters apply ----------
  function applyFilters(){var cols=visSites(),colKeys=cols.map(function(s){return s.key;}),vis=0;var sm=S.tags.size?seenSpeciesMap():null;
@@ -515,7 +522,7 @@ window.__wire5=function(UNIC,SMETA){
  function hlCard(o,sk){var m=markOf(o),g=m?MARKG[m]:null,uniq=sk&&o._sites.length===1;
   var pre=g?('<span style="color:'+g.col+'">'+g.gl+'</span> '):'';
   var tag=(!g&&uniq)?' <span style="font-size:9px;color:#8a6a2f;border:1px solid #d9c98f;border-radius:6px;padding:0 4px;white-space:nowrap">only here</span>':'';
-  return '<div class="hl" data-oi="'+o.i+'" style="display:flex;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--rule);cursor:pointer">'+(o.p?'<img src="'+esc(o.p[0])+'" style="width:34px;height:34px;flex-shrink:0;border-radius:4px;object-fit:cover;border-left:3px solid '+TAXCOL[o.g]+'">':'<div style="width:34px;height:34px;flex-shrink:0;border-radius:4px;border-left:3px solid '+TAXCOL[o.g]+';background:'+C.raised+'"></div>')+'<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:600;color:'+C.ink+';line-height:1.2">'+pre+esc(o.c||o.s)+tag+'</div><div style="font-size:10px;color:'+C.soft+';font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(sciOf(o))+'</div></div><div style="flex-shrink:0">'+badges(o)+'</div></div>';}
+  return '<div class="hl" data-oi="'+o.i+'" style="display:flex;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--rule);cursor:pointer">'+(o.p?'<img class="'+(o.sil?'sil':'')+'" src="'+esc(o.p[0])+'" style="width:34px;height:34px;flex-shrink:0;border-radius:4px;object-fit:'+(o.sil?'contain;padding:3px;background:'+C.raised:'cover')+';border-left:3px solid '+TAXCOL[o.g]+'">':'<div style="width:34px;height:34px;flex-shrink:0;border-radius:4px;border-left:3px solid '+TAXCOL[o.g]+';background:'+C.raised+'"></div>')+'<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:600;color:'+C.ink+';line-height:1.2">'+pre+esc(o.c||o.s)+tag+'</div><div style="font-size:10px;color:'+C.soft+';font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(sciOf(o))+'</div></div><div style="flex-shrink:0">'+badges(o)+'</div></div>';}
  function markSort(a,b){var r={tour:0,focal:1};return ((r[markOf(a)]==null?9:r[markOf(a)])-(r[markOf(b)]==null?9:r[markOf(b)]))||((b._e||0)-(a._e||0));}
  function siteHighlights(sk){var here=UNIC.filter(function(o){return presentAt(o,sk);});var hereK={};here.forEach(function(o){hereK[o.k]=o;});
   var mkd=here.filter(function(o){return markOf(o);}).sort(markSort);var used={};mkd.forEach(function(o){used[o.k]=1;});
@@ -597,7 +604,10 @@ window.__wire5=function(UNIC,SMETA){
     '<button class="markbtn" data-m="tour" style="border:1px solid #5e7249;background:'+C.raised+';color:#5e7249;border-radius:12px;padding:3px 11px;cursor:pointer;font:inherit;font-size:12px;font-weight:600">⚑ tour</button>'+
     '<span style="font-size:10.5px;color:'+C.soft+'">focal = my interest · tour = shared highlight</span></div>'+
    '<div class="sans" style="padding:14px 18px;font-size:13px">'+
-   (med?'<div style="margin-bottom:13px"><img class="dphoto" src="'+esc(med)+'" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid #9a917f;background:'+C.raised+'"><div style="font-size:10.5px;color:'+C.soft+';margin-top:3px">'+esc(o.p[2]||'')+(o.p[1]?(' · '+o.p[1].toUpperCase()):'')+' · via iNaturalist</div></div>':'')+
+   // Attribution comes from the photo record itself. It used to hardcode "via iNaturalist",
+   // which became a lie once photos could also come from Wikimedia or PhyloPic (1.0.51).
+   // Silhouettes say so plainly — a drawing must never be mistaken for a photo of the animal.
+   (med?'<div style="margin-bottom:13px"><img class="dphoto'+(o.sil?' sil':'')+'" src="'+esc(med)+'" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid #9a917f;background:'+C.raised+(o.sil?';padding:14px':'')+'"><div style="font-size:10.5px;color:'+C.soft+';margin-top:3px">'+(o.sil?'<b>Silhouette — no photo of this species is available.</b> ':'')+esc(o.p[2]||'')+(o.p[1]?(' · '+o.p[1].toUpperCase()):'')+'</div></div>':'')+
    '<div style="margin-bottom:13px"><div class="dlab">Where on this trip</div>'+whereSites.length+' site'+(whereSites.length>1?'s':'')+': '+esc(whereSites.join(', '))+'</div>'+
    spark+
    boldline+

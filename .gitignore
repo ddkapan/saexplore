@@ -15,3 +15,5 @@ tools/reconcile/pull.log
 tools/reconcile/iipull.log
 tools/reconcile/ii_chunks.json
 tools/reconcile/corpus_keys.txt
+tools/reconcile/photocache/
+tools/reconcile/photo_pull.log
