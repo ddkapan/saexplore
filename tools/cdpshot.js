@@ -101,6 +101,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url: URL_ });
   await sleep(1800); // let data.js + first render settle
+  if (process.env.DELAY) await sleep(+process.env.DELAY); // extra wait for pages that fetch async
   if (process.env.EVALJS) { await cdp.send('Runtime.evaluate', { expression: process.env.EVALJS }); await sleep(500); }
   if (process.env.SCROLLY) { await cdp.send('Runtime.evaluate', { expression: 'window.scrollTo(0,' + (+process.env.SCROLLY) + ')' }); await sleep(300); }
   if (process.env.PRINT) { await cdp.send('Emulation.setEmulatedMedia', { media: 'print' }); await sleep(300); }

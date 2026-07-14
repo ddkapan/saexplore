@@ -189,7 +189,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.49</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.50</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, with Wikimedia Commons fallback.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -362,12 +362,19 @@ window.__wire5=function(UNIC,SMETA){
  // fetch, and links. The genus stays searchable (o.s is still in the row haystack).
  function sciOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.sp)?n.sp:o.s;}
  function iiOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.spii)?n.spii:o.ii;}
- // DNA-barcode coverage (bold.js sidecar): [n, z, inst?] = barcode records · how many are South
- // African · top holding institution. These are BOLD specimens as published to GBIF by iBOL.
- // The corpus's own `g` evidence came from GBIF material samples — a thin slice (210 species) —
- // so barcode evidence is the UNION of the two: this is much the deeper source.
+ // DNA-barcode coverage (bold.js sidecar): [n, z, inst?, tk?] = barcode records · how many are
+ // South African · top holding institution · the GBIF taxonKey when it differs from the corpus
+ // key. These are BOLD specimens as published to GBIF by iBOL. The corpus's own `g` evidence came
+ // from GBIF material samples — a thin slice (210 species) — so barcode evidence is the UNION of
+ // the two: this is much the deeper source.
  function boldOf(o){var b=window.BOLD&&window.BOLD[o.k];return (b&&b[0]>0)?b:null;}
- function boldURL(o){return 'https://v4.boldsystems.org/index.php/Public_SearchTerms?query='+encodeURIComponent(sciOf(o));}
+ // Link to the RECORDS WE COUNTED — the iBOL dataset on GBIF — so the page's count matches ours.
+ // (We do not link BOLD's own portal: it cannot deep-link a species. Its query parser splits on
+ // the space in a binomial — "Loxodonta africana" becomes genus:Loxodonta + processid:africana —
+ // so every species search lands on a 0-result page. Verified 2026-07-13.)
+ var IBOL='040c5662-da76-4782-a48e-cdea1892d14c';
+ function boldKey(o){var b=boldOf(o);return (b&&b[3])?b[3]:String(o.k).replace(/^k/,'');}
+ function boldURL(o){return 'https://www.gbif.org/occurrence/search?dataset_key='+IBOL+'&taxon_key='+boldKey(o);}
  // Species-level evidence test. 'g' (genomic/barcode) is true if EITHER source has it.
  function hasEv(o,k){return k==='g'?(o.src.indexOf('g')>=0||!!boldOf(o)):(o.src.indexOf(k)>=0);}
  // Per-species name-expander: every alias, grouped + source-labelled, for the drawer.
@@ -576,7 +583,7 @@ window.__wire5=function(UNIC,SMETA){
    boldline='<div style="margin-bottom:13px"><div class="dlab">DNA barcodes · BOLD</div>'+
     '<div style="font-size:12px;color:'+C.soft+';line-height:1.5">'+_bits.join(' · ')+
     (_bd[2]?('<br>mostly at <b>'+esc(_bd[2])+'</b>'):'')+
-    '<br><a href="'+boldURL(o)+'" target="_blank" rel="noopener" style="color:'+C.acacia+'">open in BOLD ↗</a></div></div>';}
+    '<br><a href="'+boldURL(o)+'" target="_blank" rel="noopener" style="color:'+C.acacia+'">see the record'+(_bd[0]===1?'':'s')+' ↗</a> <span style="opacity:.75">· BOLD specimens, via GBIF/iBOL</span></div></div>';}
   var spark='';if(monthly){var mx=Math.max.apply(null,monthly)||1;spark='<div style="margin-bottom:13px"><div class="dlab">Season'+(tr>=0.3?' · good in late July':tr>0?' · possible late July':' · scarce late July')+'</div><div style="display:flex;align-items:flex-end;gap:3px;height:40px">'+monthly.map(function(v,k){return '<div title="'+MN[k]+'" style="flex:1;border-radius:1px;background:'+([6,7].indexOf(k)>=0?C.terra:C.rule)+';height:'+Math.max(2,Math.round(v/mx*40))+'px"></div>';}).join('')+'</div></div>';}
   var ckchips=SITES.map(function(s){var ck=o.k+'|'+s.key;var on=seen.has(ck);var known=presentAt(o,s.key);return '<span class="ckchip" data-key="'+ck+'" data-known="'+(known?1:0)+'" style="background:'+(on?sitecol(s.key):C.raised)+';color:'+(on?'#fff':sitecol(s.key))+';border-color:'+sitecol(s.key)+';opacity:'+(known?'1':'.5')+'">'+(on?'✓ ':'')+esc(s.short.replace('Kruger–','K–'))+'</span>';}).join('');
   var nk='sp:'+o.k;var iok=inatobs[o.k]||'';
@@ -595,7 +602,7 @@ window.__wire5=function(UNIC,SMETA){
    spark+
    boldline+
    '<div style="margin-bottom:13px" class="dwiki"><div class="dlab">Normally</div><span style="color:'+C.soft+'">loading…</span></div>'+
-   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'',_bd?'<a href="'+boldURL(o)+'" target="_blank" rel="noopener" title="'+_bd[0]+' barcode records in BOLD">BOLD</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
+   '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'',_bd?'<a href="'+boldURL(o)+'" target="_blank" rel="noopener" title="'+_bd[0]+' BOLD barcode records, listed on GBIF/iBOL">Barcodes</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
    '<div style="margin-bottom:13px"><div class="dlab">Seen on this trip</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+ckchips+'</div></div>'+
    '<div style="margin-bottom:13px"><div class="dlab">iNaturalist observation</div><input class="inatobs sans" data-k="'+o.k+'" value="'+esc(iok)+'" placeholder="paste an iNat observation URL / id" style="width:100%;border:1px solid '+C.rule+';border-radius:6px;padding:6px 8px;font-size:12px;background:'+C.raised+';color:'+C.ink+'"></div>'+
    '<div style="margin-bottom:8px"><div class="dlab">My notes</div><textarea class="noteta" data-nk="'+nk+'" placeholder="What you saw, where, with whom…">'+esc(notes[nk]||'')+'</textarea></div>'+
