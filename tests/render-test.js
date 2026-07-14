@@ -339,6 +339,34 @@ const lm = d.getElementById('listMgr');
 ok('the list manager renders a row per list', !!lm && lm.querySelectorAll('.lmD').length >= 3);
 ok('list chips render in the strip', !!d.getElementById('listChips') && d.querySelectorAll('#listChips .tagf').length >= 3);
 
+// ---- durability: her notes are the only irreplaceable data on the phone ----
+ok('the app asks for PERSISTENT storage (best effort)', /navigator\.storage[\s\S]{0,40}persist\(\)/.test(fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8')));
+ok('a backup nudge slot exists next to Export', !!d.getElementById('bkNudge'));
+// there IS unsaved work at this point in the run (notes/seen/journal were written above)
+ok('unsaved work is counted', w.__unsavedCount() > 0, w.__unsavedCount() + ' unsaved');
+ok('the nudge tells her to back up', /unsaved/.test(d.getElementById('bkNudge').textContent));
+w.__markBackedUp();
+ok('after a backup the nudge clears', w.__unsavedCount() === 0 && !/unsaved/.test(d.getElementById('bkNudge').textContent));
+// EDITING an existing note must also count as unsaved — a count-based check would miss this,
+// and she would be told she was backed up when a day's edits were not.
+w.__sa.notes['sp:k2481915'] = 'EDITED after the backup'; w.__sa.save();
+ok('EDITING an existing note makes the nudge return (not just adding one)', w.__unsaved() === true);
+w.__markBackedUp();
+ok('backing up again clears it', w.__unsaved() === false);
+
+// ---- the iNat observation link is no longer a dead end (it stored, and showed nothing) ----
+w.__sa.inatobs['k2481915'] = 'https://www.inaturalist.org/observations/12345678';
+w.__sa.save();
+ok('a pasted iNat URL resolves', /observations\/12345678/.test(w.__inatOf('k2481915')));
+ok('a bare iNat id also resolves to a URL', (function () {
+  w.__sa.inatobs['k3242735'] = '87654321';
+  return /inaturalist\.org\/observations\/87654321/.test(w.__inatOf('k3242735'));
+})());
+w.__openJournal();
+const jh = d.getElementById('journal').innerHTML;
+ok('the iNat observation now SHOWS in the journal (account or checklist)', /observations\/12345678/.test(jh), 'not rendered');
+d.querySelector('#journal .jback') ? d.querySelector('#journal .jback').click() : null;
+
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
 // ---- top controls: clear of the Dynamic Island, auto-hiding on scroll (issue #57) ----

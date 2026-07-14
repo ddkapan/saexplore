@@ -202,9 +202,10 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  h+=sec(8,'Field journal','a Grinnell Field Journal page, saved per day')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your lists — your picks and the site specials — without your field notes">Export lists ◆</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div>'+
+   '<div id="bkNudge" class="sans" style="margin-top:12px"></div>'+
    '<div id="listMgr" class="sans" style="margin-top:16px"></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.53</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.54</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -261,7 +262,8 @@ window.__wire5=function(UNIC,SMETA){
  var seen,notes,seenOrder,journal,inatobs,marks;
  function LG(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
  seen=new Set(LG('sa5_seen',[]));notes=LG('sa5_notes',{});seenOrder=LG('sa5_seenOrder',[]);journal=LG('sa5_journal',{});inatobs=LG('sa5_inatobs',{});marks=LG('sa5_marks',{});
- function save(){try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));localStorage.setItem('sa5_marks',JSON.stringify(typeof marksMap==='function'?marksMap():marks));}catch(e){}}
+ function save(){try{if(typeof paintBackup==='function')paintBackup();}catch(e){}
+  try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));localStorage.setItem('sa5_marks',JSON.stringify(typeof marksMap==='function'?marksMap():marks));}catch(e){}}
  window.__sa={get seen(){return seen;},get notes(){return notes;},get journal(){return journal;},get inatobs(){return inatobs;},get marks(){return marksMap();},get lists(){return LSTORE;},save:save};
  // ---------- lists: the CURATION layer (PR-K) ----------
  // A list is a named, scoped, portable SET of species. Everything curated is one:
@@ -730,7 +732,7 @@ window.__wire5=function(UNIC,SMETA){
    '<div style="margin-bottom:13px" class="dwiki"><div class="dlab">Normally</div><span style="color:'+C.soft+'">loading…</span></div>'+
    '<div style="margin-bottom:13px"><div class="dlab">Explore</div>'+[_gk?'<a href="https://www.gbif.org/species/'+_gk+'" target="_blank" rel="noopener">GBIF</a>':'<a href="https://www.gbif.org/species/search?q='+encodeURIComponent(_sci)+'" target="_blank" rel="noopener">GBIF</a>',_ii?'<a href="https://www.inaturalist.org/taxa/'+_ii+'" target="_blank" rel="noopener">iNaturalist</a>':'',ebOf(o)?'<a href="https://ebird.org/species/'+ebOf(o)+'" target="_blank" rel="noopener" title="eBird species code '+ebOf(o)+' — the join key for eBird checklists">eBird</a>':'',_bd?'<a href="'+boldURL(o)+'" target="_blank" rel="noopener" title="'+_bd[0]+' BOLD barcode records, listed on GBIF/iBOL">Barcodes</a>':'','<a href="https://en.wikipedia.org/wiki/'+encodeURIComponent((_sci||'').replace(/ /g,'_'))+'" target="_blank" rel="noopener">Wikipedia</a>'].filter(Boolean).join(' · ')+'</div>'+
    '<div style="margin-bottom:13px"><div class="dlab">Seen on this trip</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+ckchips+'</div></div>'+
-   '<div style="margin-bottom:13px"><div class="dlab">iNaturalist observation</div><input class="inatobs sans" data-k="'+o.k+'" value="'+esc(iok)+'" placeholder="paste an iNat observation URL / id" style="width:100%;border:1px solid '+C.rule+';border-radius:6px;padding:6px 8px;font-size:12px;background:'+C.raised+';color:'+C.ink+'"></div>'+
+   '<div style="margin-bottom:13px"><div class="dlab">iNaturalist observation'+(inatOf(o.k)?(' \u00b7 '+inatLinkHTML(o.k,'open yours')):'')+'</div><input class="inatobs sans" data-k="'+o.k+'" value="'+esc(iok)+'" placeholder="paste an iNat observation URL / id" style="width:100%;border:1px solid '+C.rule+';border-radius:6px;padding:6px 8px;font-size:12px;background:'+C.raised+';color:'+C.ink+'"></div>'+
    '<div style="margin-bottom:8px"><div class="dlab">My notes</div><textarea class="noteta" data-nk="'+nk+'" placeholder="What you saw, where, with whom…">'+esc(notes[nk]||'')+'</textarea></div>'+
    '</div>';
   scrim.style.display='block';
@@ -790,12 +792,53 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- observer notebook: JSON backup (offline; export is the save mechanism) ----------
  // eBird species codes for every species referenced in the export — the join key so an
  // exported file lines up with eBird checklists / trip reports (birds are canonical on eBird).
+ // ---------- iNaturalist observation links ----------
+ // The drawer has always let you paste an iNat observation URL against a species… and then never
+ // showed it back to you. It stored it, it exported it, it rendered nothing. A control that does
+ // nothing is worse than no control. These surface it: on the day's species account, in the day's
+ // checklist, and in the drawer itself as a link you can actually follow.
+ function inatURL(v){v=String(v||'').trim();if(!v)return '';
+  if(/^https?:\/\//i.test(v))return v;
+  var m=v.match(/(\d{4,})/);return m?('https://www.inaturalist.org/observations/'+m[1]):'';}
+ function inatOf(k){return inatURL(inatobs[k]||'');}
+ function inatLinkHTML(k,label){var u=inatOf(k);if(!u)return '';
+  return '<a href="'+esc(u)+'" target="_blank" rel="noopener" class="jctrl" style="font-size:11px;color:#5e7249;text-decoration:none;white-space:nowrap">\u25c9 '+esc(label||'your iNat observation')+' \u2197</a>';}
+ window.__inatOf=inatOf;
  function refEbird(){var m={};function add(k){k=String(k||'').replace(/^sp:/,'').split('|')[0];if(k&&!m[k]){var o=OBYK[k];if(o){var cd=ebOf(o);if(cd)m[k]=cd;}}}listIds().forEach(function(id){LST(id).it.forEach(add);});seen.forEach(add);Object.keys(notes).forEach(add);return m;}
  // v3 carries the LISTS (curation). `marks` is still emitted, derived, so a v2 reader — and the
  // shipped samples/saexplore-favorites.json — keep working both ways.
  function collectNotes(){return {v:3,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs,marks:marksMap(),lists:{ord:LSTORE.ord,l:LSTORE.l},ebird:refEbird()};}
  function dlJSON(obj,name){try{var blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},0);}catch(e){window.alert&&alert('Export failed: '+e.message);}}
- function exportJSON(){dlJSON(collectNotes(),'saexplore-fieldnotes.json');}
+ // ---------- durability: her notes are the one irreplaceable thing on this phone ----------
+ // The corpus can be rebuilt in a day. Her observations cannot. And they live ONLY in
+ // localStorage, which a browser is free to evict under storage pressure. So:
+ //   1. ask the browser to make this origin's storage PERSISTENT (best effort — some engines
+ //      ignore it, which is exactly why (2) exists and is not optional);
+ //   2. count the record-layer entries and nag, gently, when there is unsaved work.
+ // The nudge only appears when something has actually changed since the last export, so it is
+ // never noise.
+ (function(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(g){window.__persisted=!!g;paintBackup();}).catch(function(){});}catch(e){}})();
+ function recordSize(){return Object.keys(notes).length+seen.size+Object.keys(journal).length+Object.keys(inatobs).length;}
+ // A COUNT of entries is not enough: editing an existing note leaves the count unchanged, and she
+ // would be told she was backed up when she wasn't. That is precisely the way to lose a day's
+ // work. So fingerprint the CONTENT — cheap, and it notices edits, not just additions.
+ function recordFP(){try{return JSON.stringify(notes).length+'|'+JSON.stringify(journal).length+'|'+seen.size+'|'+JSON.stringify(inatobs).length;}catch(e){return String(recordSize());}}
+ function lastBackup(){return LG('sa5_backup',null);}
+ function markBackedUp(){try{localStorage.setItem('sa5_backup',JSON.stringify({t:Date.now(),f:recordFP(),n:recordSize()}));}catch(e){}paintBackup();}
+ function unsaved(){var n=recordSize();if(!n)return false;var b=lastBackup();return !b||b.f!==recordFP();}
+ function unsavedCount(){return unsaved()?recordSize():0;}
+ function paintBackup(){var el=$('#bkNudge');if(!el)return;
+  var n=unsaved()?recordSize():0;
+  if(!n){var b=lastBackup();
+   el.innerHTML=b?('<span style="color:var(--soft);font-size:11.5px">\u2713 backed up \u2014 '+recordSize()+' entries saved to a file</span>'):'';
+   return;}
+  el.innerHTML='<div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;border:1px solid var(--terra);border-radius:9px;padding:8px 11px;background:var(--raised)">'+
+   '<b style="color:var(--terra);font-size:12.5px">\u26a0 unsaved changes \u00b7 '+n+' '+(n===1?'entry':'entries')+' on this phone</b>'+
+   '<span style="font-size:11.5px;color:var(--soft);flex:1;min-width:180px">Your notes live on this phone only. Back them up to a file \u2014 do it at the end of each day.</span>'+
+   '<button id="bkNow" class="btn sans">Back up now</button></div>';
+  var b=$('#bkNow');if(b)b.onclick=exportJSON;}
+ window.__unsavedCount=unsavedCount;window.__unsaved=unsaved;window.__markBackedUp=markBackedUp;window.__paintBackup=paintBackup;
+ function exportJSON(){dlJSON(collectNotes(),'saexplore-fieldnotes.json');markBackedUp();}
  // Curation, on its own. This is the whole point of the split: you can hand someone your lists
  // — your tour, your targets, the site specials you edited — WITHOUT handing over your field
  // notes. Import merges them in (union, never destructive), as lists they can toggle.
@@ -845,14 +888,15 @@ window.__wire5=function(UNIC,SMETA){
  function reJournal(){renderJournal(jScope);}
  // ----- accounts (read view; only noted species) -----
  function acctList(s){var jk=dayKey(s),arr=[];
-  dayReal(s).forEach(function(o){var n=noteVal(notes['sp:'+o.k]);if(n)arr.push({name:o.c||o.s,sci:o.c?sciOf(o):'',meta:[o.cl,o.o,o.f].filter(Boolean).join(' · '),photo:o.p?o.p[0]:'',col:TAXCOL[o.g],note:n});});
+  dayReal(s).forEach(function(o){var n=noteVal(notes['sp:'+o.k]);if(n)arr.push({name:o.c||o.s,sci:o.c?sciOf(o):'',meta:[o.cl,o.o,o.f].filter(Boolean).join(' · '),photo:o.p?o.p[0]:'',col:TAXCOL[o.g],note:n,inat:inatOf(o.k),k:o.k});});
   dayExtras(jk).forEach(function(x){var n=noteVal(x.note);if(n)arr.push({name:x.n,sci:x.s||'',meta:x.src==='gbif'?'added species · GBIF backbone':'added species · manual stub',photo:'',col:C.soft,note:n});});
   return arr;}
  function accountsHTML(s){var arr=acctList(s);if(!arr.length)return '<div class="jctrl" style="color:#9a917f;font-size:12px;padding:2px 0">Only species you write about appear here — tap one in the checklist below to add a field note.</div>';
-  return arr.map(function(a){return '<div class="jacct">'+(a.photo?'<img src="'+esc(a.photo)+'" style="width:56px;height:56px;flex-shrink:0;border-radius:3px;object-fit:cover;border-left:3px solid '+a.col+'">':'<div style="width:56px;height:56px;flex-shrink:0;border-radius:3px;border-left:3px solid '+a.col+';background:#efe8d8"></div>')+'<div style="flex:1"><div style="font-family:var(--serif);font-size:15px;font-weight:600">'+esc(a.name)+(a.sci?' <span style="font-style:italic;font-weight:400;color:#6b6459;font-size:13px">'+esc(a.sci)+'</span>':'')+'</div><div class="jctrl" style="font-size:11px;color:#9a917f">'+esc(a.meta)+'</div><div style="font-size:13.5px;line-height:1.5;margin-top:3px;white-space:pre-wrap">'+esc(a.note)+'</div></div></div>';}).join('');}
+  return arr.map(function(a){return '<div class="jacct">'+(a.photo?'<img src="'+esc(a.photo)+'" style="width:56px;height:56px;flex-shrink:0;border-radius:3px;object-fit:cover;border-left:3px solid '+a.col+'">':'<div style="width:56px;height:56px;flex-shrink:0;border-radius:3px;border-left:3px solid '+a.col+';background:#efe8d8"></div>')+'<div style="flex:1"><div style="font-family:var(--serif);font-size:15px;font-weight:600">'+esc(a.name)+(a.sci?' <span style="font-style:italic;font-weight:400;color:#6b6459;font-size:13px">'+esc(a.sci)+'</span>':'')+'</div><div class="jctrl" style="font-size:11px;color:#9a917f">'+esc(a.meta)+(a.inat?(' \u00b7 '+inatLinkHTML(a.k)):'')+'</div><div style="font-size:13.5px;line-height:1.5;margin-top:3px;white-space:pre-wrap">'+esc(a.note)+'</div></div></div>';}).join('');}
  // ----- checklist (all detected; click a row to add/edit its note) -----
  function ckRow(r){var own=r.sp?('data-sp="'+esc(r.sp)+'"'):('data-xk="'+esc(r.xk)+'" data-jk="'+esc(r.jk)+'"');
   var tag=r.extra?(' <span style="font-size:9.5px;font-weight:700;color:'+(r.src==='gbif'?'#5e7249':'#b5623c')+'">'+(r.src==='gbif'?'+GBIF':'+STUB')+'</span>'):'';
+  var _in=r.k?inatLinkHTML(r.k,'iNat'):'';if(_in)tag+=' '+_in;
   return '<div class="jckwrap">'+
    '<div class="jck'+(r.noted?' noted':'')+'" '+own+'><span class="tick">✓</span><span>'+esc(r.name)+tag+'</span>'+(r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'<span class="pen">✎ '+(r.noted?'note':'add note')+'</span></div>'+
    '<textarea class="jtray jnoteta" '+own+' placeholder="Field note for '+esc(r.name)+'…" style="display:none;margin:2px 0 8px">'+esc(r.note)+'</textarea>'+
@@ -860,7 +904,7 @@ window.__wire5=function(UNIC,SMETA){
   '</div>';}
  function checklistHTML(s){var jk=dayKey(s),real=dayReal(s),extras=dayExtras(jk);
   if(!real.length&&!extras.length)return '<div class="jctrl" style="color:#9a917f;font-size:12px">No sightings ticked for this day yet — tick cells in the explorer matrix, or add a species below.</div>';
-  var rows=real.map(function(o){var n=notes['sp:'+o.k]||'';return ckRow({sp:'sp:'+o.k,name:o.c||o.s,sci:o.c?sciOf(o):'',noted:!!noteVal(n),note:n,col:TAXCOL[o.g]});}).join('')+
+  var rows=real.map(function(o){var n=notes['sp:'+o.k]||'';return ckRow({sp:'sp:'+o.k,name:o.c||o.s,sci:o.c?sciOf(o):'',noted:!!noteVal(n),note:n,col:TAXCOL[o.g],k:o.k});}).join('')+
    extras.map(function(x){return ckRow({xk:x.k,jk:jk,name:x.n,sci:x.s||'',noted:!!noteVal(x.note),note:x.note||'',extra:true,src:x.src});}).join('');
   return '<div class="jchecklist">'+rows+'</div>';}
  // ----- eBird checklist links (offline-safe URL strings) -----
@@ -925,7 +969,7 @@ window.__wire5=function(UNIC,SMETA){
  window.__openJournal=openJournal;window.__addExtra=addExtra;
 
  // ---------- init ----------
- buildTaxa();buildSiteChips();buildListChips();renderListMgr();buildMatrix();paintRegion();paintSeason();renderItin();renderMap();renderRails();updateSeenOrder();paintSeenTally();paintMarkToggle();wireTourSpeed();applyFilters();
+ buildTaxa();buildSiteChips();buildListChips();renderListMgr();paintBackup();buildMatrix();paintRegion();paintSeason();renderItin();renderMap();renderRails();updateSeenOrder();paintSeenTally();paintMarkToggle();wireTourSpeed();applyFilters();
 };
 
 try{APP5(window.UNIC,window.SMETA,window.MAPIMG);}catch(e){var _a=document.getElementById("app");if(_a)_a.innerHTML="<pre>BOOT: "+(e&&e.message)+"</pre>";}
