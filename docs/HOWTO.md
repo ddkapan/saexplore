@@ -88,15 +88,26 @@ season by quarter, and sort order.
 
 ---
 
-## 5. Focal & tour species (your shortlist)
+## 5. Lists — your picks, and the curated ones
 
-- Tap the **☆** beside any species to cycle **★ focal → ⚑ tour → off**, or use the buttons in
-  the species page.
-- Marked species pin to the top under a **★ Focal & tour** header and lead the guided **tour**
-  (the ▶ control by the map).
-- **Import a starter set:** in **section 08**, tap **Import…** and choose
-  `samples/saexplore-favorites.json` (47 curated focal/tour picks). Importing only sets pins —
-  your notes and journal are untouched.
+A **list** is just a named set of species. That is the one idea to hold on to.
+
+- Tap the **☆** beside any species to cycle **★ focal → ⚑ tour → off**. Those are simply two
+  lists you always have.
+- **The site specials are lists too** — Big Five, the penguins, the Cape endemics. They are
+  seeded for you, and unlike before, **they are yours to change**: rename them, add to them,
+  delete them.
+- **Every list is a filter.** Tap a list's chip in the results strip and the table narrows to it.
+  A site's list appears once you focus that site.
+- **＋ list** freezes whatever is on screen into a new list. Filter to *Kruger · late July · birds*,
+  tap ＋ list, and you have a targets list.
+- **Sort → my lists** puts everything you have curated at the top: focal first, then tour, then
+  anything else you have listed.
+- **Manage them in section 08** — filter, rename, or delete any list.
+
+**Sharing (this is the useful bit).** **Export lists ◆** writes a file with your lists and
+**none of your field notes**. Hand it to someone; they **Import…** it and your lists are *added*
+to theirs — nothing of theirs is overwritten. Your notes stay yours.
 
 ---
 
@@ -111,11 +122,26 @@ A Grinnell-style journal, one page per site-day.
   offline to resolve later).
 - **eBird checklist** — paste your eBird checklist URL for the day.
 - **← Back to explorer** stays pinned at the top (clears the Dynamic Island).
-- **Export / Print** — Export the whole notebook to JSON to back it up (and re-import later);
-  Print each day for a clean PDF.
+- **iNaturalist observation** — paste the URL (or just the observation number) on a species'
+  page, and it now shows up **on that species' account and in the day's checklist**, as a link
+  you can tap.
+- **Export / Print** — **Export notes (JSON)** backs up the whole notebook (and re-imports
+  later); **Print** each day for a clean PDF.
 
-> Everything you type is saved **on that device**. Export to JSON now and then so you have a
-> backup — especially before clearing your browser.
+---
+
+## 6b. Back up your notes — every day. This matters most.
+
+Your notes, ticks and journal live **on that phone only**. Nothing is on a server, and a phone
+can lose browser data. **They are the one thing here that cannot be rebuilt.**
+
+- At the end of each day, open **section 08** and tap **Export notes (JSON)**. Save the file
+  somewhere real — Files, iCloud, or email it to yourself.
+- The app watches for this: when you have written anything since your last export, a warning
+  appears next to the button — **"⚠ unsaved changes"** — with a **Back up now** button. When it
+  is gone, you are backed up.
+- **Export notes** = your notebook (private). **Export lists** = your picks (shareable). They are
+  deliberately different files.
 
 ---
 
@@ -133,6 +159,7 @@ A Grinnell-style journal, one page per site-day.
 - [ ] Phone: **Add to Home Screen**.
 - [ ] Tapped **"Save photos for offline"** on both; saw **"Saved for offline ●"**.
 - [ ] Tested **Airplane Mode** — list, search, photos, journal all work.
-- [ ] (Optional) Imported the favorites preload.
+- [ ] (Optional) Imported a lists file someone shared with you.
+- [ ] **Exported your notes once**, so you know where the backup file lands.
 
 Have a wonderful trip. 🐦

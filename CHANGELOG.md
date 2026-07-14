@@ -10,6 +10,34 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.55 — low-hanging fruit before the freeze
+
+Housekeeping while the field kit is still open. No schema changes.
+
+- **"My lists" sort.** A fourth sort option: everything you have curated floats to the top —
+  focal, then tour, then anything on any other list, then the rest. (This is the old
+  "focal/tour/normal sort" item, reshaped by PR-K into pure list membership.)
+- **Dark-mode column headers.** The site chips were lightened for dark mode long ago; the site
+  **column headers** were missed and still used the raw tint, which goes muddy on the dark
+  background. Fixed, and they repaint when you flip the theme.
+- **The offline card now has a step 4: "Back it up, every day."** It explained how to cache
+  photos and install to the Home Screen, but never said the thing that actually matters — her
+  notes live on that phone only.
+- **HOWTO rewritten** for lists: what a list is, that the site specials are now hers to edit,
+  that every list is a filter, that **＋ list** freezes a view, and — the point — that
+  **Export lists** shares her picks *without* her field notes. Plus a new section on the daily
+  backup habit and the unsaved-changes warning.
+- **`docs/REHEARSAL.md`** — the real-device checklist to run before freezing: upgrade path first
+  (the risky one), then true offline (with a phone reboot), a day's work, and a backup that is
+  proven to *round-trip*. Offline has broken twice on this app and both times a human caught it,
+  not a test.
+- **`docs/INGEST_PLAN.md` corrected.** I had said the iNat project was time-sensitive. It isn't —
+  a **collection project is a saved query**, not a bucket, so it back-fills past observations and
+  can be created *after* the trip. Also reordered: **iNaturalist import is primary** (2,148
+  species, any taxon, her photos); **eBird is secondary and optional**.
+
+Shell → `sa-shell-v34`. +3 render tests (121 pass).
+
 ## 1.0.54 — her notes made durable · the dead iNat link finally does something
 
 Two small, pre-freeze fixes. Six days from the field, the job is no longer "build" — it is

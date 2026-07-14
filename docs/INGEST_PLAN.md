@@ -118,13 +118,26 @@ The dev fork must therefore do **both**:
 
 ## 10. Sequence
 
+> **CORRECTION (2026-07-14).** I earlier called creating the iNat project *time-sensitive*. **It is
+> not** — provided it is a **collection project**, which is a *saved query*, not a bucket: it
+> auto-includes every observation matching its filters (place, date range, members), **including
+> past ones**. So it can be created **after the trip** and will sweep the whole thing up.
+> (A **traditional** project is the one that needs observations added by hand — don't use that.)
+> Durrell will create it on his return. Nothing is lost by waiting.
+>
+> **Priority also corrected:** **iNaturalist import is primary** (it covers 2,148 species, any
+> taxon, and carries her photos). **eBird import is secondary and optional** — she may not even
+> use eBird lists.
+
 | when | what |
 |---|---|
-| **now** (Durrell) | **Create the iNat project.** Only genuinely time-sensitive item — it cannot retroactively collect what wasn't posted to it. |
+| **after the field** (Durrell) | Create the iNat **collection project** — filters: place + date range 20 Jul–1 Aug + members. It back-fills automatically. |
 | **now** (done, v1.0.54) | Durability (persist + backup nudge) · the iNat link finally renders |
 | **by 17 Jul** | Real-device offline rehearsal → **freeze** |
 | **20 Jul – 1 Aug** | The trip. She *generates* the data this feature consumes. |
 | **during/after, on the fork** | Phase 1: **eBird CSV import** (no token, works anywhere) → day list + memos. Phase 2: **iNat project pull** (open API) → day list + her photos on accounts. Phase 3: seen-tick offer, idempotency, polish. |
 
-**Phase 1 first** — CSV needs no token, no network, and proves the whole day-list + memo pipeline
-with the least machinery. The iNat pull then reuses it.
+**Revised order (Durrell, 2026-07-14): iNaturalist first.** It is the richer spine — 2,148 species,
+any taxon, her own photos — and its API is open, needing no token. **eBird is the secondary,
+optional half**: it speaks only for birds, and she may not use eBird lists at all. Build the
+day-list + memo pipeline against iNat; eBird (CSV first, no token, plane-safe) then reuses it.
