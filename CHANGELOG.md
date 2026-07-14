@@ -10,6 +10,49 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.53 — LISTS: curation becomes a first-class, portable thing (PR-K)
+
+*"Making SPECIALS editable is a good idea, but it is a single instance of a more general idea."*
+It is. **It was never a missing button — it was a missing noun.**
+
+Every curated thing in this app is the same shape: a **named, scoped, portable set of species**.
+Because "a set of species" wasn't a concept, each one was hand-built separately:
+
+| was | now |
+|---|---|
+| `SPECIALS` — a hardcoded object, matched by common-name **string** at boot | **shipped lists** (`lists.js`), resolved to corpus keys at **build** time |
+| `marks` — exactly two hardcoded tiers | **two default lists** (★ focal, ⚑ tour) |
+| per-site highlights | derived from the **site-scoped lists** |
+| "Export tour ⚑" (a marks-only workaround) | **"Export lists ◆"** — curation *without* your notes |
+
+**Lists and filters are duals.** The app was already a filter engine — a filter is a query that
+yields a set; a list is a set that acts as a filter. That loop is now closed:
+
+- **＋ list** freezes whatever is on screen into a named list ("Kruger targets").
+- **Every list is a filter chip** in the results strip (contextual: your lists, the defaults,
+  cross-site lists, and the focused site's list — so 11 shipped lists don't drown a phone).
+- **Lists manager** (§8): filter · rename · delete, per list. The curated site specials are now
+  **yours to edit**, because they're data, not code.
+- **Drawer**: add a species to any list, not just the two tiers.
+
+**Three layers, now separated.** *Corpus* (what exists) · **Curation** (what matters — lists) ·
+*Record* (what you saw — seen/notes/journal). You can hand someone your **lists** without handing
+over your **field notes**. Deliberately *not* folded together: `seen` is species×site and
+time-stamped, notes are prose — forcing those into the list shape would be the abstraction
+leaking.
+
+Migration is automatic: your existing ★/⚑ marks become the focal/tour lists. Export is **v3**
+(carries `lists`, still emits a derived `marks` map, so v2 files and
+`samples/saexplore-favorites.json` keep working both ways). Import is a **union** — it *adds*
+lists, it never clobbers yours. Deleting a shipped list **tombstones** it so a later build can't
+silently re-seed it.
+
+Also fixed en route: a list change made behind the UI's back (deleting a list, importing one) left
+the row stars **stale** — a species could show ☆ while actually being marked, so the next tap
+cycled it the wrong way. Stars are now repainted as the view of the lists they are.
+
+Shell → `sa-shell-v32`. +11 render tests (108 pass). Supersedes backlog items 22 & 23.
+
 ## 1.0.52 — the ◐ and A+ buttons escape the Dynamic Island (issue #57)
 
 Durrell: *"I love the full screen on a modern iPhone with a Dynamic Island, but we need to be able

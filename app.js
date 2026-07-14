@@ -177,9 +177,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<span style="font-weight:700;color:var(--soft);font-size:10px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap">Filters at hand</span>'+
    '<input id="q" type="search" placeholder="Search any name, eBird code, or type — every language" style="flex:1;min-width:190px;font-size:13px;padding:6px 13px">'+
    '<span style="width:1px;height:15px;background:var(--rule);margin:0 1px"></span>'+
-   '<button class="tagf chip sans mini" data-tag="focal" title="only your ★ focal picks">★</button>'+
-   '<button class="tagf chip sans mini" data-tag="tour" title="only ⚑ tour picks">⚑</button>'+
-   '<button class="tagf chip sans mini" data-tag="seen" title="only species seen this trip">✓</button>'+
+   '<span id="listChips" style="display:flex;gap:5px;flex-wrap:wrap"></span>'+
    '<button class="tripBtn chip sans mini" title="only species around in the trip window (late Jul) — on by default">★ late Jul</button>'+
    '<button id="markToggle" class="chip sans mini" style="display:none;border-color:#b5623c;color:#b5623c"></button>'+
    '<span id="seenTally" class="sans" style="font-size:11.5px;font-weight:700;color:#fbf7ee;background:var(--acacia);border:1px solid var(--acacia);border-radius:12px;padding:3px 10px;display:none"></span></div>'+
@@ -203,9 +201,10 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  // 8 export
  h+=sec(8,'Field journal','a Grinnell Field Journal page, saved per day')+'<div class="fb" data-body="8"><div id="exportPanel" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:14px 16px">'+
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
-   '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
+   '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your lists — your picks and the site specials — without your field notes">Export lists ◆</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div>'+
+   '<div id="listMgr" class="sans" style="margin-top:16px"></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.52</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.53</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -262,13 +261,66 @@ window.__wire5=function(UNIC,SMETA){
  var seen,notes,seenOrder,journal,inatobs,marks;
  function LG(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
  seen=new Set(LG('sa5_seen',[]));notes=LG('sa5_notes',{});seenOrder=LG('sa5_seenOrder',[]);journal=LG('sa5_journal',{});inatobs=LG('sa5_inatobs',{});marks=LG('sa5_marks',{});
- function save(){try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));localStorage.setItem('sa5_marks',JSON.stringify(marks));}catch(e){}}
- window.__sa={get seen(){return seen;},get notes(){return notes;},get journal(){return journal;},get inatobs(){return inatobs;},get marks(){return marks;},save:save};
- // focal (personal interest) / tour (shared highlight) tiers
- function markOf(o){return marks[o.k]||'';}
- function cycleMark(o){var m=markOf(o);var n=(m===''?'focal':m==='focal'?'tour':'');if(n)marks[o.k]=n;else delete marks[o.k];save();return n;}
- function setMark(o,v){if(v)marks[o.k]=v;else delete marks[o.k];save();}
- function markCount(){return Object.keys(marks).length;}
+ function save(){try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));localStorage.setItem('sa5_marks',JSON.stringify(typeof marksMap==='function'?marksMap():marks));}catch(e){}}
+ window.__sa={get seen(){return seen;},get notes(){return notes;},get journal(){return journal;},get inatobs(){return inatobs;},get marks(){return marksMap();},get lists(){return LSTORE;},save:save};
+ // ---------- lists: the CURATION layer (PR-K) ----------
+ // A list is a named, scoped, portable SET of species. Everything curated is one:
+ //   ★ focal / ⚑ tour  — two default lists (they were hardcoded "mark tiers")
+ //   site lists        — the per-site specials, once a hardcoded object in this file, now
+ //                       shipped DATA (lists.js) that you can edit, extend, delete and share
+ //   your own lists    — "save the current view as a list": filters make lists, lists filter
+ // Curation is deliberately kept apart from the RECORD (seen/notes/journal): you can hand
+ // someone your lists without handing over your field notes. That split is why there used to
+ // be two export buttons; now there is one list export and one notes export, and they mean
+ // different things.
+ var LSTORE=LG('sa5_lists',null);
+ function saveLists(){try{localStorage.setItem('sa5_lists',JSON.stringify(LSTORE));}catch(e){}}
+ (function migrateLists(){
+  if(!LSTORE||!LSTORE.l){
+   LSTORE={v:1,ord:['focal','tour'],dead:[],l:{
+    focal:{n:'Focal',g:'\u2605',c:'#b5623c',site:'',it:[],o:'mine'},
+    tour:{n:'Tour',g:'\u2691',c:'#5e7249',site:'',it:[],o:'mine'}}};
+   // carry the old two-tier marks store (sa5_marks) across
+   try{Object.keys(marks||{}).forEach(function(k){var t=marks[k];if(LSTORE.l[t]&&LSTORE.l[t].it.indexOf(k)<0)LSTORE.l[t].it.push(k);});}catch(e){}
+  }
+  if(!LSTORE.dead)LSTORE.dead=[];
+  // Seed the shipped lists. New shipped lists reach existing users too — but a list the user
+  // DELETED stays deleted (tombstoned in .dead), and their edits are never overwritten.
+  var SH=window.LISTS||{};
+  Object.keys(SH).forEach(function(id){
+   if(LSTORE.l[id]||LSTORE.dead.indexOf(id)>=0)return;
+   LSTORE.l[id]={n:SH[id].n,g:SH[id].g,c:SH[id].c,site:SH[id].site||'',it:(SH[id].it||[]).slice(),o:'shipped'};
+   LSTORE.ord.push(id);
+  });
+  saveLists();
+ })();
+ function LST(id){return LSTORE.l[id];}
+ function listIds(){return LSTORE.ord.filter(function(id){return !!LSTORE.l[id];});}
+ function inList(id,k){var l=LSTORE.l[id];return !!l&&l.it.indexOf(k)>=0;}
+ function listAdd(id,k){var l=LSTORE.l[id];if(l&&l.it.indexOf(k)<0){l.it.push(k);saveLists();}}
+ function listDel(id,k){var l=LSTORE.l[id];if(!l)return;var i=l.it.indexOf(k);if(i>=0){l.it.splice(i,1);saveLists();}}
+ function listToggle(id,k){if(inList(id,k))listDel(id,k);else listAdd(id,k);}
+ function listsOfKey(k){return listIds().filter(function(id){return inList(id,k);});}
+ function listNew(name,items,site){
+  var id='mine-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1296).toString(36);
+  LSTORE.l[id]={n:name||'Untitled list',g:'\u25c6',c:'#2f4f86',site:site||'',it:(items||[]).slice(),o:'mine'};
+  LSTORE.ord.push(id);saveLists();return id;}
+ // The row stars are a VIEW of the focal/tour lists, so any change to those lists behind the
+ // UI's back (deleting a list, importing one) must repaint them — otherwise a star shows ☆ for a
+ // species that is actually marked, and the next tap cycles it the wrong way.
+ function repaintStars(){$$('#matrix .markstar').forEach(function(b){var o=UNIC[+b.dataset.oi];if(o)paintMarkStar(b,o);});paintMarkToggle();}
+ window.__repaintStars=repaintStars;
+ function listRemove(id){
+  if(!LSTORE.l[id])return;
+  if(LSTORE.l[id].o==='shipped'&&LSTORE.dead.indexOf(id)<0)LSTORE.dead.push(id);   // tombstone: don't re-seed
+  delete LSTORE.l[id];LSTORE.ord=LSTORE.ord.filter(function(x){return x!==id;});
+  S.tags.delete(id);saveLists();repaintStars();}
+ // ★ focal / ⚑ tour are now just two lists. These shims keep every existing call site working.
+ function markOf(o){return inList('focal',o.k)?'focal':inList('tour',o.k)?'tour':'';}
+ function setMark(o,v){listDel('focal',o.k);listDel('tour',o.k);if(v)listAdd(v,o.k);}
+ function cycleMark(o){var m=markOf(o);var n=(m===''?'focal':m==='focal'?'tour':'');setMark(o,n);return n;}
+ function markCount(){var s={};['focal','tour'].forEach(function(id){var l=LST(id);if(l)l.it.forEach(function(k){s[k]=1;});});return Object.keys(s).length;}
+ function marksMap(){var m={};['tour','focal'].forEach(function(id){var l=LST(id);if(l)l.it.forEach(function(k){m[k]=id;});});return m;}
  var MARKG={focal:{gl:'★',col:'#b5623c',lab:'focal'},tour:{gl:'⚑',col:'#5e7249',lab:'tour'}};
  function markStarHTML(o){var m=markOf(o);var g=m?MARKG[m]:null;return '<button class="markstar" data-oi="'+o.i+'" title="focal (my interest) → tour (shared highlight) → off" style="border:none;background:none;cursor:pointer;font-size:12px;padding:0 5px 0 0;margin:0;color:'+(g?g.col:'#c9bfa8')+'">'+(g?g.gl:'☆')+'</button>';}
  function paintMarkStar(b,o){var m=markOf(o);var g=m?MARKG[m]:null;b.textContent=g?g.gl:'☆';b.style.color=g?g.col:'#c9bfa8';}
@@ -324,8 +376,64 @@ window.__wire5=function(UNIC,SMETA){
  var SEAS=[[11,0,1],[2,3,4],[5,6,7],[8,9,10]];
  $$('.tripBtn').forEach(function(b){b.onclick=function(){S.tripwin=!S.tripwin;if(S.tripwin)S.months=new Set([6]);else S.months=new Set([0,1,2,3,4,5,6,7,8,9,10,11]);paintSeason();applyFilters();};});
  // tagged quick-filters: ★ focal · ⚑ tour · ✓ seen this trip (union — any active tag shows)
- function paintTags(){var COL={focal:'#b5623c',tour:'#5e7249',seen:'#5e7249'};$$('.tagf').forEach(function(b){var t=b.dataset.tag,on=S.tags.has(t),c=COL[t];b.style.background=on?c:C.raised;b.style.color=on?'#fff':c;b.style.borderColor=c;b.style.fontWeight='700';});}
- $$('.tagf').forEach(function(b){b.onclick=function(){var t=b.dataset.tag;if(S.tags.has(t))S.tags.delete(t);else S.tags.add(t);paintTags();applyFilters();};});paintTags();
+ // A list IS a filter. Every list gets a chip; tapping it narrows to that list (union across
+ // several). With 11 shipped lists the strip would drown a phone, so it stays contextual: the
+ // two default lists, your own lists, cross-site lists, ✓ seen, and the FOCUSED site's list.
+ function chipIds(){return listIds().filter(function(id){var l=LST(id);if(!l)return false;
+  if(id==='focal'||id==='tour')return true;
+  if(l.o==='mine'||l.o==='imported')return true;
+  if(!l.site)return true;                       // cross-site (Big Five)
+  return S.focus===l.site;});}                  // site list appears when you focus that site
+ function buildListChips(){var box=$('#listChips');if(!box)return;
+  var h=chipIds().map(function(id){var l=LST(id);
+   return '<button class="tagf chip sans mini" data-tag="'+esc(id)+'" title="'+esc(l.n)+' \u00b7 '+l.it.length+' species">'+esc(l.g)+' '+esc(l.n)+'</button>';}).join('');
+  h+='<button class="tagf chip sans mini" data-tag="seen" title="species you have ticked as seen this trip">\u2713 Seen</button>';
+  h+='<button id="listNew" class="chip sans mini" title="Save the species currently in view as a new list \u2014 filters make lists, lists make filters">\uff0b list</button>';
+  box.innerHTML=h;
+  $$('#listChips .tagf').forEach(function(b){b.onclick=function(){var t=b.dataset.tag;if(S.tags.has(t))S.tags.delete(t);else S.tags.add(t);paintTags();applyFilters();};});
+  var nb=$('#listNew');if(nb)nb.onclick=listFromView;
+  paintTags();}
+ // ---------- the list manager (section 8) ----------
+ // Deliberately NOT a "screen": one compact row per list — filter it, rename it, bin it.
+ // Shipped lists are yours to edit too; deleting one tombstones it so it is never re-seeded.
+ function renderListMgr(){var box=$('#listMgr');if(!box)return;
+  box.innerHTML='<div class="dlab" style="margin-bottom:6px">Lists \u2014 what matters, as data</div>'+
+   '<p style="margin:0 0 9px;font-size:12px;color:var(--soft);max-width:520px">A list is a named set of species: your <b>\u2605 focal</b> and <b>\u2691 tour</b> picks, the curated <b>site specials</b>, or anything you save from the current view (\uff0b list). Lists <b>are</b> filters \u2014 tap a chip up in the results. <b>Export lists \u25c6</b> shares them <i>without</i> your field notes.</p>'+
+   '<div style="display:flex;flex-direction:column;gap:5px;max-width:560px">'+
+   listIds().map(function(id){var l=LST(id);
+    var _sn=(l.site&&SI[l.site])?SI[l.site].short:'';var site=(_sn&&_sn!==l.n)?(' \u00b7 '+esc(_sn)):'';
+    var org=l.o==='shipped'?'shipped':(l.o==='imported'?'imported':'yours');
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--raised)">'+
+     '<span style="color:'+l.c+';font-weight:700">'+esc(l.g)+'</span>'+
+     '<span style="flex:1;min-width:0;font-size:12.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(l.n)+
+      '<span style="color:var(--soft);font-size:11px"> \u00b7 '+l.it.length+' species'+site+' \u00b7 '+org+'</span></span>'+
+     '<button class="lmF chip sans mini" data-id="'+esc(id)+'" title="show only this list">filter</button>'+
+     '<button class="lmR chip sans mini" data-id="'+esc(id)+'" title="rename">\u270e</button>'+
+     '<button class="lmD chip sans mini" data-id="'+esc(id)+'" title="delete this list (the species stay in the corpus)" style="border-color:var(--terra);color:var(--terra)">\u2715</button>'+
+    '</div>';}).join('')+'</div>';
+  $$('#listMgr .lmF').forEach(function(b){b.onclick=function(){var id=b.dataset.id,l=LST(id);
+   if(S.tags.has(id))S.tags.delete(id);else S.tags.add(id);
+   if(l&&l.site&&S.focus!==l.site)focusSite(l.site);   // its chip only shows when that site is focused
+   buildListChips();paintTags();applyFilters();
+   var mx=$('#matrix');if(mx&&mx.scrollIntoView)mx.scrollIntoView({block:'start'});};});
+  $$('#listMgr .lmR').forEach(function(b){b.onclick=function(){var id=b.dataset.id,l=LST(id);if(!l)return;
+   var nm=window.prompt?window.prompt('Rename list',l.n):null;if(nm===null||nm===undefined)return;
+   l.n=(nm||'').trim()||l.n;saveLists();buildListChips();renderListMgr();};});
+  $$('#listMgr .lmD').forEach(function(b){b.onclick=function(){var id=b.dataset.id,l=LST(id);if(!l)return;
+   if(window.confirm&&!window.confirm('Delete the list \u201c'+l.n+'\u201d? The species stay in the corpus.'))return;
+   listRemove(id);buildListChips();renderListMgr();paintMarkToggle();renderRails();applyFilters();};});}
+ window.__listAdd=listAdd;window.__listToggle=listToggle;window.__renderListMgr=renderListMgr;window.__listsOfKey=listsOfKey;window.__listNew=listNew;window.__mergeLists=mergeLists;window.__LSTORE=function(){return LSTORE;};
+ function paintTags(){$$('.tagf').forEach(function(b){var t=b.dataset.tag,on=S.tags.has(t);var l=LST(t);var c=l?l.c:'#5e7249';
+  b.style.background=on?c:C.raised;b.style.color=on?'#fff':c;b.style.borderColor=c;b.style.fontWeight='700';});}
+ // filters -> lists: freeze whatever is on screen right now into a named list.
+ function listFromView(){
+  var keys=[];$$('#matrix tr.org').forEach(function(tr){if(!tr.classList.contains('hid'))keys.push(UNIC[+tr.dataset.i].k);});
+  if(!keys.length){window.alert&&alert('Nothing in view to save \u2014 widen the filters first.');return;}
+  var nm=window.prompt?window.prompt('Name this list ('+keys.length+' species in view)',''):'';
+  if(nm===null)return;                          // cancelled
+  var id=listNew((nm||'').trim()||('List of '+keys.length),keys,S.focus||'');
+  buildListChips();renderListMgr();
+  S.tags.add(id);paintTags();applyFilters();}
  $$('.allyrBtn').forEach(function(b){b.onclick=function(){S.tripwin=false;S.months=new Set([0,1,2,3,4,5,6,7,8,9,10,11]);paintSeason();applyFilters();};});
  (function(){var t=$('#srcToggle'),p=$('#srcPanel');if(!t||!p)return;t.onclick=function(){var open=p.style.display==='none';p.style.display=open?'':'none';t.textContent=(open?'▾':'▸')+' Sources in view';};})();
  $$('.seasonchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:system-ui,sans-serif';c.onclick=function(){var mm=SEAS[+c.dataset.se];var allon=mm.every(function(m){return S.months.has(m);});mm.forEach(function(m){if(allon)S.months.delete(m);else S.months.add(m);});S.tripwin=false;paintSeason();applyFilters();};});
@@ -351,24 +459,15 @@ window.__wire5=function(UNIC,SMETA){
  // Curated per-site "specials to look out for" (from the trip digest / brochure). Charismatic
  // species carry abundance _e=0, so pure abundance-sorting buries them — this surfaces the
  // iconic ones (Big Five, penguins, endemic birds) in each site's highlights + the tour.
- var SPECIALS={
-  kirstenbosch:["Cape Sugarbird","Orange-breasted Sunbird","Cape Spurfowl","Forest Canary","Cape Batis","African Olive-Pigeon","African Goshawk","Spotted Eagle-Owl","Cape Grysbok","Rock Hyrax"],
-  tablemtn:["Cape Sugarbird","Orange-breasted Sunbird","Cape Rock-Thrush","Rock Hyrax","Cape Spurfowl"],
-  capepoint:["African Oystercatcher","Kelp Gull","Hartlaub's Gull","Cape Cormorant","Common Ostrich","Cape Sugarbird","Chacma Baboon","Cape Mountain Zebra","Bontebok","Eland"],
-  boulders:["African Penguin","Crowned Cormorant","Cape Cormorant","African Oystercatcher","Swift Tern","Rock Hyrax"],
-  houtbay:["Cape Fur Seal","Cape Cormorant","Bank Cormorant","Kelp Gull","Hartlaub's Gull","African Oystercatcher"],
-  moholoholo:["Cape Vulture","Verreaux's Eagle","African Fish-Eagle","Jackal Buzzard","Narina Trogon","Knysna Turaco","Purple-crested Turaco","Southern Bald Ibis","Malachite Sunbird"],
-  blyde:["Cape Vulture","Common Hippopotamus","Nile Crocodile","Greater Kudu","Blue Wildebeest","Waterbuck"],
-  karongwe:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Cheetah","Southern Giraffe","Plains Zebra","Greater Kudu","Spotted Hyena"],
-  kruger_letaba:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Common Hippopotamus","Southern Giraffe","Plains Zebra","African Fish-Eagle","Bateleur"],
-  kruger_mdluli:["Lion","Leopard","African Bush Elephant","White Rhinoceros","African Buffalo","Nyala","Vervet Monkey","Southern Giraffe","Impala"]};
- var SPECIALK={};(function(){var idx={};function nm(s){return (s||'').toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ').trim();}
-  UNIC.forEach(function(o){[o.c,o.s].forEach(function(n){if(n&&!idx[nm(n)])idx[nm(n)]=o.k;});var N=window.NAMES&&window.NAMES[o.k];if(N){var al=(N.sp?[N.sp]:[]).concat(N.s||[],N.v||[]);al.forEach(function(a){if(!idx[nm(a)])idx[nm(a)]=o.k;});}});
-  Object.keys(SPECIALS).forEach(function(s){SPECIALK[s]=SPECIALS[s].map(function(n){return idx[nm(n)];}).filter(Boolean);});})();
- // First run (no marks yet): seed the curated per-site specials as ⚑ tour marks, so you see &
- // can edit "the choices" in the main list (they float to the top, un-star any you don't want).
- // Runs once — guarded so it never clobbers your own marks or re-seeds after you clear them.
- (function(){try{if(!Object.keys(marks).length&&!localStorage.getItem('sa_specials_seeded')){var did=false;Object.keys(SPECIALK).forEach(function(s){SPECIALK[s].forEach(function(k){if(k&&!marks[k]){marks[k]='tour';did=true;}});});if(did)save();localStorage.setItem('sa_specials_seeded','1');}}catch(e){}})();
+ // The per-site "specials" now live in lists.js (shipped lists, resolved to corpus keys at build
+ // time). They used to be a hardcoded object here, matched by common-name string at boot.
+ function siteListIds(sk){return listIds().filter(function(id){var l=LST(id);return l&&l.site===sk;});}
+ function siteListKeys(sk){var out=[],seenk={};siteListIds(sk).forEach(function(id){LST(id).it.forEach(function(k){if(!seenk[k]){seenk[k]=1;out.push(k);}});});return out;}
+ // First run: seed the shipped site lists into \u2691 tour, so you open onto "the choices"
+ // pinned at the top and can un-star any you don't want. Runs once; never clobbers your marks.
+ (function(){try{if(!markCount()&&!localStorage.getItem('sa_specials_seeded')){
+   listIds().forEach(function(id){var l=LST(id);if(l&&l.site)l.it.forEach(function(k){listAdd('tour',k);});});
+   localStorage.setItem('sa_specials_seeded','1');}}catch(e){}})();
  function ebOf(o){var n=window.NAMES&&window.NAMES[o.k];return (n&&n.ebk)?n.ebk:'';}
  function aliasList(o){var n=window.NAMES&&window.NAMES[o.k];if(!n)return[];var a=[];if(n.sp)a.push(n.sp);if(n.ebk)a.push(n.ebk);if(n.s)a=a.concat(n.s);if(n.v)a=a.concat(n.v);if(n.l)Object.keys(n.l).forEach(function(k){a=a.concat(n.l[k]);});return a;}
  function aliasHay(o){var a=aliasList(o);return a.length?(' '+a.join(' ').toLowerCase()):'';}
@@ -445,7 +544,8 @@ window.__wire5=function(UNIC,SMETA){
    if(ok&&S.tags.size){
     // Tagged quick-filters are explicit user picks — show them regardless of the discovery
     // filters (season / abundance / year / site), but still honour taxa + search.
-    ok=(S.tags.has('focal')&&markOf(o)==='focal')||(S.tags.has('tour')&&markOf(o)==='tour')||(S.tags.has('seen')&&!!(sm&&sm[o.k]));
+    ok=(S.tags.has('seen')&&!!(sm&&sm[o.k]));
+    if(!ok){var _ids=listIds();for(var _z=0;_z<_ids.length;_z++){if(S.tags.has(_ids[_z])&&inList(_ids[_z],o.k)){ok=true;break;}}}
     if(ok&&S.q)ok=textOK(o,tr);
    }else if(ok&&S.showMarks&&markOf(o)){
     // pinned highlights (focal/tour) stay visible regardless of season/site/abundance/year —
@@ -538,7 +638,7 @@ window.__wire5=function(UNIC,SMETA){
  function siteHighlights(sk){var here=UNIC.filter(function(o){return presentAt(o,sk);});var hereK={};here.forEach(function(o){hereK[o.k]=o;});
   var mkd=here.filter(function(o){return markOf(o);}).sort(markSort);var used={};mkd.forEach(function(o){used[o.k]=1;});
   // curated specials present here (Big Five, penguins, endemics) come right after the user's marks
-  var spec=(SPECIALK[sk]||[]).map(function(k){return hereK[k];}).filter(function(o){return o&&!used[o.k];});spec.forEach(function(o){used[o.k]=1;});
+  var spec=(siteListKeys(sk)||[]).map(function(k){return hereK[k];}).filter(function(o){return o&&!used[o.k];});spec.forEach(function(o){used[o.k]=1;});
   var rest=here.filter(function(o){return !used[o.k];}).sort(function(a,b){return (b._e||0)-(a._e||0);});
   return mkd.concat(spec,rest).slice(0,8);}
  function renderRails(){var L=$('#mapLeft'),R=$('#mapRight');if(!L||!R)return;
@@ -555,8 +655,8 @@ window.__wire5=function(UNIC,SMETA){
  document.addEventListener('click',function(e){var hl=e.target.closest&&e.target.closest('.hl');if(hl)openDrawer(+hl.dataset.oi);});
  // ---------- focus + tour ----------
  var tourTimer=null;
- function focusSite(k){S.focus=k;if(S.region!=='all'&&SI[k].rk!==S.region){S.region='all';paintRegion();}colVisibility();paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
- function clearFocus(){S.focus=null;colVisibility();paintSiteChips();renderItin();renderMap();renderRails();applyFilters();}
+ function focusSite(k){S.focus=k;if(S.region!=='all'&&SI[k].rk!==S.region){S.region='all';paintRegion();}colVisibility();paintSiteChips();buildListChips();renderItin();renderMap();renderRails();applyFilters();}
+ function clearFocus(){S.focus=null;colVisibility();paintSiteChips();buildListChips();renderItin();renderMap();renderRails();applyFilters();}
  function stopTour(){if(tourTimer){clearInterval(tourTimer);tourTimer=null;var p=$('#tPlay');if(p){p.innerHTML='▶ Play tour';p.style.background=C.acacia;}}}
  function stepTour(dir){var list=itinList();var idx=S.focus?list.map(function(s){return s.key;}).indexOf(S.focus):-1;idx=(idx+dir+list.length)%list.length;focusSite(list[idx].key);}
  function tourRun(){if(tourTimer)clearInterval(tourTimer);tourTimer=setInterval(function(){stepTour(1);},S.tourMs);}
@@ -614,6 +714,11 @@ window.__wire5=function(UNIC,SMETA){
     '<button class="markbtn" data-m="focal" style="border:1px solid #b5623c;background:'+C.raised+';color:#b5623c;border-radius:12px;padding:3px 11px;cursor:pointer;font:inherit;font-size:12px;font-weight:600">★ focal</button>'+
     '<button class="markbtn" data-m="tour" style="border:1px solid #5e7249;background:'+C.raised+';color:#5e7249;border-radius:12px;padding:3px 11px;cursor:pointer;font:inherit;font-size:12px;font-weight:600">⚑ tour</button>'+
     '<span style="font-size:10.5px;color:'+C.soft+'">focal = my interest · tour = shared highlight</span></div>'+
+   // …and every other list this species could belong to. focal/tour are just the first two.
+   '<div class="sans" style="padding:8px 18px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:'+C.soft+'">Lists</span>'+
+    listIds().filter(function(id){return id!=='focal'&&id!=='tour';}).map(function(id){var l=LST(id);var on=inList(id,o.k);
+     return '<button class="lbtn chip sans mini" data-lid="'+esc(id)+'" title="'+esc(l.n)+' \u00b7 '+l.it.length+' species" style="border-color:'+l.c+';background:'+(on?l.c:C.raised)+';color:'+(on?'#fff':l.c)+'">'+esc(l.g)+' '+esc(l.n)+'</button>';}).join('')+
+   '</div>'+
    '<div class="sans" style="padding:14px 18px;font-size:13px">'+
    // Attribution comes from the photo record itself. It used to hardcode "via iNaturalist",
    // which became a lie once photos could also come from Wikimedia or PhyloPic (1.0.51).
@@ -631,6 +736,8 @@ window.__wire5=function(UNIC,SMETA){
   scrim.style.display='block';
   $('.dclose',drawer).onclick=closeDrawer;
   function paintMarkBtns(){$$('.markbtn',drawer).forEach(function(b){var on=markOf(o)===b.dataset.m;var col=b.dataset.m==='focal'?'#b5623c':'#5e7249';b.style.background=on?col:C.raised;b.style.color=on?'#fff':col;});}
+  function paintLBtns(){$$('.lbtn',drawer).forEach(function(b){var id=b.dataset.lid,l=LST(id);if(!l)return;var on=inList(id,o.k);b.style.background=on?l.c:C.raised;b.style.color=on?'#fff':l.c;});}
+  $$('.lbtn',drawer).forEach(function(b){b.onclick=function(){listToggle(b.dataset.lid,o.k);paintLBtns();buildListChips();renderListMgr();renderRails();applyFilters();};});
   $$('.markbtn',drawer).forEach(function(b){b.onclick=function(){var cur=markOf(o);setMark(o,cur===b.dataset.m?'':b.dataset.m);paintMarkBtns();refreshMark(o);};});paintMarkBtns();
   $$('.ckchip',drawer).forEach(function(ch){ch.onclick=function(){toggleSeen(o,ch.dataset.key.split('|')[1]);};});
   var ta=$('.noteta',drawer);ta.style.overflow='hidden';ta.oninput=function(){notes[nk]=ta.value;save();autoGrow(ta);};autoGrow(ta);
@@ -683,16 +790,43 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- observer notebook: JSON backup (offline; export is the save mechanism) ----------
  // eBird species codes for every species referenced in the export — the join key so an
  // exported file lines up with eBird checklists / trip reports (birds are canonical on eBird).
- function refEbird(){var m={};function add(k){k=String(k||'').replace(/^sp:/,'').split('|')[0];if(k&&!m[k]){var o=OBYK[k];if(o){var cd=ebOf(o);if(cd)m[k]=cd;}}}Object.keys(marks).forEach(add);seen.forEach(add);Object.keys(notes).forEach(add);return m;}
- function collectNotes(){return {v:2,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs,marks:marks,ebird:refEbird()};}
+ function refEbird(){var m={};function add(k){k=String(k||'').replace(/^sp:/,'').split('|')[0];if(k&&!m[k]){var o=OBYK[k];if(o){var cd=ebOf(o);if(cd)m[k]=cd;}}}listIds().forEach(function(id){LST(id).it.forEach(add);});seen.forEach(add);Object.keys(notes).forEach(add);return m;}
+ // v3 carries the LISTS (curation). `marks` is still emitted, derived, so a v2 reader — and the
+ // shipped samples/saexplore-favorites.json — keep working both ways.
+ function collectNotes(){return {v:3,app:'saexplore',exported:'2026',seen:Array.from(seen),notes:notes,seenOrder:seenOrder,journal:journal,inatobs:inatobs,marks:marksMap(),lists:{ord:LSTORE.ord,l:LSTORE.l},ebird:refEbird()};}
  function dlJSON(obj,name){try{var blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},0);}catch(e){window.alert&&alert('Export failed: '+e.message);}}
  function exportJSON(){dlJSON(collectNotes(),'saexplore-fieldnotes.json');}
- // A shareable, marks-only file — the tour/focal picks, to hand to another user (import merges
- // the pins; their notes/journal are untouched). Same shape as samples/saexplore-favorites.json.
- function exportFavorites(){var mk=Object.keys(marks);if(!mk.length){window.alert&&alert('No focal or tour species marked yet — tap the ☆ beside a species to add one.');return;}var eb={};mk.forEach(function(k){var o=OBYK[k];if(o){var cd=ebOf(o);if(cd)eb[k]=cd;}});dlJSON({v:2,app:'saexplore',note:'Focal/tour favorites — import merges these pins; your notes/checklist/journal are untouched.',marks:marks,ebird:eb},'saexplore-favorites.json');}
- window.__exportFavorites=exportFavorites;
- function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=d.journal;if(d.inatobs)inatobs=d.inatobs;if(d.marks)marks=d.marks;save();buildMatrix();updateSeenOrder();paintSeenTally();paintMarkToggle();renderRails();applyFilters();window.alert&&alert('Field notes imported.');}catch(e){window.alert&&alert('Import failed: '+e.message);}}
- var ej=$('#expJson');if(ej)ej.onclick=exportJSON;var ef=$('#expFav');if(ef)ef.onclick=exportFavorites;
+ // Curation, on its own. This is the whole point of the split: you can hand someone your lists
+ // — your tour, your targets, the site specials you edited — WITHOUT handing over your field
+ // notes. Import merges them in (union, never destructive), as lists they can toggle.
+ function exportLists(){
+  var ids=listIds().filter(function(id){return LST(id).it.length;});
+  if(!ids.length){window.alert&&alert('No lists with any species in them yet.');return;}
+  var l={},eb={};
+  ids.forEach(function(id){var L2=LST(id);l[id]={n:L2.n,g:L2.g,c:L2.c,site:L2.site,it:L2.it.slice(),o:L2.o};
+   L2.it.forEach(function(k){var o=OBYK[k];if(o&&ebOf(o))eb[k]=ebOf(o);});});
+  dlJSON({v:3,app:'saexplore',exported:'2026',lists:{ord:ids,l:l},ebird:eb},'saexplore-lists.json');}
+ var exportFavorites=exportLists;              // old name, kept so nothing breaks
+ window.__exportFavorites=exportLists;window.__exportLists=exportLists;
+ // Merge incoming lists: an unknown list is added; a known one takes the UNION of its species.
+ // Never destructive — the same union rule the name backbone uses.
+ function mergeLists(inc){
+  if(!inc||!inc.l)return 0;
+  var n=0;
+  (inc.ord||Object.keys(inc.l)).forEach(function(id){
+   var L2=inc.l[id];if(!L2)return;
+   if(!LSTORE.l[id]){
+    LSTORE.l[id]={n:L2.n||'Imported list',g:L2.g||'\u25c6',c:L2.c||'#2f4f86',site:L2.site||'',it:(L2.it||[]).slice(),o:(L2.o==='shipped'?'shipped':'imported')};
+    LSTORE.ord.push(id);LSTORE.dead=LSTORE.dead.filter(function(x){return x!==id;});n++;
+   }else{(L2.it||[]).forEach(function(k){if(LSTORE.l[id].it.indexOf(k)<0){LSTORE.l[id].it.push(k);n++;}});}
+  });
+  saveLists();return n;}
+ function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=d.journal;if(d.inatobs)inatobs=d.inatobs;
+  // v3: lists. v2: a flat marks map — fold it into the two default lists so old files still work.
+  if(d.lists)mergeLists(d.lists);
+  else if(d.marks)Object.keys(d.marks).forEach(function(k){var t=d.marks[k];if(LST(t)&&!inList(t,k))listAdd(t,k);});
+  save();buildMatrix();updateSeenOrder();paintSeenTally();paintMarkToggle();buildListChips();renderListMgr();renderRails();applyFilters();window.alert&&alert('Imported.');}catch(e){window.alert&&alert('Import failed: '+e.message);}}
+ var ej=$('#expJson');if(ej)ej.onclick=exportJSON;var ef=$('#expFav');if(ef)ef.onclick=exportLists;
  var ij=$('#impJson'),iff=$('#impFile');if(ij&&iff){ij.onclick=function(){iff.click();};iff.onchange=function(){var f=iff.files&&iff.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importJSON(r.result);};r.readAsText(f);};}
  window.__exportJSON=exportJSON;window.__importJSON=importJSON;window.__collectNotes=collectNotes;
 
@@ -791,7 +925,7 @@ window.__wire5=function(UNIC,SMETA){
  window.__openJournal=openJournal;window.__addExtra=addExtra;
 
  // ---------- init ----------
- buildTaxa();buildSiteChips();buildMatrix();paintRegion();paintSeason();renderItin();renderMap();renderRails();updateSeenOrder();paintSeenTally();paintMarkToggle();wireTourSpeed();applyFilters();
+ buildTaxa();buildSiteChips();buildListChips();renderListMgr();buildMatrix();paintRegion();paintSeason();renderItin();renderMap();renderRails();updateSeenOrder();paintSeenTally();paintMarkToggle();wireTourSpeed();applyFilters();
 };
 
 try{APP5(window.UNIC,window.SMETA,window.MAPIMG);}catch(e){var _a=document.getElementById("app");if(_a)_a.innerHTML="<pre>BOOT: "+(e&&e.message)+"</pre>";}

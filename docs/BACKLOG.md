@@ -87,15 +87,18 @@ pill** + "save photos for offline" action. *(status: implemented; verifying offl
 - **Item 4 [done · v1.0.36]:** journal back bar is safe-area-aware, sticky, and the back button is a larger tap target.
 - **Item 2:** **taller tour** with greatest-hits **prose (left)** + larger trip/favorites list (right).
 - **Item 20/21 [done · v1.0.40]:** curated per-site SPECIALS (Big Five, penguins, endemics from the digest) now lead each site's highlights + the tour, after any user marks — the "things to look out for". 76/81 names resolve. Absent-at-site or unmatched are dropped.
-- **Item 23 — make SPECIALS exportable + in-app editable** (Durrell 2026-07-12): today the
-  per-site specials are a **hardcoded list in app.js** — NOT yet exportable or user-editable.
-  Future PR: expose them as an editable/exportable set (e.g. a "specials" mark tier, or seed
-  them into marks so they ride the JSON export, plus in-app add/remove per site). Verify against
-  the trip digest names.
+- **Item 23 — make SPECIALS exportable + in-app editable** — ✅ **DONE v1.0.53, SUPERSEDED BY PR-K.**
+  Not solved as a one-off: SPECIALS turned out to be one instance of a missing noun. The per-site
+  specials are now **shipped lists** (`lists.js`, built by `tools/reconcile/build_lists.js`) —
+  data, not code — seeded into the user's list store, then editable, renameable, deletable and
+  shareable like any other list. See PR-K.
 
-- **Item 22 — share a tour via JSON:** the tour/focal **marks already ride the JSON
-  export/re-import** (that's how `samples/saexplore-favorites.json` works — export → send to
-  Shannon → she imports → gets your tour). [done · v1.0.39] "Export tour ⚑" button (section 08) downloads a clean marks-only favorites file (marks + eBird codes, no notes/journal) to share with the Dr.
+- **Item 22 — share a tour via JSON** — ✅ **DONE, then GENERALISED BY PR-K.** Was "Export tour ⚑"
+  (a marks-only file). That button existed because the full export dragged your private notes
+  along — which was the system telling us curation and record are different layers. It is now
+  **"Export lists ◆"**: every list (your picks, the site specials you edited, anything you froze
+  from a view), with **no field notes**. Import merges as a **union** — it adds lists, it never
+  overwrites yours. `samples/saexplore-favorites.json` (v2 marks) still imports.
 
 ### PR-D3 · P1 — site-focus labels + evidence caption (Durrell 2026-07-12, late)
 - **"only at <site>" wrongly implies endemicity.** It's really *species expected/recorded at*
@@ -196,6 +199,50 @@ header area** exposed, growing or shrinking depending on the current state.
   double-tap-to-zoom. Remember the state (localStorage), like the ◐ toggle.
 - Verify with CDP device emulation at 393×852, installed/standalone — not desktop Chrome.
 
+### PR-K · ✅ DONE v1.0.53 — LISTS: curation as a first-class, portable primitive
+**The hypothesis (Durrell, 2026-07-14):** "make SPECIALS editable" was never a missing *button* —
+it was a **missing noun**. Every curated thing in the app is the same shape: a **named, scoped,
+portable SET of species**. Because "a set of species" wasn't a concept, each one was hand-built
+with its own storage key, its own UI and its own export field:
+
+| was | now |
+|---|---|
+| `SPECIALS` — hardcoded object, matched by common-name **string** at boot | **shipped lists** (`lists.js`, keys resolved at BUILD time) |
+| `marks` — exactly 2 hardcoded tiers (`MARKG`) | **two default lists** (`focal`, `tour`) |
+| per-site highlights | derived from the **site-scoped lists** |
+| "Export tour ⚑" (marks-only) — a workaround | **"Export lists ◆"** — curation without the notes |
+
+**Lists and filters are duals.** The app was already a filter engine: a filter is a query that
+yields a set; a list is a set that acts as a filter. PR-K closes the loop — **＋ list** freezes the
+current view into a named list, and every list is a filter chip.
+
+**The three layers, now separated:** *Corpus* (what exists — data.js/names.js/bold.js/lists.js) ·
+**Curation** (what matters — lists; portable, mergeable, multi-author) · *Record* (what you saw —
+seen/notes/journal; personal, private). Deliberately **not** folded together: `seen` is
+species×site and time-stamped, notes are prose. Forcing them into the list shape would be the
+abstraction leaking.
+
+Store `sa5_lists` (v1); export **v3** carries `lists` and still emits a derived `marks` map so v2
+files and readers keep working. Import is a **union** — never destructive. Deleting a shipped list
+**tombstones** it so it is not silently re-seeded.
+
+### Follow-ups RESHAPED by PR-K (were separate items; now expressed as lists)
+- **Focal/tour/normal SORT** (was: a 3-way sort) → now **sort by list priority**: order the rows by
+  which list(s) a species belongs to. The tiers are no longer special; any list can carry weight.
+- **"Possible here" candidate pool** (regional envelope, 2σ ellipse) → becomes a **generated list**
+  per site, not a new filter category. It ships like any other list and can be toggled/deleted.
+- **eBird checklist / trip report** → a **day-scoped list IMPORT**, not an export (Durrell,
+  2026-07-14 — I had the arrow backwards). The point is *not* that the app builds an eBird report:
+  **someone has already done the eBird checklist**, and we ingest it so it can be reviewed *here* —
+  with our photos, evidence glyphs, barcode data and accounts against each bird. The join key
+  already exists: **584 of 585 birds carry their eBird species code** (`ebk`, from PR #33), so rows
+  map **exactly**, not by fuzzy name. A checklist is a set of species with a date and a place —
+  i.e. a day-scoped list. Two-way (app → eBird) is *possible* but secondary: **this app was not
+  designed for eBird**, and 2,195 of 2,780 organisms are not birds, so eBird can never speak for
+  the corpus.
+- **Multi-author curation** (new, now cheap): Durrell's picks and Shannon's picks can coexist as
+  separate lists instead of one `marks` map that one import would clobber.
+
 ### PR-H · P3 — Final polish
 - **Item 13 (full):** formatting/QA sweep (italics, spacing), desktop-web + (phone) captures.
 
@@ -209,9 +256,12 @@ header area** exposed, growing or shrinking depending on the current state.
    crisp. → new PR-G/PR-D item: online-only crisp-tile layer over the baked offline base.
 
 ## Blue-sky / 3.0 (beyond current scope — parking good ideas)
-- **The app builds the eBird trip report itself.** Aggregate the per-day checklists (which we
-  already collect) into a shareable trip report / assist eBird submission. Shannon is unlikely
-  to build trip reports by hand — having the app do it would be a genuinely great feature.
+- **Import an eBird checklist / trip report → review it here.** (Corrected 2026-07-14: the value
+  is the *inbound* direction.) Shannon won't hand-build a trip report — but she, or a guide, will
+  already have **submitted checklists to eBird**. Ingesting one turns it into a **day-scoped list**
+  she can review with photos, evidence, barcodes and accounts, and tick against. Bounded honestly:
+  **birds only** (585 of 2,780); anything not in the corpus falls to the existing off-DB stub path.
+  Outbound (app → eBird) stays a maybe — this app was never designed to be an eBird client.
 - (Add future big swings here as they come up.)
 
 ## Done this session (merged to main)
