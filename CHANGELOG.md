@@ -10,6 +10,37 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.52 — the ◐ and A+ buttons escape the Dynamic Island (issue #57)
+
+Durrell: *"I love the full screen on a modern iPhone with a Dynamic Island, but we need to be able
+to … get back a little header area so we can actually click the things at the top."*
+
+**This was a bug, not a missing feature.** `index.html` asks for `viewport-fit=cover` + a
+black-translucent status bar, so the page runs edge-to-edge *behind* the island — but the two
+floating controls were pinned at a raw `top:8px`:
+
+```
+#themeToggle{position:fixed;top:8px;…}   #textSize{position:fixed;top:8px;…}
+```
+
+On an iPhone 16 Pro the top safe-area inset is ~59px, so **both buttons sat literally underneath
+the island**, untappable. (The offline pill at the *bottom* already respected
+`env(safe-area-inset-bottom)`; the top simply never got the same treatment.)
+
+- **Safe-area fix** — the controls are offset by `env(safe-area-inset-top)`, so they always sit
+  **below** the island while content stays full-bleed behind it. No gesture, nothing to learn.
+- **Auto-hide on scroll** — scroll down and they slide away (the list gets the whole screen);
+  scroll up, or return near the top, and they **drop back down**. An open drawer/journal keeps
+  them put.
+- **Deliberately NOT a double-tap.** It *is* available (`touch-action:manipulation` frees it from
+  iOS double-tap-zoom), but a hidden gesture that must be taught is a poor way to reach a button
+  that should never have been unreachable — and it would collide with taps on rows, chips and the
+  map.
+
+The inset is read through `var(--sat, env(safe-area-inset-top))` so tests and CDP can *simulate*
+an island — headless Chrome always reports a 0px inset, which is exactly why this shipped broken.
+Shell → `sa-shell-v31`. +7 render tests (98 pass).
+
 ## 1.0.51 — photo backfill: no species is blank any more (270 → 0)
 
 270 species rendered as an empty grey square. They weren't missing because no image exists —

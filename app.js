@@ -77,8 +77,19 @@
 ".jck .pen{margin-left:auto;font-family:system-ui,sans-serif;font-size:10.5px;color:#b5623c;opacity:0;flex-shrink:0}.jck:hover .pen,.jck.noted .pen{opacity:1}\n"+
 ".ebd{font-family:system-ui,sans-serif;font-size:11.5px;background:#eef3ea;border:1px solid #cfdcc6;color:#4a6b3f;border-radius:11px;padding:2px 9px;text-decoration:none}\n"+
 "@media(max-width:680px){.jday{padding:22px 16px!important}}\n"+
-"#themeToggle{position:fixed;top:8px;right:10px;z-index:80;width:34px;height:34px;border-radius:50%}\n"+
-"#textSize{position:fixed;top:8px;right:50px;z-index:80;height:34px;min-width:34px;padding:0 11px;border-radius:17px;font-weight:700}\n"+
+// Top controls (◐ dark, A+ text-size) sit ABOVE the fold on a phone. index.html asks for
+// viewport-fit=cover + a black-translucent status bar, so the page runs edge-to-edge *behind*
+// the Dynamic Island — which means a raw `top:8px` puts these two buttons literally underneath
+// the island, where they cannot be tapped. Offset them by the safe-area inset instead; the
+// bottom offline pill already does exactly this. (--sat lets tests/CDP simulate an island,
+// since headless Chrome always reports a 0px inset.)
+"#themeToggle{position:fixed;top:calc(var(--sat,env(safe-area-inset-top)) + 8px);right:10px;z-index:80;width:34px;height:34px;border-radius:50%}\n"+
+"#textSize{position:fixed;top:calc(var(--sat,env(safe-area-inset-top)) + 8px);right:50px;z-index:80;height:34px;min-width:34px;padding:0 11px;border-radius:17px;font-weight:700}\n"+
+// …and they auto-hide: scrolling DOWN slides them away (the list gets the whole screen);
+// scrolling UP — or returning near the top — drops them back down. No gesture to learn, and
+// nothing that can fire by accident on a row, chip or the map.
+"#themeToggle,#textSize{transition:transform .22s ease,opacity .18s ease}\n"+
+"#themeToggle.tophide,#textSize.tophide{transform:translateY(calc(-100% - var(--sat,env(safe-area-inset-top)) - 14px));opacity:0;pointer-events:none}\n"+
 "#textSize .tsx{font-size:10px;opacity:.7}\n"+
 ".dual{position:relative;height:26px;width:160px;display:inline-block}\n"+
 ".dual .trk{position:absolute;top:11px;height:3px;left:0;right:0;background:var(--rule);border-radius:2px}\n"+
@@ -194,7 +205,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="flex:1;min-width:220px"><p class="sans" style="margin:0 0 10px;font-size:12.5px;color:var(--soft);max-width:460px">A saveable page per day, in the Grinnell form: the day’s <b>narrative</b> on top, <b>species accounts with your own notes</b> in the middle, the day’s <b>checklist</b> at the bottom. Prints to PDF for the browser. Notes are stored on this device only — <b>export the JSON to keep a backup</b>.</p>'+
    '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="openJournal2 btn pri sans">Open field journal ▸</button><button id="expJson" class="btn sans">Export notes (JSON)</button><button id="expFav" class="btn sans" title="Share your focal/tour picks as a file">Export tour ⚑</button><button id="impJson" class="btn sans">Import…</button><input id="impFile" type="file" accept="application/json,.json" style="display:none"></div></div></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.51</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.52</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -636,6 +647,30 @@ window.__wire5=function(UNIC,SMETA){
  $$('.fh').forEach(function(hd){var sec=hd.dataset.sec;var body=$('.fb[data-body="'+sec+'"]');var tri=$('.tri',hd);
   if(OPEN&&OPEN[sec]===0){body.style.display='none';tri.textContent='▸';}
   hd.onclick=function(){var open=body.style.display!=='none';body.style.display=open?'none':'';tri.textContent=open?'▸':'▾';OPEN=OPEN||{};OPEN[sec]=open?0:1;try{localStorage.setItem('sa5_open',JSON.stringify(OPEN));}catch(e){}};});
+
+ // ---------- auto-hiding top controls ----------
+ // Scroll down and the ◐ / A+ buttons slide away, so the list gets the whole screen; scroll up
+ // even slightly — or come back near the top — and they drop straight back down. Deliberately
+ // NOT a double-tap: a hidden gesture that has to be taught is a bad way to reach a button, and
+ // it would collide with taps on rows, chips and the map.
+ (function(){
+  var tops=[$('#themeToggle'),$('#textSize')].filter(Boolean);
+  if(!tops.length)return;
+  var lastY=0,hidden=false,tick=false;
+  function set(h){if(h===hidden)return;hidden=h;tops.forEach(function(b){b.classList.toggle('tophide',h);});}
+  function onScroll(){
+   var y=window.scrollY||document.documentElement.scrollTop||0;
+   // A drawer/journal overlay owns the screen — leave the buttons alone while one is open.
+   var busy=(document.getElementById('drawer')||{}).classList&&document.getElementById('drawer').classList.contains('open');
+   if(busy){set(false);lastY=y;return;}
+   if(y<90)set(false);                       // near the top: always available
+   else if(y>lastY+8)set(true);              // moving down: get out of the way
+   else if(y<lastY-8)set(false);             // moving up: come back
+   lastY=y;
+  }
+  window.addEventListener('scroll',function(){if(tick)return;tick=true;requestAnimationFrame(function(){tick=false;onScroll();});},{passive:true});
+  window.__topAuto=onScroll;                 // test hook
+ })();
 
  // ---------- theme ----------
  var root=document.documentElement;try{var th=localStorage.getItem('sa_theme');if(th)root.dataset.theme=th;}catch(e){}
