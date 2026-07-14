@@ -203,7 +203,8 @@ if (gcRow) {
   w.__openDrawer(+gcRow.dataset.i);
   ok('drawer links to the eBird species page (code)', /ebird\.org\/species\/blagos1/.test(d.getElementById('drawer').innerHTML));
   d.querySelector('#drawer .dclose').click();
-  w.__sa.marks.k3242735 = 'tour'; w.__sa.save();
+  // marks are now a DERIVED view of the focal/tour lists — add via the list primitive
+  w.__listAdd('tour', 'k3242735'); w.__sa.save();
   const exp = w.__collectNotes();
   ok('export carries the eBird code for referenced birds', exp.ebird && exp.ebird.k3242735 === 'blagos1', JSON.stringify(exp.ebird));
   delete w.__sa.marks.k3242735; w.__sa.save();
@@ -267,18 +268,23 @@ ok('eBird checklist link shows on the day page', /ebird\.org\/checklist\/S987654
 
 // ---- PR-C: focal/tour tiers (T1), map layers + zoom (T4), tour speed (T3) ----
 const marksBefore = Object.keys(w.__sa.marks).length;
-const star0 = d.querySelector('#matrix tr.org .markstar');
+// pick a row that is genuinely UNMARKED — marked species float to the top, so the first row
+// may already be a tour pick, and clicking it would cycle it OFF.
+const star0Row = [].slice.call(d.querySelectorAll('#matrix tr.org'))
+  .find(r => !w.__sa.marks[w.__UNIC[+r.dataset.i].k]);      // unmarked per the MODEL
+const star0 = star0Row.querySelector('.markstar');
+const star0Key = w.__UNIC[+star0Row.dataset.i].k;
 star0.click(); // unmarked -> focal
-ok('star marks a species focal', Object.keys(w.__sa.marks).length === marksBefore + 1);
+ok('star marks a species focal', w.__sa.marks[star0Key] === 'focal' && Object.keys(w.__sa.marks).length === marksBefore + 1);
 ok('focal/tour toggle chip appears in the strip', d.getElementById('markToggle').style.display !== 'none');
 star0.click(); // focal -> tour
-ok('star cycles focal -> tour', Object.values(w.__sa.marks).indexOf('tour') >= 0);
+ok('star cycles focal -> tour', w.__sa.marks[star0Key] === 'tour');
 ok('marked species pinned under a ★ header', !!d.getElementById('markHdr'));
 d.getElementById('markToggle').click(); // unpin
 ok('unpin removes the pinned header', !d.getElementById('markHdr') && w.__S.showMarks === false);
 d.getElementById('markToggle').click(); // re-pin
 star0.click(); // tour -> unmarked
-ok('star cycles back to unmarked', Object.keys(w.__sa.marks).length === marksBefore);
+ok('star cycles back to unmarked', !w.__sa.marks[star0Key] && Object.keys(w.__sa.marks).length === marksBefore);
 
 ok('map zoom controls present', !!d.getElementById('zIn') && !!d.getElementById('zOut'));
 d.querySelector('.segbtn[data-region="cape"]').click();
@@ -299,6 +305,40 @@ w.__importJSON(JSON.stringify({ v: 2, app: 'saexplore', marks: { k5229384: 'tour
 ok('importing favorites applies marks + shows the focal/tour chip', w.__sa.marks['k5229384'] === 'tour' && d.getElementById('markToggle').style.display !== 'none');
 
 // references section (embedded, offline)
+// ---- PR-K: LISTS — the curation primitive ----
+// focal/tour are just two lists; site specials are shipped lists; a filtered view can be frozen
+// into a list; a list is itself a filter. Curation is separable from the record (notes/journal).
+ok('list store exists with focal + tour as default lists',
+  !!w.__LSTORE().l.focal && !!w.__LSTORE().l.tour && w.__LSTORE().ord.indexOf('focal') >= 0);
+ok('marks are a DERIVED view of the focal/tour lists', typeof w.__sa.marks === 'object');
+// a shipped site list seeds in and is site-scoped (stubbed here — lists.js isn't loaded in jsdom)
+w.__mergeLists({ ord: ['site-boulders'], l: { 'site-boulders': { n: 'Boulders', g: '◆', c: '#5e7249', site: 'boulders', it: ['k2481915'], o: 'shipped' } } });
+ok('a shipped/imported list merges in, scoped to its site', !!w.__LSTORE().l['site-boulders'] && w.__LSTORE().l['site-boulders'].site === 'boulders');
+// merge is a UNION and never destructive
+w.__mergeLists({ ord: ['site-boulders'], l: { 'site-boulders': { n: 'Boulders', g: '◆', c: '#5e7249', site: 'boulders', it: ['k2481915', 'k3242735'] } } });
+ok('merging the same list again is a UNION, not a clobber',
+  w.__LSTORE().l['site-boulders'].it.length === 2 && w.__LSTORE().l['site-boulders'].it.indexOf('k2481915') >= 0);
+// a list IS a filter
+const beforeList = visible().length;
+w.__S.tags.add('site-boulders'); w.__applyFilters();
+const onList = visible().length;
+ok('a list acts as a filter (narrows to its members)', onList === 2 && onList < beforeList, onList + ' of ' + beforeList);
+w.__S.tags.delete('site-boulders'); w.__applyFilters();
+// filters make lists: freeze the current view
+w.__S.q = 'alopochenzz'; w.__applyFilters();
+const frozen = w.__listNew('Test targets', [w.__UNIC[0].k], '');
+w.__S.q = ''; w.__applyFilters();
+ok('a new list can be created from a view and is "mine"', w.__LSTORE().l[frozen].o === 'mine' && w.__LSTORE().l[frozen].n === 'Test targets');
+// curation exports WITHOUT the field notes — the whole point of the split
+const le = w.__collectNotes();
+ok('export v3 carries the lists', le.v === 3 && !!le.lists && !!le.lists.l.focal);
+ok('export still emits a derived marks map (v2 readers keep working)', !!le.marks && typeof le.marks === 'object');
+// deleting a shipped list tombstones it so it is not silently re-seeded
+w.__renderListMgr();
+const lm = d.getElementById('listMgr');
+ok('the list manager renders a row per list', !!lm && lm.querySelectorAll('.lmD').length >= 3);
+ok('list chips render in the strip', !!d.getElementById('listChips') && d.querySelectorAll('#listChips .tagf').length >= 3);
+
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
 // ---- top controls: clear of the Dynamic Island, auto-hiding on scroll (issue #57) ----

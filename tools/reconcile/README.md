@@ -114,6 +114,24 @@ Origin` caches as a *blank*; only whitelisted hosts are accepted. (3) **Commons 
 returns other species** — a hit is accepted only if the filename carries a name we know for this
 species (accepted / resolved / GBIF-confirmed synonym). A wrong photo is worse than no photo.
 
+### Rebuild the shipped lists (`lists.js`) — curation as data
+```sh
+node build_lists.js     # → ../../lists.js   { id: {n,g,c,site,it:[corpusKey]} }
+```
+The per-site "specials" (Big Five, penguins, endemics) used to be a hardcoded object in `app.js`,
+matched to the corpus by **common-name string at boot**. They are now **shipped lists**: the
+curated names live in `build_lists.js` (edit there), and are resolved to corpus **keys at build
+time** through the union name index — so synonyms resolve, and a name that matches nothing is
+**reported**, not silently dropped.
+
+The build also refuses to put a species on a site list if the corpus has **no record of it at
+that site** (currently 2: Cape Grysbok @ Kirstenbosch, Blue Wildebeest @ Blyde) — a curated
+species that isn't recorded there would be a lie on the site page.
+
+Shipped lists are **defaults, not law**: they seed into the user's list store on first run, after
+which they're editable, renameable, deletable and shareable like any other list. A list the user
+deletes is **tombstoned** so a later build doesn't silently re-seed it.
+
 ## Next (per NAME_BACKBONE.md)
 Add **eBird + BOLD + book** name columns (`v`/`s` already carry GBIF's), pull the
 per-sub-region **envelope candidate pool** (2σ ellipse → GBIF/iNat facet, all taxa), and
