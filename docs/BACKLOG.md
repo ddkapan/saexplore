@@ -173,13 +173,28 @@ the surprises matter):
 - Genus-collapse trap avoided: 28 corpus keys are **genus** GBIF keys; using them as `taxonKey`
   would have counted the whole genus. Resolved to species keys first.
 
-**(c) Photo backfill for the 270 photoless species** (Insecta 83, Other 66, Plantae 55, Mollusca 50,
+**(c) Photo backfill for the 270 photoless species** — ✅ DONE v1.0.51 (#TBD). 92 CC photos
+(77 GBIF occurrence media + 15 Wikimedia) + 178 PhyloPic CC0 silhouettes = **0 blanks**. Silhouettes
+are labelled as drawings, never as photos. Traps: species-exact taxonKey only (a genus key returns
+the WRONG animal); CORS-only hosts (the precache caches an opaque response as a blank); Commons
+free-text returns other species, so filenames are validated against known names. `gen_precache.js`
+now regenerates `precache-list.js` (2,675 urls) so it can't go stale again. Original spec below. (Insecta 83, Other 66, Plantae 55, Mollusca 50,
   Reptilia 5, Arachnida 5, Mammalia 3, fish 2, Amphibia 1).
 - CC images DO exist — probe of *Promeces longipes* (photoless beetle): **GBIF has 872 occurrences
   with images**, first is CC BY-NC iNat. Sources ranked: **GBIF occurrence media** (`mediaType=StillImage`
   + license whitelist CC0/BY/BY-NC/BY-SA — best single source) → EOL → **BOLD specimen images** → more
   Wikimedia → broader-grade iNat → **PhyloPic CC0 silhouettes** as a universal fallback so nothing is
   blank offline. Build-time pass; keep the CC-license discipline. Then regenerate `precache-list.js`.
+
+### PR-J · P1 — Double-tap to toggle full-screen (iPhone / Dynamic Island) — GitHub issue #57
+Durrell, 2026-07-13 (from the trail): the full-screen standalone view looks great on a modern
+iPhone with a Dynamic Island, **but there's no way out** — the top controls sit under the island
+and can't be tapped. Ask: **double-tap toggles** between full-screen and a state with a **small
+header area** exposed, growing or shrinking depending on the current state.
+- Likely `viewport-fit=cover` + `env(safe-area-inset-top)`: pad the top in the "headroom" state.
+- Must not hijack double-taps on rows/chips/photos/the map — only neutral chrome. Beware iOS
+  double-tap-to-zoom. Remember the state (localStorage), like the ◐ toggle.
+- Verify with CDP device emulation at 393×852, installed/standalone — not desktop Chrome.
 
 ### PR-H · P3 — Final polish
 - **Item 13 (full):** formatting/QA sweep (italics, spacing), desktop-web + (phone) captures.
