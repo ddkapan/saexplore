@@ -17,7 +17,7 @@
    Bump SHELL_CACHE when data.js / names.js / bold.js / app.js / index.html change. */
 importScripts('./precache-list.js');
 
-var SHELL_CACHE = 'sa-shell-v30';   // ← bump on shell change
+var SHELL_CACHE = 'sa-shell-v31';   // ← bump on shell change
 var MEDIA_CACHE = 'sa-media-v1';    // ← stable; keep across shell bumps
 var SHELL = ['./', './index.html', './data.js', './names.js', './bold.js', './app.js', './precache-list.js', './manifest.json', './icon.svg'];
 

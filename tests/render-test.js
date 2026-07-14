@@ -301,6 +301,34 @@ ok('importing favorites applies marks + shows the focal/tour chip', w.__sa.marks
 // references section (embedded, offline)
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
+// ---- top controls: clear of the Dynamic Island, auto-hiding on scroll (issue #57) ----
+// The page runs edge-to-edge under the island (viewport-fit=cover + black-translucent status
+// bar), so a raw top:8px puts ◐ / A+ UNDERNEATH it, untappable. They must be offset by the
+// safe-area inset — and they slide away on scroll-down so the list gets the whole screen.
+const css = [].slice.call(d.querySelectorAll('style')).map(s => s.textContent).join('\n');
+ok('top controls clear the Dynamic Island (safe-area inset, not a raw top:8px)',
+  /#themeToggle\{[^}]*top:calc\([^)]*safe-area-inset-top/.test(css) &&
+  /#textSize\{[^}]*top:calc\([^)]*safe-area-inset-top/.test(css));
+ok('a .tophide state exists to slide them away', /tophide/.test(css));
+const tt = d.getElementById('themeToggle'), tsz = d.getElementById('textSize');
+const topHidden = () => tt.classList.contains('tophide') && tsz.classList.contains('tophide');
+const setY = y => Object.defineProperty(w, 'scrollY', { value: y, configurable: true });
+// while a drawer/journal overlay owns the screen the controls must STAY put
+const drw2 = d.getElementById('drawer');
+drw2.classList.add('open'); setY(500); w.__topAuto();
+ok('an open drawer keeps the top controls visible (no slide-away under an overlay)', !topHidden());
+drw2.classList.remove('open');
+setY(0); w.__topAuto();
+ok('near the top the controls are shown', !topHidden());
+setY(400); w.__topAuto();
+ok('scrolling DOWN hides the top controls', topHidden());
+setY(300); w.__topAuto();
+ok('scrolling UP brings them back', !topHidden());
+setY(600); w.__topAuto();
+ok('scrolling down again re-hides', topHidden());
+setY(10); w.__topAuto();
+ok('returning near the top always restores them', !topHidden());
+
 // ---- photo backfill: every species has an image, and a silhouette is never sold as a photo ----
 const UN = w.__UNIC || [];
 ok('no species is left without an image', UN.length ? UN.every(o => o.p && o.p[0]) : true,
