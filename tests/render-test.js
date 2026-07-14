@@ -367,6 +367,16 @@ const jh = d.getElementById('journal').innerHTML;
 ok('the iNat observation now SHOWS in the journal (account or checklist)', /observations\/12345678/.test(jh), 'not rendered');
 d.querySelector('#journal .jback') ? d.querySelector('#journal .jback').click() : null;
 
+// ---- low-hanging: 'my lists' sort + dark-mode column headers ----
+ok('a "my lists" sort option exists', !!d.querySelector('.sortchip[data-sort="list"]'));
+w.__listAdd('focal', w.__UNIC[2000].k);
+w.__S.sort = 'list'; w.__sortRows();
+const firstRows = [].slice.call(d.querySelectorAll('#matrix tr.org')).slice(0, 60)
+  .map(r => w.__UNIC[+r.dataset.i].k);
+ok('sorting by "my lists" floats curated species to the top', firstRows.indexOf(w.__UNIC[2000].k) >= 0);
+w.__S.sort = 'az'; w.__sortRows();
+ok('site column headers repaint for dark mode (no raw muddy tint)', typeof w.__paintBackup === 'function' && !!d.querySelector('#matrix .colh'));
+
 ok('reference section present', !!d.getElementById('refs') && d.querySelectorAll('#refs ol li').length >= 8);
 
 // ---- top controls: clear of the Dynamic Island, auto-hiding on scroll (issue #57) ----
