@@ -10,6 +10,39 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.54 — her notes made durable · the dead iNat link finally does something
+
+Two small, pre-freeze fixes. Six days from the field, the job is no longer "build" — it is
+"don't lose the trip".
+
+**1 · Durability. Her notes are the only irreplaceable thing on that phone.**
+The corpus can be rebuilt in a day; her observations cannot — and they lived **only** in
+localStorage, which a browser may evict under storage pressure. Now:
+- the app **requests persistent storage** (`navigator.storage.persist()`), best-effort;
+- an **unsaved-work nudge** sits beside Export: *"⚠ unsaved changes · N entries on this phone"*,
+  with a **Back up now** button. It appears only when something has actually changed since the
+  last export, so it is never noise.
+
+⚠️ Caught while building it: a **count** of entries is not enough. **Editing** an existing note
+leaves the count unchanged — she would have been told she was backed up when a day's edits were
+not. The check now fingerprints the **content**, so edits count too. That is exactly the bug that
+loses a day's work.
+
+**2 · The iNaturalist observation link was a dead end.**
+The drawer has always let you paste an iNat observation URL against a species. It stored it. It
+exported it. It **rendered it nowhere** — *"there is a place for it but it didn't do anything."*
+It now appears where it is useful: on the day's **species account**, in the day's **checklist**,
+and in the **drawer** as a link you can follow. A bare observation id resolves too, not just a
+full URL.
+
+Also added `docs/INGEST_PLAN.md` — the design for pulling the **iNat project** and the **eBird
+trip list** into the journal (day-scoped lists, memo append, her own photos on the accounts).
+Drafted, **not built**: it changes the journal schema, so it waits for review, the freeze, and a
+**dev fork on a separate origin** — `localStorage` is per-origin, and a dev build on the same
+origin would share Shannon's real field notes.
+
+Shell → `sa-shell-v33`. +9 render tests (118 pass).
+
 ## 1.0.53 — LISTS: curation becomes a first-class, portable thing (PR-K)
 
 *"Making SPECIALS editable is a good idea, but it is a single instance of a more general idea."*
