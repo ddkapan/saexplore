@@ -57,9 +57,12 @@ dom1.window.NAMES_LANG = { afr: 'Afrikaans' };
 // Barcode sidecar (bold.js) stub. [n, z, inst?] = records · South-African share · top holder.
 // k2498252 (Egyptian Goose) has corpus src 'ei' — NO genomic evidence — so it proves the
 // barcode sidecar ALONE lights the genomic glyph. k3242735 has no named institution.
+// k3242735's corpus key is a GENUS key, so it carries a 4th field: the resolved species
+// taxonKey. The records link MUST use it — linking by the corpus key would list the whole genus
+// (and for the White-fronted Plover, whose key is k1 = Animalia, the entire animal kingdom).
 dom1.window.BOLD = {
   k2498252: [267, 9, 'Iziko South African Museum'],
-  k3242735: [12, 5],
+  k3242735: [12, 5, '', 2480631],
 };
 let { d, w, err } = boot(dom1);
 const rows = () => [].slice.call(d.querySelectorAll('#matrix tbody tr.org'));
@@ -140,7 +143,10 @@ const bHtml = d.getElementById('drawer').innerHTML;
 ok('drawer shows the barcode block with record count', /DNA barcodes · BOLD/.test(bHtml) && /267<\/b> barcode records/.test(bHtml));
 ok('drawer calls out the South-African subset', /9<\/b> from South Africa/.test(bHtml));
 ok('drawer names the holding institution', /Iziko South African Museum/.test(bHtml));
-ok('drawer links out to BOLD', /boldsystems\.org[^"]*Alopochen/.test(bHtml));
+// BOLD's portal cannot deep-link a species (its parser splits the binomial), so we link the
+// records we actually counted: the iBOL dataset on GBIF, keyed by taxonKey.
+ok('drawer links to the iBOL records on GBIF (not BOLD\'s dead search URL)',
+  /gbif\.org\/occurrence\/search\?dataset_key=040c5662[^"]*taxon_key=2498252/.test(bHtml) && !/boldsystems\.org/.test(bHtml));
 d.querySelector('#drawer .dclose').click();
 // a species with barcodes but no named depository must not render an empty "mostly at" line
 const bgRow = [].slice.call(d.querySelectorAll('#matrix tr.org')).find(r => {
@@ -149,6 +155,9 @@ const bgRow = [].slice.call(d.querySelectorAll('#matrix tr.org')).find(r => {
 w.__openDrawer(+bgRow.dataset.i);
 const gHtml = d.getElementById('drawer').innerHTML;
 ok('no institution → no dangling "mostly at" line', /12<\/b> barcode records/.test(gHtml) && !/mostly at/.test(gHtml));
+// the genus-key trap: link by the RESOLVED species taxonKey, never by the coarse corpus key
+ok('coarse corpus key links by the resolved species taxonKey, not the genus/kingdom key',
+  /taxon_key=2480631/.test(gHtml) && !/taxon_key=3242735/.test(gHtml));
 d.querySelector('#drawer .dclose').click();
 
 // text-size stepper present and changes the explorer zoom

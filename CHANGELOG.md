@@ -10,6 +10,27 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.50 — fix the dead BOLD link (it pointed at NOTFOUND)
+
+Durrell hit `boldsystems.org/NOTFOUND?query=Loxodonta%20africana`. Two separate faults:
+
+1. **BOLD retired the v4 site**, so the `v4.boldsystems.org/…/Public_SearchTerms` URL 404s.
+2. **BOLD's new portal cannot deep-link a species at all.** Its query parser splits on the space
+   in a binomial — *Loxodonta africana* becomes `tax:genus:Loxodonta` + `ids:processid:africana`
+   — so the page lands on a **0-result** summary. Even the explicit `tax:species:Loxodonta
+   africana` (which their *API* answers correctly: 16 specimens) gets mangled by the page. There
+   is no species URL we can construct that works.
+
+So we now link **the records we actually counted**: the iBOL dataset on GBIF, by taxonKey. The
+linked page's count **matches the number we display** (verified: elephant 12, White-fronted Plover
+9). The drawer reads "see the records ↗ · BOLD specimens, via GBIF/iBOL", which is also the honest
+provenance. BOLD's homepage link in References is unaffected (it works).
+
+`bold.js` gains a 4th field — the resolved **species taxonKey** — for the 27 coarse corpus keys.
+Without it the plover (corpus key `k1` = *Animalia*) would have linked to **the entire animal
+kingdom**; it now correctly links to taxonKey 2480288. Shell → `sa-shell-v29`. +2 render tests
+(84 pass).
+
 ## 1.0.49 — real DNA-barcode coverage (BOLD): 210 → 1,819 species
 
 The "genomic" evidence was never a BOLD pull — it came from GBIF material samples, a thin slice:
