@@ -231,8 +231,15 @@ files and readers keep working. Import is a **union** — never destructive. Del
   which list(s) a species belongs to. The tiers are no longer special; any list can carry weight.
 - **"Possible here" candidate pool** (regional envelope, 2σ ellipse) → becomes a **generated list**
   per site, not a new filter category. It ships like any other list and can be toggled/deleted.
-- **eBird trip report** (blue-sky) → a **day-scoped list** export. The day checklist is already a
-  set of species with a date; that is a list.
+- **eBird checklist / trip report** → a **day-scoped list IMPORT**, not an export (Durrell,
+  2026-07-14 — I had the arrow backwards). The point is *not* that the app builds an eBird report:
+  **someone has already done the eBird checklist**, and we ingest it so it can be reviewed *here* —
+  with our photos, evidence glyphs, barcode data and accounts against each bird. The join key
+  already exists: **584 of 585 birds carry their eBird species code** (`ebk`, from PR #33), so rows
+  map **exactly**, not by fuzzy name. A checklist is a set of species with a date and a place —
+  i.e. a day-scoped list. Two-way (app → eBird) is *possible* but secondary: **this app was not
+  designed for eBird**, and 2,195 of 2,780 organisms are not birds, so eBird can never speak for
+  the corpus.
 - **Multi-author curation** (new, now cheap): Durrell's picks and Shannon's picks can coexist as
   separate lists instead of one `marks` map that one import would clobber.
 
@@ -249,9 +256,12 @@ files and readers keep working. Import is a **union** — never destructive. Del
    crisp. → new PR-G/PR-D item: online-only crisp-tile layer over the baked offline base.
 
 ## Blue-sky / 3.0 (beyond current scope — parking good ideas)
-- **The app builds the eBird trip report itself.** Aggregate the per-day checklists (which we
-  already collect) into a shareable trip report / assist eBird submission. Shannon is unlikely
-  to build trip reports by hand — having the app do it would be a genuinely great feature.
+- **Import an eBird checklist / trip report → review it here.** (Corrected 2026-07-14: the value
+  is the *inbound* direction.) Shannon won't hand-build a trip report — but she, or a guide, will
+  already have **submitted checklists to eBird**. Ingesting one turns it into a **day-scoped list**
+  she can review with photos, evidence, barcodes and accounts, and tick against. Bounded honestly:
+  **birds only** (585 of 2,780); anything not in the corpus falls to the existing off-DB stub path.
+  Outbound (app → eBird) stays a maybe — this app was never designed to be an eBird client.
 - (Add future big swings here as they come up.)
 
 ## Done this session (merged to main)
