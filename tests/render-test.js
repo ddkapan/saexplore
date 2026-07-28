@@ -88,6 +88,14 @@ ok('tour buttons present', !!d.getElementById('tPlay') && !!d.getElementById('tP
 ok('matrix has a site column per site', d.querySelectorAll('#matrix thead .colh').length === 20);
 ok('status line renders', /organisms/.test((d.getElementById('status') || {}).textContent || ''));
 
+// new-site months are SEASON-RESOLVED (real subsets), not the [0..11] placeholder — and a
+// summer migrant (European Bee-eater) is correctly absent in July at a resolved site.
+const someResolved = w.__UNIC.some(o => { const s = o.st && o.st.greenpoint; const mo = s && ((s.e && s.e[2]) || (s.i && s.i[1])); return mo && mo.length > 0 && mo.length < 12; });
+ok('new-site months are season-resolved (not all-year placeholders)', someResolved);
+const beeEater = w.__UNIC.find(o => o.s === 'Merops apiaster');
+const beeMo = beeEater && beeEater.st.kruger_central && ((beeEater.st.kruger_central.e && beeEater.st.kruger_central.e[2]) || (beeEater.st.kruger_central.i && beeEater.st.kruger_central.i[1]));
+ok('summer migrant (Bee-eater) resolved absent in July at a new site', !beeMo || beeMo.indexOf(6) < 0, beeMo ? beeMo.join(',') : 'n/a');
+
 // taxa filter: none -> 0, then Plants-only -> all Plantae
 d.getElementById('taxNone').click();
 ok('taxa NONE hides all', visible().length === 0, visible().length + ' visible');

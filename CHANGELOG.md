@@ -10,6 +10,28 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.59 — the new sites now know their seasons
+
+1.0.57 shipped the new localities with month-agnostic presence (everything showed in every
+season). This resolves **real monthly presence** per species per site, so the late-July (winter)
+filter is now accurate there — as it already was for the original ten.
+
+- **Sources, by taxon:** non-birds from **iNaturalist** per-month research-grade records; birds
+  from **eBird** (via its GBIF dataset) per-month presence, which is far denser than iNat for
+  birds. The two are **unioned** and a species is never narrowed below its observed months, so
+  nothing present in July is wrongly hidden. Species with no monthly signal keep the full-year
+  default (safe fallback).
+- **It's biologically right:** residents keep July (Egyptian Goose, African Penguin, Helmeted
+  Guineafowl all resolve to year-round), while austral-summer migrants correctly drop out —
+  **European Bee-eater** and **Barn Swallow** resolve to Oct–Apr only, so the winter trip filter
+  no longer lists them at the new sites.
+- Roughly **a third to a half** of each new site's species are present in late July — the real
+  winter signal (e.g. greenpoint 328→106, kruger_central 774→~400).
+- **No regressions:** `g` = 210, non-bird eBird = 0, 2,780 rows unchanged, existing sites'
+  months untouched, no empty month arrays. Only the season filter is affected (months feed
+  nothing else). Data actually **shrank 73 KB** (real subsets are smaller than `[0..11]`).
+  Render + migration tests ALL PASS (+2). Shell → `sa-shell-v38`.
+
 ## 1.0.58 — eBird hotspots per site, and they're tappable
 
 Every site account now lists its **eBird hotspots as live links** — tap through to the hotspot
