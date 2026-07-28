@@ -110,11 +110,11 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
  var h='';
  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">'+
    '<div><h1 style="font-size:30px;margin:0 0 4px;font-weight:600;letter-spacing:-.2px">South Africa — Species Explorer</h1>'+
-   '<p class="sans" style="margin:0;font-size:13px;color:var(--soft)">Cal Academy field guide · 20 Jul – 1 Aug 2026 · ten localities, Cape winter to Kruger dry season.</p></div>'+
+   '<p class="sans" style="margin:0;font-size:13px;color:var(--soft)">Cal Academy field guide · 22 – 30 Jul 2026 · twenty localities, Cape winter to Kruger dry season.</p></div>'+
    '<div style="display:flex;align-items:center;gap:12px"><span class="sans" style="font-size:11.5px;color:var(--soft);max-width:210px;text-align:right;line-height:1.35">Read down the sections to orient. Collapse each <b style="color:var(--terra)">▾</b> as you learn it — the list rises to fill the screen.</span>'+
    '<button id="openJournal" class="btn pri sans">Field journal ▸</button></div></div>';
  // one-paragraph summary: what it is + Grinnell-in-reverse + take your own notes
- h+='<p class="sans" style="max-width:770px;margin:13px 0 2px;font-size:13.5px;line-height:1.6;color:var(--ink)">A pocket field guide to every organism recorded at this trip’s ten stops — one species per row, built from museum vouchers, eBird and iNaturalist on the GBIF Backbone, and fully usable offline. It runs a museum naturalist’s field notes <b>in reverse</b>: instead of writing notes that a museum later files, you start from the filed record. In the <b>Grinnell</b> tradition — the century-old method of pairing a species list with a written journal and species accounts — you then take those notes yourself, per day and per species, as you go.</p>';
+ h+='<p class="sans" style="max-width:770px;margin:13px 0 2px;font-size:13.5px;line-height:1.6;color:var(--ink)">A pocket field guide to every organism recorded at this trip’s twenty stops — one species per row, built from museum vouchers, eBird and iNaturalist on the GBIF Backbone, and fully usable offline. It runs a museum naturalist’s field notes <b>in reverse</b>: instead of writing notes that a museum later files, you start from the filed record. In the <b>Grinnell</b> tradition — the century-old method of pairing a species list with a written journal and species accounts — you then take those notes yourself, per day and per species, as you go.</p>';
  // app-like setup (offline · home screen · notes+reference) — one place for "how to use it"
  h+='<div id="appSetup" class="sans" style="margin:14px 0 6px;background:var(--raised);border:1px solid var(--rule);border-radius:10px;padding:13px 16px 14px">'+
    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:9px"><span style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--acacia);text-transform:uppercase">Use it offline · as an app</span><span id="appSetupClose" style="font-size:11px;color:var(--soft);cursor:pointer">hide ✕</span></div>'+
@@ -126,17 +126,22 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '</div></div>';
  // 1 South Africa
  h+=sec(1,'South Africa','the frame')+'<div class="fb" data-body="1">'+
-   '<p style="max-width:660px;margin:.1em 0 12px">Thirteen days across two of the world’s great biological regions: the <b>Cape Floristic Region</b> — the smallest and richest of the world’s six floral kingdoms<sup><a href="#refs" style="text-decoration:none">1</a></sup> — and the summer-rain <b>savanna of the Lowveld</b>. We travel in austral winter, and each region is read on its own clock.</p>'+
+   '<p style="max-width:660px;margin:.1em 0 12px">Nine days on the ground, across two of the world’s great biological zones: the <b>Cape Floristic Region</b> — the smallest and richest of the world’s six floral kingdoms<sup><a href="#refs" style="text-decoration:none">1</a></sup> — and the summer-rain <b>savanna of the interior</b>. The program runs through four regions — <b>Cape Town</b>, the <b>Lowveld</b>, <b>Kruger</b> and the <b>Escarpment</b> — and we travel in austral winter, each read on its own clock.</p>'+
    '<div class="sans" id="saStats" style="display:flex;gap:28px;flex-wrap:wrap;font-size:12px;color:var(--soft);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:9px 0;max-width:660px"></div></div>';
  // 2 regions
- h+=sec(2,'The two regions','the axis everything hinges on')+'<div class="fb" data-body="2">'+
-   '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">'+
-   '<div class="regcard" data-region="cape" style="flex:1;min-width:250px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(45,110,126);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(45,110,126);text-transform:uppercase">Cape · first half</div><h3 style="margin:3px 0 5px;font-size:17px;font-weight:600">Winter-rain fynbos</h3><p class="sans" style="margin:0;font-size:12.5px;color:var(--soft);line-height:1.45">Five peninsula sites, 20–24 Jul. Cool, wet, still mornings; sunbirds on the proteas, seabirds inshore. Rain comes now.</p></div>'+
-   '<div class="regcard" data-region="lowveld" style="flex:1;min-width:250px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(176,120,52);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(176,120,52);text-transform:uppercase">Lowveld · second half</div><h3 style="margin:3px 0 5px;font-size:17px;font-weight:600">Summer-rain savanna</h3><p class="sans" style="margin:0;font-size:12.5px;color:var(--soft);line-height:1.45">Five escarpment &amp; Kruger sites, 26 Jul–1 Aug. Dry season — game and birds concentrate at the last water. Rain is months away.</p></div></div>'+
-   '<div class="sans" style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--soft);flex-wrap:wrap"><span>Focus the trip on:</span><div id="regToggle" style="display:inline-flex;border:1px solid var(--rule);border-radius:9px;overflow:hidden">'+
+ h+=sec(2,'The regions','the axis everything hinges on')+'<div class="fb" data-body="2">'+
+   '<p class="sans" style="margin:.1em 0 11px;font-size:12.5px;color:var(--soft);max-width:660px">Two clocks: the Cape reads winter-wet, the interior reads summer-rain and is bone-dry now. Four program regions in itinerary order —</p>'+
+   '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">'+
+   '<div class="regcard" data-region="cape" style="flex:1;min-width:220px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(45,110,126);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(45,110,126);text-transform:uppercase">Cape Town · Days 3–5</div><h3 style="margin:3px 0 5px;font-size:16px;font-weight:600">Winter-rain fynbos</h3><p class="sans" style="margin:0;font-size:12px;color:var(--soft);line-height:1.45">Eleven peninsula &amp; city sites, 22–24 Jul. Cool, wet, still mornings; sunbirds on the proteas, seabirds inshore. Rain comes now.</p></div>'+
+   '<div class="regcard" data-region="lowveld" style="flex:1;min-width:220px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(176,120,52);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(176,120,52);text-transform:uppercase">Lowveld · Days 6–7</div><h3 style="margin:3px 0 5px;font-size:16px;font-weight:600">Summer-rain savanna</h3><p class="sans" style="margin:0;font-size:12px;color:var(--soft);line-height:1.45">Escarpment foothills &amp; private reserves near Hoedspruit, 25–26 Jul. Dry season — game concentrates at the last water.</p></div>'+
+   '<div class="regcard" data-region="kruger" style="flex:1;min-width:220px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(140,90,43);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(140,90,43);text-transform:uppercase">Kruger · Days 8–11</div><h3 style="margin:3px 0 5px;font-size:16px;font-weight:600">The great park</h3><p class="sans" style="margin:0;font-size:12px;color:var(--soft);line-height:1.45">Letaba, the central rivers and the Mdluli sourveld in the south-west, 27–30 Jul. Big game on the last water.</p></div>'+
+   '<div class="regcard" data-region="escarp" style="flex:1;min-width:220px;background:var(--raised);border:1px solid var(--rule);border-left:5px solid rgb(94,114,73);border-radius:8px;padding:13px 15px;cursor:pointer"><div class="sans" style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:rgb(94,114,73);text-transform:uppercase">Escarpment · Day 10</div><h3 style="margin:3px 0 5px;font-size:16px;font-weight:600">Panorama edge</h3><p class="sans" style="margin:0;font-size:12px;color:var(--soft);line-height:1.45">Blyde Canyon, Bourke’s Luck &amp; God’s Window, 29 Jul — mist-belt forest on the Highveld rim.</p></div></div>'+
+   '<div class="sans" style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--soft);flex-wrap:wrap"><span>Focus the trip on:</span><div id="regToggle" style="display:inline-flex;border:1px solid var(--rule);border-radius:9px;overflow:hidden;flex-wrap:wrap">'+
    '<button class="segbtn" data-region="all" style="border:none;background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Whole trip</button>'+
-   '<button class="segbtn" data-region="cape" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Cape</button>'+
-   '<button class="segbtn" data-region="lowveld" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Lowveld</button></div>'+
+   '<button class="segbtn" data-region="cape" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Cape Town</button>'+
+   '<button class="segbtn" data-region="lowveld" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Lowveld</button>'+
+   '<button class="segbtn" data-region="kruger" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Kruger</button>'+
+   '<button class="segbtn" data-region="escarp" style="border:none;border-left:1px solid var(--rule);background:none;padding:5px 12px;cursor:pointer;font:inherit;color:var(--acacia)">Escarpment</button></div>'+
    '<span style="color:var(--soft)">— the top filter; the map, sites and list all follow.</span></div></div>';
  // 3 trip + map
  h+=sec(3,'The trip','itinerary &amp; the shared map')+'<div class="fb" data-body="3">'+
@@ -151,7 +156,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div style="position:relative"><div id="mapSurface" style="position:relative;height:100%;min-height:312px;overflow:hidden;background:linear-gradient(160deg,#e9e4d3,#e0d9c4)"></div></div>'+
    '<div id="mapRight" class="sans" style="border-left:1px solid var(--rule);padding:12px 12px;font-size:12px;min-height:312px;max-height:412px;overflow:auto"></div></div></div></div>';
  // 4 sites
- h+=sec(4,'The sites','ten localities, each with a field account')+'<div class="fb" data-body="4">'+
+ h+=sec(4,'The sites','twenty localities, each with a field account')+'<div class="fb" data-body="4">'+
    '<p class="sans" style="margin:.1em 0 10px;font-size:12.5px;color:var(--soft);max-width:660px">Chips are tinted by winter rainfall — <span style="color:rgb(45,110,126)">wet Cape teal</span> to <span style="color:rgb(176,120,52)">dry Lowveld sand</span>. Click one to focus (map zooms, its Grinnell account opens beside the map, the list narrows to that column). Click it again to restore. ⌘/Ctrl-click to compare.</p>'+
    '<div id="siteChips" style="display:flex;flex-wrap:wrap;gap:7px"></div></div>';
  // 5 groups
@@ -206,7 +211,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div id="bkNudge" class="sans" style="margin-top:12px"></div>'+
    '<div id="listMgr" class="sans" style="margin-top:16px"></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.55</span> · built 2026-07-13 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.56</span> · built 2026-07-28 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -238,12 +243,11 @@ window.__wire5=function(UNIC,SMETA){
  var GORDER=[['Aves','Birds'],['Mammalia','Mammals'],['Reptilia','Reptiles'],['Amphibia','Amphibians'],['Actinopterygii','Fish'],['Insecta','Insects'],['Arachnida','Arachnids'],['Mollusca','Molluscs'],['Plantae','Plants'],['Other','Other']];
  var order={};GORDER.forEach(function(p,i){order[p[0]]=i;});
  var MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
- var SITES=SMETA.sites;var SI={};SITES.forEach(function(s,i){SI[s.key]=s;s.i=i;s.rk=(s.region==='Cape Town')?'cape':'lowveld';});
- // itinerary dates (authored — data.js carries no date field)
- var DATE={kirstenbosch:'20 Jul',tablemtn:'21 Jul',capepoint:'22 Jul',boulders:'23 Jul',houtbay:'24 Jul',blyde:'26 Jul',moholoholo:'27 Jul',karongwe:'28 Jul',kruger_letaba:'30 Jul',kruger_mdluli:'31 Jul'};
- var DORD={kirstenbosch:0,tablemtn:1,capepoint:2,boulders:3,houtbay:4,blyde:5,moholoholo:6,karongwe:7,kruger_letaba:8,kruger_mdluli:9};
- SITES.forEach(function(s){s.date=DATE[s.key]||'';s.dord=DORD[s.key]==null?99:DORD[s.key];});
- var WET={kirstenbosch:.95,tablemtn:.88,houtbay:.82,boulders:.7,capepoint:.62,blyde:.42,moholoholo:.28,karongwe:.2,kruger_letaba:.16,kruger_mdluli:.14};
+ // itinerary date, day and region now live in data.js (SMETA.sites) — the real program, not an authored map.
+ var RK={'Cape Town':'cape','Lowveld':'lowveld','Kruger':'kruger','Escarpment':'escarp'};
+ var SITES=SMETA.sites;var SI={};SITES.forEach(function(s,i){SI[s.key]=s;s.i=i;s.rk=RK[s.region]||'lowveld';s.dord=(s.day==null?99:s.day)*100+i;});
+ // winter-rainfall tint: wet Cape teal → dry interior sand (any site not listed falls back to mid .5)
+ var WET={greenpoint:.9,houtbay:.82,duikerisland:.8,chapmanspeak:.84,capepoint:.62,simonstown:.72,boulders:.7,tablemtn:.88,kirstenbosch:.95,sanccob:.78,vawaterfront:.74,hoedspruit:.3,moholoholo:.28,karongwe:.2,kruger_letaba:.16,kruger_central:.15,kruger_mdluli:.14,blyde:.42,bourkesluck:.4,godswindow:.5};
  function colr(w){var a=[176,120,52],b=[45,110,126];return 'rgb('+Math.round(a[0]+(b[0]-a[0])*w)+','+Math.round(a[1]+(b[1]-a[1])*w)+','+Math.round(a[2]+(b[2]-a[2])*w)+')';}
  function sitecol(k){var v=WET[k];if(v==null)v=.5;return colr(v);}window.__sitecol=sitecol;
  // ---------- glyphs ----------
@@ -263,6 +267,29 @@ window.__wire5=function(UNIC,SMETA){
  var seen,notes,seenOrder,journal,inatobs,marks;
  function LG(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
  seen=new Set(LG('sa5_seen',[]));notes=LG('sa5_notes',{});seenOrder=LG('sa5_seenOrder',[]);journal=LG('sa5_journal',{});inatobs=LG('sa5_inatobs',{});marks=LG('sa5_marks',{});
+ // ---------- Part C: automatic, non-destructive schema migration (guards Dr. Bennett's notes) ----------
+ // The itinerary re-key changed site DATES, and journal entries are keyed "date|siteKey". On first
+ // load of this version we (1) back up every app key + auto-download a copy BEFORE touching anything,
+ // (2) realign journal keys to the corrected dates, (3) assert nothing is lost, (4) stamp the schema so
+ // it never runs twice. (organism×site) checks and "sp:" species notes use stable keys — they pass
+ // straight through untouched. The same realign runs on JSON import, so re-importing an old export migrates too.
+ var SA_SCHEMA='2';
+ function realignJournal(j){var out={},moved=0;Object.keys(j||{}).forEach(function(k){var e=j[k],bar=k.indexOf('|');if(bar<0){out[k]=e;return;}var site=k.slice(bar+1),nk=(SI[site]?SI[site].date:k.slice(0,bar))+'|'+site;if(nk!==k)moved++;if(out[nk]){var a=out[nk];a.extras=(a.extras||[]).concat(e.extras||[]);a.ebird=(a.ebird||[]).concat(e.ebird||[]);if(e.note)a.note=(a.note?a.note+'\n':'')+e.note;if(e.weather&&!a.weather)a.weather=e.weather;}else out[nk]=e;});return {j:out,moved:moved,kept:Object.keys(out).length};}
+ window.__realignJournal=realignJournal;
+ (function migrateSchema(){try{
+  if(localStorage.getItem('sa5_schema')===SA_SCHEMA)return; // idempotent — never runs twice
+  var keys=['sa5_seen','sa5_notes','sa5_seenOrder','sa5_journal','sa5_inatobs','sa5_marks','sa5_lists'];
+  var from=localStorage.getItem('sa5_schema')||'legacy',backup={_app:'saexplore',_ts:new Date().toISOString(),_schema_from:from};
+  var hadData=false;keys.forEach(function(k){var v=localStorage.getItem(k);if(v!=null){backup[k]=v;hadData=true;}});
+  var bkStr=JSON.stringify(backup),stashKey='sa5_backup_'+from+'_'+Date.now();
+  try{localStorage.setItem(stashKey,bkStr);}catch(e){if(hadData)return;} // back up FIRST — abort if real data can't be stashed
+  if(hadData)try{var bl=new Blob([bkStr],{type:'application/json'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='saexplore-backup-'+from+'-'+Date.now()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},0);}catch(e){}
+  var inN=Object.keys(journal||{}).length,r=realignJournal(journal);
+  if(inN>0&&r.kept===0)return; // sanity: never persist a total loss (the backup is already stashed + downloaded)
+  journal=r.j;try{localStorage.setItem('sa5_journal',JSON.stringify(journal));}catch(e){}
+  localStorage.setItem('sa5_schema',SA_SCHEMA);
+  if(hadData&&r.moved>0)try{var n=document.createElement('div');n.id='migNote';n.style.cssText='position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;background:#2b2723;color:#fbf7ee;font:13px system-ui,sans-serif;padding:9px 14px;border-radius:9px;box-shadow:0 3px 14px rgba(0,0,0,.3);max-width:90%;cursor:pointer';n.textContent='Itinerary updated — realigned '+r.moved+' journal day'+(r.moved===1?'':'s')+' to the corrected dates · backup saved. Tap to dismiss.';n.onclick=function(){n.remove();};document.body.appendChild(n);}catch(e){}
+ }catch(e){}})();
  function save(){try{if(typeof paintBackup==='function')paintBackup();}catch(e){}
   try{localStorage.setItem('sa5_seen',JSON.stringify(Array.from(seen)));localStorage.setItem('sa5_notes',JSON.stringify(notes));localStorage.setItem('sa5_seenOrder',JSON.stringify(seenOrder));localStorage.setItem('sa5_journal',JSON.stringify(journal));localStorage.setItem('sa5_inatobs',JSON.stringify(inatobs));localStorage.setItem('sa5_marks',JSON.stringify(typeof marksMap==='function'?marksMap():marks));}catch(e){}}
  window.__sa={get seen(){return seen;},get notes(){return notes;},get journal(){return journal;},get inatobs(){return inatobs;},get marks(){return marksMap();},get lists(){return LSTORE;},save:save};
@@ -580,7 +607,7 @@ window.__wire5=function(UNIC,SMETA){
   renderSources(vis,srcN,srcRec);
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
   var cnt=$('#count');if(cnt)cnt.textContent=vis.toLocaleString()+' / '+UNIC.length.toLocaleString();var mc=$('#mxCount');if(mc)mc.textContent=vis.toLocaleString()+' species';
-  var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all ten sites':'in the '+(S.region==='cape'?'Cape':'Lowveld'));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
+  var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var RLAB={cape:'Cape Town',lowveld:'Lowveld',kruger:'Kruger',escarp:'Escarpment'};var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all twenty sites':'in the '+(RLAB[S.region]||S.region));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
   var at=$('#absToggle');if(at){if(S.focus){var _sn=SI[S.focus].short;at.style.display='';at.textContent=S.hideAbsent?(_sn+' list'):('all sites · '+_sn);at.title=S.hideAbsent?('The species recorded at '+_sn+' (many are widespread — not an endemics list). Tap to show all sites.'):('Every site’s species, '+_sn+' highlighted. Tap for just the '+_sn+' list.');}else at.style.display='none';}
  }
  // ---------- filter-aware source breakdown ----------
@@ -610,7 +637,7 @@ window.__wire5=function(UNIC,SMETA){
 
  // ---------- shared map (real MAPIMG tiles) ----------
  var lon2x=function(lo,z){return (lo+180)/360*Math.pow(2,z);},lat2y=function(la,z){var r=la*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z);};
- function mapKey(){if(S.focus)return SI[S.focus].rk==='cape'?'cape':'low';return S.region==='cape'?'cape':S.region==='lowveld'?'low':'sa';}
+ function mapKey(){if(S.focus)return SI[S.focus].rk==='cape'?'cape':'low';return S.region==='cape'?'cape':S.region==='all'?'sa':'low';}
  var LNAMES=[['streets','Basic'],['terrain','Terrain'],['satellite','Satellite']];
  function renderMap(){var surf=$('#mapSurface');if(!surf||!MI)return;var mk=mapKey();var mi=MI[mk]||MI.sa;var layers=mi.layers||{streets:mi.url};
   if(surf.__mk!==mk){S.zoom=1;S.panX=0;S.panY=0;surf.__mk=mk;}
@@ -652,7 +679,7 @@ window.__wire5=function(UNIC,SMETA){
   var rest=here.filter(function(o){return !used[o.k];}).sort(function(a,b){return (b._e||0)-(a._e||0);});
   return mkd.concat(spec,rest).slice(0,8);}
  function renderRails(){var L=$('#mapLeft'),R=$('#mapRight');if(!L||!R)return;
-  if(!S.focus){L.innerHTML='<div style="color:var(--soft);font-size:12px;line-height:1.5"><b style="color:'+C.ink+';font-family:var(--serif);font-size:15px">The itinerary</b><br>Ten localities, Cape winter to Kruger dry season. <b style="color:'+C.terra+'">Tap a stop</b> (or a map dot) to read its field account here and see its highlights.<br><br>Or press <b>▶ Play tour</b> to walk the route.</div>';
+  if(!S.focus){L.innerHTML='<div style="color:var(--soft);font-size:12px;line-height:1.5"><b style="color:'+C.ink+';font-family:var(--serif);font-size:15px">The itinerary</b><br>Twenty localities, Cape winter to Kruger dry season. <b style="color:'+C.terra+'">Tap a stop</b> (or a map dot) to read its field account here and see its highlights.<br><br>Or press <b>▶ Play tour</b> to walk the route.</div>';
    var marked=UNIC.filter(function(o){return markOf(o);}).sort(markSort);var seenk={};var hl=marked.slice(0,8);hl.forEach(function(o){seenk[o.k]=1;});
    if(hl.length<5){itinList().slice(0,5).forEach(function(s){var t=siteHighlights(s.key).filter(function(o){return !markOf(o);})[0];if(t&&!seenk[t.k]){seenk[t.k]=1;hl.push(t);}});}
    var head=marked.length?('Trip highlights · <span style="color:#b5623c">'+marked.length+' focal/tour</span>'):'Trip highlights';
@@ -872,7 +899,7 @@ window.__wire5=function(UNIC,SMETA){
    }else{(L2.it||[]).forEach(function(k){if(LSTORE.l[id].it.indexOf(k)<0){LSTORE.l[id].it.push(k);n++;}});}
   });
   saveLists();return n;}
- function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=d.journal;if(d.inatobs)inatobs=d.inatobs;
+ function importJSON(text){try{var d=JSON.parse(text);if(d.seen)seen=new Set(d.seen);if(d.notes)notes=d.notes;if(d.seenOrder)seenOrder=d.seenOrder;if(d.journal)journal=realignJournal(d.journal).j;if(d.inatobs)inatobs=d.inatobs;
   // v3: lists. v2: a flat marks map — fold it into the two default lists so old files still work.
   if(d.lists)mergeLists(d.lists);
   else if(d.marks)Object.keys(d.marks).forEach(function(k){var t=d.marks[k];if(LST(t)&&!inList(t,k))listAdd(t,k);});

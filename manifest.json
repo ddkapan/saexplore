@@ -1,7 +1,7 @@
 {
   "name": "South Africa Species Explorer",
   "short_name": "SA Species",
-  "description": "Cal Academy South Africa itinerary (20 Jul – 1 Aug 2026): species by site and season across ten localities, Cape winter to Kruger dry season.",
+  "description": "Cal Academy South Africa itinerary (22 – 30 Jul 2026): species by site and season across twenty localities, Cape winter to Kruger dry season.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

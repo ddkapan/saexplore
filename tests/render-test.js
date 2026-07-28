@@ -79,13 +79,13 @@ ok('every section has a ▾/▸ triangle', d.querySelectorAll('.fh .tri').length
 // at-hand strip carries taxa + search + site + season
 ok('strip has taxa chips', d.querySelectorAll('#stripTaxa .chip.tax').length === 10);
 ok('strip has search box', !!d.querySelector('.strip #q'));
-ok('strip has site chips', d.querySelectorAll('#stripSites .chip.site').length === 10);
+ok('strip has site chips', d.querySelectorAll('#stripSites .chip.site').length === 20);
 ok('strip has ★ late Jul + count', d.querySelectorAll('.strip .tripBtn').length === 1 && !!d.getElementById('count'));
 
 // shared map + tour + matrix columns
-ok('map markers render (10)', d.querySelectorAll('.mkr').length === 10, d.querySelectorAll('.mkr').length + '');
+ok('map markers render (20)', d.querySelectorAll('.mkr').length === 20, d.querySelectorAll('.mkr').length + '');
 ok('tour buttons present', !!d.getElementById('tPlay') && !!d.getElementById('tPrev') && !!d.getElementById('tNext'));
-ok('matrix has a site column per site', d.querySelectorAll('#matrix thead .colh').length === 10);
+ok('matrix has a site column per site', d.querySelectorAll('#matrix thead .colh').length === 20);
 ok('status line renders', /organisms/.test((d.getElementById('status') || {}).textContent || ''));
 
 // taxa filter: none -> 0, then Plants-only -> all Plantae
@@ -96,10 +96,13 @@ const pv = visible();
 ok('Plants-only shows only Plantae', pv.length > 0 && pv.every(r => r.getAttribute('data-g') === 'Plantae'), pv.length + ' rows');
 d.getElementById('taxAll').click();
 
-// region cascade: Lowveld selects the 5 Lowveld/Kruger site columns (fixes #54)
+// region cascade: 4-region model (fixes #54). Lowveld = the 3 Hoedspruit/reserve sites.
 d.querySelector('.segbtn[data-region="lowveld"]').click();
 const lowCols = [].slice.call(d.querySelectorAll('#matrix thead .colh')).filter(th => th.style.display !== 'none').length;
-ok('Lowveld region shows 5 site columns', lowCols === 5, lowCols + ' columns');
+ok('Lowveld region shows 3 site columns', lowCols === 3, lowCols + ' columns');
+d.querySelector('.segbtn[data-region="escarp"]').click();
+const escCols = [].slice.call(d.querySelectorAll('#matrix thead .colh')).filter(th => th.style.display !== 'none').length;
+ok('Escarpment region shows 3 site columns (Blyde/Bourke\'s/God\'s Window)', escCols === 3, escCols + ' columns');
 d.querySelector('.segbtn[data-region="all"]').click();
 
 // focus a site -> one column highlighted, others dimmed
@@ -230,7 +233,7 @@ ok('seen-header row inserted', !!d.getElementById('seenHdr'));
 // drawer opens with evidence band + notes + iNat-obs slot
 d.querySelector('#matrix tr.org').click();
 ok('drawer opens', d.getElementById('drawer').classList.contains('open'));
-ok('drawer has seen-chips', d.querySelectorAll('#drawer .ckchip').length === 10);
+ok('drawer has seen-chips', d.querySelectorAll('#drawer .ckchip').length === 20);
 ok('drawer has notes + iNat slot', !!d.querySelector('#drawer .noteta') && !!d.querySelector('#drawer .inatobs'));
 
 // notebook: write a species note + journal entry, save
@@ -241,7 +244,7 @@ w.__sa.save();
 // Grinnell export renders the three parts across the trip
 w.__openJournal();
 const jtxt = d.getElementById('journal').textContent;
-ok('journal renders 10 site-days', d.querySelectorAll('#journal .jday').length === 10);
+ok('journal renders 20 site-days', d.querySelectorAll('#journal .jday').length === 20);
 ok('journal has narrative + accounts + checklist', /Journal/.test(jtxt) && /Species accounts/.test(jtxt) && /checklist/i.test(jtxt));
 ok('export/import buttons present', !!d.getElementById('expJson') && !!d.getElementById('impJson'));
 
