@@ -10,6 +10,22 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.60 — "Last recorded": a working recency filter
+
+The `ld` (most-recent iNaturalist/eBird observation) dates have been in the data since the Pass-C
+enrichment, but nothing used them. Now there's a **Last recorded** filter in §6: **any · ≤3 mo ·
+≤1 yr · ≤2 yr**. It's the "is this species actually being seen here lately" cut.
+
+- **What it does:** keeps organisms whose newest field observation falls within the window;
+  specimen-only rows (no recent sighting) drop out while a window is active. Off by default —
+  nothing changes until you tap a chip.
+- **Stable windows.** Measured from the corpus's newest record, not the device clock, so the
+  ld snapshot reads the same today and next year. ~1,420 of 2,780 organisms carry a date;
+  ≤3 mo ≈ 850, ≤1 yr ≈ 1,320, ≤2 yr ≈ 1,410.
+- Shows in the status line ("…recorded in the last 3 months…") and composes with every other
+  filter. Precomputed per row (`o._ld`) so it's free at filter time.
+- No data change — pure app feature. Render tests ALL PASS (+3). Shell → `sa-shell-v39`.
+
 ## 1.0.59 — the new sites now know their seasons
 
 1.0.57 shipped the new localities with month-agnostic presence (everything showed in every

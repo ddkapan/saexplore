@@ -169,7 +169,8 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div><div class="dlab">Abundance</div><div id="abChips" style="display:flex;gap:5px;align-items:center"></div><div style="font-size:11px;color:var(--soft);margin-top:5px">tap classes to filter · rare → common · none = all</div></div>'+
    '<div><div class="dlab">Specimen year</div><div class="dual" id="yrD"><span class="trk"></span><span class="bnd" id="yrBnd"></span><input type="range" id="yrLo"><input type="range" id="yrHi"></div><div class="yrlab" style="font-size:11px;color:var(--soft)"><span id="yrLoLab"></span> – <span id="yrHiLab"></span> · museum records</div></div>'+
    '<div><div class="dlab">Season</div><div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap"><button class="tripBtn" style="border:1px solid #2f4f86;background:var(--raised);color:#2f4f86;border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit;font-weight:600">★ late Jul</button><button class="allyrBtn" style="border:1px solid var(--rule);background:var(--raised);color:var(--soft);border-radius:13px;padding:4px 11px;cursor:pointer;font:inherit">all yr</button><span class="seasonchip" data-se="0">Summer</span><span class="seasonchip" data-se="1">Autumn</span><span class="seasonchip" data-se="2">Winter</span><span class="seasonchip" data-se="3">Spring</span></div></div>'+
-   '<div><div class="dlab">Sort</div><div style="display:flex;gap:5px;flex-wrap:wrap"><span class="sortchip" data-sort="az">A→Z</span><span class="sortchip" data-sort="za">Z→A</span><span class="sortchip" data-sort="tax">taxonomic</span><span class="sortchip" data-sort="list" title="the species on your lists first — focal, then tour, then the rest">my lists</span></div></div></div>'+
+   '<div><div class="dlab">Sort</div><div style="display:flex;gap:5px;flex-wrap:wrap"><span class="sortchip" data-sort="az">A→Z</span><span class="sortchip" data-sort="za">Z→A</span><span class="sortchip" data-sort="tax">taxonomic</span><span class="sortchip" data-sort="list" title="the species on your lists first — focal, then tour, then the rest">my lists</span></div></div>'+
+   '<div><div class="dlab">Last recorded</div><div style="display:flex;gap:5px;flex-wrap:wrap"><span class="recchip" data-rec="0">any</span><span class="recchip" data-rec="93">≤3 mo</span><span class="recchip" data-rec="366">≤1 yr</span><span class="recchip" data-rec="731">≤2 yr</span></div><div style="font-size:11px;color:var(--soft);margin-top:5px">most recent iNaturalist / eBird sighting</div></div></div>'+
    '<div style="margin-top:18px;border-top:1px solid var(--rule);padding-top:12px"><div class="dlab" style="margin-bottom:8px">Evidence — strongest first</div><div id="evLegend" style="display:flex;flex-wrap:wrap;gap:20px"></div></div></div>';
  // 7 results
  h+=sec(7,'The results','the working checklist · columns are sites, rows are organisms')+'<div class="fb" data-body="7" style="padding:0 0 16px 8px">'+
@@ -211,7 +212,7 @@ window.APP5=function(UNIC,SMETA,MAPIMG){
    '<div id="bkNudge" class="sans" style="margin-top:12px"></div>'+
    '<div id="listMgr" class="sans" style="margin-top:16px"></div></div>';
  // footer + references
- h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.59</span> · built 2026-07-28 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
+ h+='<footer class="sans" id="appfoot" style="margin-top:30px;border-top:1px solid var(--rule);padding:12px 0;font-size:11.5px;color:var(--soft)"><span style="font-weight:700;color:var(--acacia)">v1.0.60</span> · built 2026-07-28 PDT<br>One organism per row, reconciled on the GBIF Backbone. Evidence glyphs: <b>filled square</b>=museum voucher · <b>outlined square</b>=DNA barcode (BOLD) · <b>ring</b>=iNaturalist sighting · <b>chevron</b>=eBird record. Photos CC-licensed via iNaturalist, GBIF occurrence media and Wikimedia Commons. Where no photo of a species exists, a CC0 <b>silhouette</b> from PhyloPic stands in — labelled as such, never as a photo.</footer>';
  // references — checked against authoritative sources, embedded for offline use
  h+='<details class="sans" id="refs" style="margin-top:10px;font-size:11px;color:var(--soft)"><summary style="cursor:pointer;font-weight:700;color:var(--acacia)">References &amp; sources</summary>'+
    '<p style="margin:8px 0 4px;max-width:760px">Checked against the IUCN Red List, SANBI, BirdLife International, UNESCO and the national parks. IUCN categories are <b>global</b>; South-African regional Red List assessments are noted where they differ.</p>'+
@@ -260,9 +261,12 @@ window.__wire5=function(UNIC,SMETA){
  window.__GLYPH=glyph;
  function badges(o){return ['m','g','i','e'].map(function(k){return glyph(k,hasEv(o,k)?1:0);}).join('');}
  // ---------- precompute per-org ----------
- UNIC.forEach(function(o,i){o.i=i;o._sites=Object.keys(o.st);var me=0,yrs=[];o._sites.forEach(function(k){var s=o.st[k];if(s.e&&s.e[4]>me)me=s.e[4];if(s.i&&s.i[2]>me)me=s.i[2];var m=s.m;if(m){if(m[4]&&m[4].length)m[4].forEach(function(y){yrs.push(y);});else if(m[3]&&m[3][0])yrs.push(m[3][0]);}});o._e=me||0;o._yr=yrs;});
+ UNIC.forEach(function(o,i){o.i=i;o._sites=Object.keys(o.st);var me=0,yrs=[];o._sites.forEach(function(k){var s=o.st[k];if(s.e&&s.e[4]>me)me=s.e[4];if(s.i&&s.i[2]>me)me=s.i[2];var m=s.m;if(m){if(m[4]&&m[4].length)m[4].forEach(function(y){yrs.push(y);});else if(m[3]&&m[3][0])yrs.push(m[3][0]);}});o._e=me||0;o._yr=yrs;o._ld=o.ld?Date.parse(o.ld):0;});
  UNIC.sort(function(a,b){var d=(order[a.g]==null?9:order[a.g])-(order[b.g]==null?9:order[b.g]);if(d)return d;return (a.c||a.s).localeCompare(b.c||b.s);});
  UNIC.forEach(function(o,i){o.i=i;});
+ // recency anchor: newest observation in the corpus. "last recorded" windows measure from here,
+ // so they stay stable regardless of the device clock (the ld dates are a fixed snapshot).
+ var LDMAX=0;UNIC.forEach(function(o){if(o._ld>LDMAX)LDMAX=o._ld;});
  // ---------- persistence ----------
  var seen,notes,seenOrder,journal,inatobs,marks;
  function LG(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
@@ -360,7 +364,7 @@ window.__wire5=function(UNIC,SMETA){
  function seenSpeciesCount(){return Object.keys(seenSpeciesMap()).length;}
  function updateSeenOrder(){var m=seenSpeciesMap();seenOrder=seenOrder.filter(function(k){return m[k];});Object.keys(m).forEach(function(k){if(seenOrder.indexOf(k)<0)seenOrder.push(k);});save();}
  // ---------- state ----------
- var S={region:'all',focus:null,taxa:{},q:'',months:new Set([6]),tripwin:true,tags:new Set(),ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'satellite',zoom:1,panX:0,panY:0,tourMs:3200};
+ var S={region:'all',focus:null,taxa:{},q:'',months:new Set([6]),tripwin:true,tags:new Set(),ab:new Set(),hideAbsent:true,yLo:(SMETA.gbifYears||[1838,2026])[0],yHi:(SMETA.gbifYears||[1838,2026])[1],sort:'az',showMarks:true,layer:'satellite',zoom:1,panX:0,panY:0,tourMs:3200,recency:0};
  GORDER.forEach(function(p){S.taxa[p[0]]=1;});
  var GY=SMETA.gbifYears||[1838,2026];
  window.__S=S;
@@ -470,6 +474,8 @@ window.__wire5=function(UNIC,SMETA){
  $$('.seasonchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:system-ui,sans-serif';c.onclick=function(){var mm=SEAS[+c.dataset.se];var allon=mm.every(function(m){return S.months.has(m);});mm.forEach(function(m){if(allon)S.months.delete(m);else S.months.add(m);});S.tripwin=false;paintSeason();applyFilters();};});
  function paintSeason(){$$('.tripBtn').forEach(function(b){b.style.background=S.tripwin?'#2f4f86':C.raised;b.style.color=S.tripwin?'#fff':'#2f4f86';});var sc=['#c0392b','#cf7d3a','#3f6fb0','#8e6fb0'];$$('.seasonchip').forEach(function(c){var mm=SEAS[+c.dataset.se];var on=mm.some(function(m){return S.months.has(m);});var col=sc[+c.dataset.se];c.style.background=on?col:C.raised;c.style.color=on?'#fff':col;c.style.borderColor=col;});}
  $$('.sortchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 10px;font-size:11.5px;cursor:pointer;color:'+C.soft+';font-family:system-ui,sans-serif';c.onclick=function(){S.sort=c.dataset.sort;$$('.sortchip').forEach(function(x){x.style.background=C.raised;x.style.color=C.soft;x.style.borderColor=C.rule;});c.style.background=C.ink;c.style.color=C.paper;c.style.borderColor=C.ink;sortRows();};});
+ function paintRec(){$$('.recchip').forEach(function(c){var on=(+c.dataset.rec===S.recency);c.style.background=on?C.acacia:C.raised;c.style.color=on?'#fff':C.soft;c.style.borderColor=on?C.acacia:C.rule;});}
+ $$('.recchip').forEach(function(c){c.style.cssText='border:1px solid '+C.rule+';border-radius:11px;padding:3px 10px;font-size:11.5px;cursor:pointer;color:'+C.soft+';font-family:system-ui,sans-serif';c.onclick=function(){S.recency=+c.dataset.rec;paintRec();applyFilters();};});paintRec();
 
  // ---------- search ----------
  var _BF=['nymphalidae','pieridae','lycaenidae','papilionidae','hesperiidae','riodinidae'];var _SNK=['colubridae','elapidae','viperidae','lamprophiidae','pythonidae','typhlopidae','leptotyphlopidae','atractaspididae'];function _isBF(o){return _BF.indexOf((o.f||'').toLowerCase())>=0;}
@@ -479,6 +485,10 @@ window.__wire5=function(UNIC,SMETA){
  // ---------- filter predicates ----------
  function seasonOK(o){if(S.months.size>=12)return true;if(!(o.g==='Aves'||o.g==='Plantae'||o.g==='Insecta'))return true;for(var k in o.st){var s=o.st[k];var mo=s.e?s.e[2]:(s.i?s.i[1]:null);if(mo&&mo.length){for(var i=0;i<mo.length;i++)if(S.months.has(mo[i]))return true;}}return false;}
  function yearOK(o){if(S.yLo<=GY[0]&&S.yHi>=GY[1])return true;if(!o._yr.length)return true;for(var i=0;i<o._yr.length;i++)if(o._yr[i]>=S.yLo&&o._yr[i]<=S.yHi)return true;return false;}
+ // "last recorded" recency filter: keep organisms whose most-recent iNat/eBird observation falls
+ // within S.recency days of the corpus's newest record. Off (0) = show all; specimen-only rows
+ // (no ld) drop out when a window is active — they have no recent field observation.
+ function recencyOK(o){if(!S.recency)return true;return !!o._ld&&(LDMAX-o._ld)<=S.recency*864e5;}
  function textOK(o,tr){var kw=KWMAP[S.q];if(kw)return kw(o);return (tr.dataset.txt.indexOf(S.q)>=0)||((o.o||'').toLowerCase().indexOf(S.q)>=0)||((o.f||'').toLowerCase().indexOf(S.q)>=0)||((o.cl||'').toLowerCase().indexOf(S.q)>=0);}
 
  // ---------- matrix ----------
@@ -593,6 +603,7 @@ window.__wire5=function(UNIC,SMETA){
     if(ok&&S.ab.size)ok=S.ab.has(o._e);
     if(ok)ok=seasonOK(o);
     if(ok)ok=yearOK(o);
+    if(ok)ok=recencyOK(o);
     if(ok)ok=colKeys.some(function(k){return presentAt(o,k);});
     if(ok&&S.focus&&S.hideAbsent&&!presentAt(o,S.focus))ok=false;
    }
@@ -607,7 +618,7 @@ window.__wire5=function(UNIC,SMETA){
   renderSources(vis,srcN,srcRec);
   $$('#matrix .cell, #matrix .colh').forEach(function(el){var isF=!S.focus||el.dataset.site===S.focus;el.style.opacity=isF?'':'.24';});
   var cnt=$('#count');if(cnt)cnt.textContent=vis.toLocaleString()+' / '+UNIC.length.toLocaleString();var mc=$('#mxCount');if(mc)mc.textContent=vis.toLocaleString()+' species';
-  var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var RLAB={cape:'Cape Town',lowveld:'Lowveld',kruger:'Kruger',escarp:'Escarpment'};var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all twenty sites':'in the '+(RLAB[S.region]||S.region));var ns=seenSpeciesCount();stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
+  var stt=$('#status');if(stt){var Gon=GORDER.filter(function(p){return S.taxa[p[0]];});var taxa=Gon.length>=GORDER.length?'all taxa':Gon.length===0?'no taxa':Gon.length<=3?Gon.map(function(p){return p[1].toLowerCase();}).join(', '):Gon.length+' groups';var season=S.months.size>=12?'year-round':(S.tripwin?'in the late-July window':'in the chosen season');var RLAB={cape:'Cape Town',lowveld:'Lowveld',kruger:'Kruger',escarp:'Escarpment'};var site=S.focus?('at '+SI[S.focus].short):(S.region==='all'?'across all twenty sites':'in the '+(RLAB[S.region]||S.region));var ns=seenSpeciesCount();var rec=S.recency?(', recorded in the last '+(S.recency<=93?'3 months':S.recency<=366?'year':'2 years')):'';stt.innerHTML='<b style="color:'+C.ink+'">'+vis.toLocaleString()+'</b> of '+UNIC.length.toLocaleString()+' organisms — '+taxa+', '+season+rec+', '+site+'.'+(ns?' &nbsp;<b style="color:'+C.acacia+'">✓ '+ns+' seen this trip.</b>':'');}
   var at=$('#absToggle');if(at){if(S.focus){var _sn=SI[S.focus].short;at.style.display='';at.textContent=S.hideAbsent?(_sn+' list'):('all sites · '+_sn);at.title=S.hideAbsent?('The species recorded at '+_sn+' (many are widespread — not an endemics list). Tap to show all sites.'):('Every site’s species, '+_sn+' highlighted. Tap for just the '+_sn+' list.');}else at.style.display='none';}
  }
  // ---------- filter-aware source breakdown ----------
