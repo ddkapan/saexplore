@@ -12,6 +12,12 @@ review. Consult any design reference for look only; reimplement natively.
 
 ---
 
+## ⚑ RUN ORDER — do `ITINERARY_FIX.md` FIRST (PR-0, urgent)
+Before any bucket in this file, complete **PR-0 = `ITINERARY_FIX.md`** (real itinerary,
+four regions, all localities, tour + highlights reshuffle, and the automatic
+note-migration). PR-B (journal, keyed per site-day) and PR-C (tour/highlights) **depend
+on** PR-0's day structure. Full sequence and branch-stacking: see `ORCHESTRATION.md`.
+
 ## VOICE & CONTENT RULES — apply to every string you write or touch
 - **Never use the word "loadbearing"** in any text written for this user. (Standing rule.)
 - **Remove "buff"** everywhere — especially the Grinnell journal description. It is not

@@ -10,6 +10,41 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.56 — the app now matches the real itinerary (+ her notes are migrated, not lost)
+
+The schedule was fabricated — one site per day, dates authored inline in `app.js`, `data.js`
+carrying no date field. Dr. Bennett flagged that it didn't follow the actual program. This
+rebuilds it from the trip spreadsheet (the real Days 3–11) and guards every saved note through
+the re-key.
+
+- **The real day-by-day.** Twenty localities in true itinerary order (was ten), the correct
+  dates, and multi-site days — Day 4 alone runs Hout Bay → Duiker cruise → Chapman's Peak →
+  Cape Point → Simon's Town → Boulders. Date and day now live in the data (`SMETA.sites`), not
+  in an authored map. Blyde moves from its wrongly-early slot to Day 10 (29 Jul); Kirstenbosch
+  and Table Mountain to Day 5 (24 Jul); Letaba to Day 8 (27 Jul).
+- **Four regions, not two.** Cape Town · Lowveld · Kruger · Escarpment — region cards, the
+  preset toggle, the map grouping, the column filter and the status line all follow (this also
+  closes the region-preset bug #54). The two-clock climate story (Cape winter-wet vs. dry
+  interior) stays.
+- **Ten new localities**, splitting the merged stops (Duiker Island off Hout Bay; Simon's Town
+  off Boulders; Bourke's Luck & God's Window off Blyde) and adding Green Point, SANCCOB/Table
+  View, V&A Waterfront (marginal), Hoedspruit, and central Kruger. All fall within the baked
+  map extents — new markers, no new tiles.
+- **Automatic, non-destructive note migration.** Journal entries are keyed `date|site`, and the
+  dates changed. On first load the app **backs up every saved key and auto-downloads a copy
+  before touching anything**, realigns journal days to the corrected dates, asserts zero loss,
+  and stamps a schema so it never runs twice. Organism×site checks and species notes use stable
+  keys and pass straight through. The same realign runs on JSON import. Verified: a seeded
+  pre-fix save round-trips with **zero lost entries**.
+- **New sites ship as empty-but-usable columns.** Their evidence data pass (eBird/iNat/GBIF)
+  is a follow-up — they still take checkmarks and notes now. The itinerary correctness does not
+  wait on the enrichment.
+
+Good parts left intact: offline photos (2,780) and PWA boot, evidence links, the genomic flag
+(`g` = 210), the ten existing site keys + Dr. Bennett's saved checkmarks, and the baked
+`MAPIMG`. Shell → `sa-shell-v35`. Render tests updated to the new 20-site / 4-region counts
+(ALL PASS); migration round-trip covered by a dedicated headless test.
+
 ## 1.0.55 — low-hanging fruit before the freeze
 
 Housekeeping while the field kit is still open. No schema changes.

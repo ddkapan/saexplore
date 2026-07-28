@@ -3,6 +3,9 @@ sa_data.js
 sa_app.js
 node_modules
 
+# stray file from another project — belongs in hexlog, not here (copied to ~/Downloads)
+hexlog-do-next.pdf
+
 # regenerable GBIF species cache (see tools/reconcile/README.md)
 tools/reconcile/gcache/
 tools/reconcile/gcache2/
