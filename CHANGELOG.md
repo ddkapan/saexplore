@@ -10,6 +10,44 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.57 — the ten new localities now carry real evidence (Part-B data pass)
+
+1.0.56 shipped the ten new sites as empty-but-usable columns. This fills them with **real
+observation data** — iNaturalist research-grade records and GBIF museum specimens, matched
+to existing organism rows by scientific name. Enrich-in-place: no schema change, no rebuild,
+and **every existing site, the backbone, photos and `MAPIMG` are untouched** (verified
+byte-identical).
+
+Per new site — organisms now carrying evidence (was 0):
+
+| site | +iNat | +museum | populated |
+|---|---|---|---|
+| greenpoint | 281 | 73 | 328 |
+| duikerisland | 325 | 63 | 346 |
+| chapmanspeak | 301 | 35 | 318 |
+| simonstown | 349 | 107 | 416 |
+| sanccob | 461 | 26 | 470 |
+| vawaterfront (marginal) | 127 | 3 | 130 |
+| hoedspruit | 581 | 69 | 603 |
+| kruger_central | 724 | 117 | 781 |
+| bourkesluck | 202 | 46 | 230 |
+| godswindow | 162 | 115 | 234 |
+
+- **Method** (`DATA_PASS.md`): iNat `observations/species_counts` inside each locality's tight
+  box → matched to `UNIC` by binomial → `i:[nObs, months, 0, taxonId]`. GBIF
+  `PRESERVED_SPECIMEN` in the same box → `m:[nSpecimens, 0, institutions, years, years, CAS]`.
+  `src` updated **additively** (a letter is only ever added, never removed; `g` is never
+  touched — the genomic rail holds at 210).
+- **Honest limits:** new-site `i` months are recorded as presence (all-month), not
+  season-resolved — flagged for a later refinement. **eBird per-hotspot enrichment** (the
+  monthly abundance bars the ten original sites carry) is a deliberate follow-up: it can't be
+  synthesised from a species list without inventing the monthly data. Boxes for the pelagic
+  (duikerisland) and marginal (vawaterfront) stops are tight, so their counts are modest by
+  design.
+- **No regressions:** `g` = 210, non-bird eBird = 0, 2,780 rows unchanged, render + migration
+  tests ALL PASS. Birds carrying iNaturalist evidence rose to 488 as a side effect. Shell →
+  `sa-shell-v36`.
+
 ## 1.0.56 — the app now matches the real itinerary (+ her notes are migrated, not lost)
 
 The schedule was fabricated — one site per day, dates authored inline in `app.js`, `data.js`
