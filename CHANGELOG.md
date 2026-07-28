@@ -10,6 +10,28 @@ footer and are reconstructed from the pre-versioning development phases.
 
 ---
 
+## 1.0.58 — eBird hotspots per site, and they're tappable
+
+Every site account now lists its **eBird hotspots as live links** — tap through to the hotspot
+page to plan or log a checklist. The ten new localities are resolved to their real, nearest
+hotspots (fixing the placeholder codes from 1.0.56), and each shows how many species eBird has
+recorded there. The original ten sites already carried their hotspots in the data; those are now
+surfaced too, so all twenty benefit.
+
+- **New behaviour:** focus a site → its Grinnell account shows an **eBird hotspots** block with
+  each hotspot linked to `ebird.org/hotspot/…`, plus "N species recorded" for the new sites.
+- **Correct hotspots.** 1.0.56 shipped guessed hotspot codes (one even pointed at a North-American
+  list). These are re-resolved from each locality's coordinates via the eBird API — e.g. Green
+  Point Park (0.8 km), the *Cape Town* Rietvlei (not the Gauteng one), God's Window (0.1 km),
+  Kruger central section + Phalaborwa–Letaba Rd.
+- **Lean by design.** Birds also gain a slim per-site eBird presence entry, but the hotspot
+  **names are stored once per site**, not copied onto every bird — the earlier draft duplicated
+  ~200 KB of hotspot-name strings across organism rows. Net data growth is **+147 KB** (not 338),
+  and no monthly bars are invented (they aren't available from a hotspot species list).
+- **No regressions:** `g` = 210, non-bird eBird = 0, 2,780 rows unchanged, existing sites'
+  evidence untouched, existing birds' drawer season charts unchanged (the new entries never win
+  the chart selector). Render + migration tests ALL PASS (+1 test). Shell → `sa-shell-v37`.
+
 ## 1.0.57 — the ten new localities now carry real evidence (Part-B data pass)
 
 1.0.56 shipped the ten new sites as empty-but-usable columns. This fills them with **real
