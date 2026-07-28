@@ -109,6 +109,9 @@ d.querySelector('.segbtn[data-region="all"]').click();
 d.querySelector('#matrix thead .colh').click();
 const focused = d.querySelector('.chip.site');
 ok('focusing a site sets a focused chip', [].slice.call(d.querySelectorAll('.chip.site')).some(c => c.style.background && /181, ?98, ?60|b5623c/i.test(c.style.background) || c.style.borderColor));
+// a focused site's account lists its eBird hotspots as live links (ebird.org/hotspot/<L…>)
+const ebLinks = [].slice.call(d.querySelectorAll('#mapLeft .ebhot'));
+ok('focused site shows eBird hotspot links', ebLinks.length > 0 && /ebird\.org\/hotspot\/L\d+/.test(ebLinks[0].href), ebLinks.length + ' links');
 d.querySelector('#matrix thead .colh').click(); // restore
 
 // abundance is a multi-select (Venn), not a floor: pick "common" (class 5) only
