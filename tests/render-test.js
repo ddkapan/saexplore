@@ -131,6 +131,15 @@ ok('abundance is multi-select (S.ab set)', !!(w.__S.ab && w.__S.ab.has(5)));
 d.querySelector('#abChips button[data-ab="5"]').click(); // toggle off -> no abundance filter
 ok('deselecting abundance shows all again', visible().length === beforeAb, visible().length + '');
 
+// "Last recorded" recency filter (uses the ld dates): ≤3 mo narrows to recently-observed rows
+const beforeRec = visible().length;
+d.querySelector('.recchip[data-rec="93"]').click();
+const recVis = visible();
+ok('recency filter narrows to recently-recorded organisms', recVis.length > 0 && recVis.length < beforeRec, recVis.length + ' of ' + beforeRec);
+ok('recency keeps only rows with a recent ld date', recVis.every(r => !!w.__UNIC[+r.dataset.i]._ld));
+d.querySelector('.recchip[data-rec="0"]').click(); // back to "any"
+ok('clearing recency restores the list', visible().length === beforeRec, visible().length + '');
+
 // ---- filter-aware Sources breakdown panel ----
 ok('Sources toggle + panel present', !!d.getElementById('srcToggle') && !!d.getElementById('srcPanel'));
 d.getElementById('srcToggle').click(); // open it
